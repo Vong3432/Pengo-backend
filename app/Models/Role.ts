@@ -11,7 +11,7 @@ export default class Role extends BaseModel {
   @column({serialize: (value: Number) => {
     return value === 1 ? true : false
   }})
-  public isActive: boolean
+  public isActive: Number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
