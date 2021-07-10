@@ -1,24 +1,15 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-export enum Roles {
-  Pengoo = 'pengoo',
-  Staff = 'penger_staff',
-  Founder = 'penger',
-  Admin = 'admin'
-}
-
-export default class Role extends BaseModel {
+export default class GooCardLog extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public name: string
-
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
-  public isActive: Number
+  public title: string
+  
+  @column()
+  public body: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

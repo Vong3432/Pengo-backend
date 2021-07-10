@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@adonisjs/auth": "^8.0.7",
+    "@adonisjs/bouncer": "^2.2.4",
     "@adonisjs/core": "^5.1.9",
     "@adonisjs/lucid": "^15.0.3",
+    "@adonisjs/redis": "^7.0.7",
     "@adonisjs/repl": "^3.1.4",
     "luxon": "^1.27.0",
     "mysql": "^2.18.1",

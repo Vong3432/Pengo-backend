@@ -1,6 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeSave, column, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
+import GooCard from './GooCard'
+import Penger from './Penger'
+import Location from './Location'
+import Role from './Role'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -33,6 +37,18 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @hasOne(() => GooCard)
+  public goocard: HasOne<typeof GooCard>
+
+  @manyToMany(() => Penger)
+  public pengers: ManyToMany<typeof Penger>
+
+  @hasOne(() => Role)
+  public role: HasOne<typeof Role>
+  
+  @manyToMany(() => Location)
+  public locations: ManyToMany<typeof Location>
 
   @beforeSave()
   public static async hashPassword(user: User) {
