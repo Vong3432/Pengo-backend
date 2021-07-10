@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeSave, belongsTo, BelongsTo, column, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import GooCard from './GooCard'
 import Penger from './Penger'
@@ -44,8 +44,8 @@ export default class User extends BaseModel {
   @manyToMany(() => Penger)
   public pengers: ManyToMany<typeof Penger>
 
-  @hasOne(() => Role)
-  public role: HasOne<typeof Role>
+  @belongsTo(() => Role)
+  public role: BelongsTo<typeof Role>
   
   @manyToMany(() => Location)
   public locations: ManyToMany<typeof Location>

@@ -34,9 +34,7 @@ export default class UpdateBookingItemValidator {
 			})
 		),
 		description: schema.string.optional(),
-		maximum_book: schema.number.optional([
-			rules.requiredIfExists('is_countable')
-		]),
+		maximum_book: schema.number.optional(),
 		maximum_transfer: schema.number.optional([
 			rules.requiredIfExists('is_transferable')
 		]),
@@ -49,15 +47,17 @@ export default class UpdateBookingItemValidator {
 		is_transferable: schema.number.optional(),
 		is_countable: schema.number.optional(),
 		is_discountable: schema.number.optional(),
-		quantity: schema.number.optional(),
+		quantity: schema.number.optional([
+			rules.requiredIfExists('is_countable')
+		]),
 		price: schema.number.optional(),
 		discount_amount: schema.number.optional([
 			rules.requiredIfExists('is_discountable')
 		]),
-		availabe_from_time: schema.date.optional({ format: 'HH:mm' }),
-		availabe_to_time: schema.date.optional({ format: 'HH:mm' }),
+		available_from_time: schema.date.optional({ format: 'HH:mm' }),
+		available_to_time: schema.date.optional({ format: 'HH:mm' }),
 		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
-		ended_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
+		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
 	})
 
 	/**

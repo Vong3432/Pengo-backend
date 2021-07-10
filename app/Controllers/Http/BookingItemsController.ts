@@ -31,8 +31,6 @@ export default class BookingItemsController {
 
   public async create ({request, response, bouncer}: HttpContextContract) {
     try {
-      const bookingItemId = request.params().uniqueId;
-
       // validate request body 
       const payload = await request.validate(CreateBookingItemValidator);
 
@@ -55,7 +53,7 @@ export default class BookingItemsController {
       await bookingCategory.related('bookingItems').save(bookingItem);
 
       // cached the new booking item into redis.
-      await Redis.set(`booking_item/${bookingItemId}`, JSON.stringify(bookingItem), 'EX', 60 * 1)
+      await Redis.set(`booking_item/${bookingItem.uniqueId}`, JSON.stringify(bookingItem), 'EX', 60 * 1)
 
       return response.status(200).json({msg: 'Updated successfully', item: bookingItem})
     } catch (error) {

@@ -9,6 +9,9 @@ export default class BookingItem extends BaseModel {
   public id: Number
 
   @column()
+  public bookingCategoryId: Number
+
+  @column()
   public uniqueId: string
 
   @column()
@@ -39,7 +42,7 @@ export default class BookingItem extends BaseModel {
     return value === 1 ? true : false
   }})
   public isPreservable: Number
-  
+
   @column({serialize: (value: Number) => {
     return value === 1 ? true : false
   }})
@@ -53,7 +56,7 @@ export default class BookingItem extends BaseModel {
   @column({serialize: (value: Number) => {
     return value === 1 ? true : false
   }})
-  public isTranserable: Number
+  public isTransferable: Number
   
   @column({serialize: (value: Number) => {
     return value === 1 ? true : false
@@ -72,6 +75,9 @@ export default class BookingItem extends BaseModel {
   public price: Number
 
   @column()
+  public discountAmount: Number
+
+  @column()
   public availableFromTime: DateTime
 
   @column()
@@ -81,7 +87,7 @@ export default class BookingItem extends BaseModel {
   public startFrom: DateTime
   
   @column.dateTime()
-  public endedAt: DateTime
+  public endAt: DateTime
 
   @hasMany(() => BookingRecord)
   public records: HasMany<typeof BookingRecord>
