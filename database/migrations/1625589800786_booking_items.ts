@@ -6,6 +6,7 @@ export default class BookingItems extends BaseSchema {
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
+      table.integer('booking_category_id').unsigned().references('booking_categories.id')
       table.string('unique_id').notNullable().unique()
       table.string('name').notNullable()
       table.text('description').nullable()
