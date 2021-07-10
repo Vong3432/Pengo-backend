@@ -27,6 +27,12 @@ export default class UpdateBookingItemValidator {
 	public schema = schema.create({
 		booking_category_id: schema.string.optional(),
 		name: schema.string.optional(),
+		poster: schema.file.optional({ size: '5mb', extnames: ['jpg', 'png'] }),
+		sub_images: schema.array.optional().members(
+			schema.file({
+				size: '5mb', extnames: ['jpg', 'png']
+			})
+		),
 		description: schema.string.optional(),
 		maximum_book: schema.number.optional([
 			rules.requiredIfExists('is_countable')

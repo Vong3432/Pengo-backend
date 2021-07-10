@@ -2,8 +2,8 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CreateBookingItemValidator {
-  constructor (protected ctx: HttpContextContract) {
-  }
+	constructor(protected ctx: HttpContextContract) {
+	}
 
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
@@ -24,36 +24,42 @@ export default class CreateBookingItemValidator {
 	 *     ])
 	 *    ```
 	 */
-  public schema = schema.create({
-	penger_id: schema.string(),
-	booking_category_id: schema.string(),
-	name: schema.string.optional(),
-	description: schema.string.optional(),
-	maximum_book: schema.number.optional([
-	  rules.requiredIfExists('is_countable')
-	]),
-	maximum_transfer: schema.number.optional([
-	  rules.requiredIfExists('is_transferable')
-	]),
-	preserved_book: schema.boolean.optional([
-		rules.requiredIfExists('is_preservable')
-	  ]),
-	credit_points: schema.number.optional(),
-	is_preservable: schema.number.optional(),
-	is_active: schema.number.optional(),
-	is_transferable: schema.number.optional(),
-	is_countable: schema.number.optional(),
-	is_discountable: schema.number.optional(),
-	quantity: schema.number.optional(),
-	price: schema.number.optional(),
-	discount_amount: schema.number.optional([
-	  rules.requiredIfExists('is_discountable')
-	]),
-	availabe_from_time: schema.date.optional({format: 'HH:mm'}),
-	availabe_to_time: schema.date.optional({format: 'HH:mm'}),
-	start_from: schema.date.optional({format: 'yyyy-MM-dd HH:mm:ss'}),
-	ended_at: schema.date.optional({format: 'yyyy-MM-dd HH:mm:ss'}),
-  })
+	public schema = schema.create({
+		penger_id: schema.string(),
+		poster: schema.file({ size: '5mb', extnames: ['jpg', 'png'] }),
+		sub_images: schema.array.optional().members(
+			schema.file({
+				size: '5mb', extnames: ['jpg', 'png']
+			})
+		),
+		booking_category_id: schema.string(),
+		name: schema.string.optional(),
+		description: schema.string.optional(),
+		maximum_book: schema.number.optional([
+			rules.requiredIfExists('is_countable')
+		]),
+		maximum_transfer: schema.number.optional([
+			rules.requiredIfExists('is_transferable')
+		]),
+		preserved_book: schema.boolean.optional([
+			rules.requiredIfExists('is_preservable')
+		]),
+		credit_points: schema.number.optional(),
+		is_preservable: schema.number.optional(),
+		is_active: schema.number.optional(),
+		is_transferable: schema.number.optional(),
+		is_countable: schema.number.optional(),
+		is_discountable: schema.number.optional(),
+		quantity: schema.number.optional(),
+		price: schema.number.optional(),
+		discount_amount: schema.number.optional([
+			rules.requiredIfExists('is_discountable')
+		]),
+		availabe_from_time: schema.date.optional({ format: 'HH:mm' }),
+		availabe_to_time: schema.date.optional({ format: 'HH:mm' }),
+		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
+		ended_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
+	})
 
 	/**
 	 * Custom messages for validation failures. You can make use of dot notation `(.)`
@@ -66,9 +72,9 @@ export default class CreateBookingItemValidator {
 	 * }
 	 *
 	 */
-  public messages = {
-	'*': (field, rule) => {
-		return `${rule} validation error on ${field} for updating booking item.›`
-	  },  
-  }
+	public messages = {
+		'*': (field, rule) => {
+			return `${rule} validation error on ${field} for updating booking item.›`
+		},
+	}
 }
