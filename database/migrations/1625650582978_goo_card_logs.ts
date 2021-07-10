@@ -6,7 +6,7 @@ export default class GooCardLogs extends BaseSchema {
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('goocard_id').unsigned().references('goocards.id').onDelete('CASCADE')
+      table.integer('goocard_id').unsigned().references('goo_cards.id').onDelete('CASCADE')
       table.string('title').notNullable()
       table.string('body').nullable()
       /**

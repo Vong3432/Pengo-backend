@@ -6,7 +6,7 @@ export default class BookingRecords extends BaseSchema {
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('goocard_id').unsigned().references('goocards.id').onDelete('CASCADE')
+      table.integer('goocard_id').unsigned().references('goo_cards.id').onDelete('CASCADE')
       table.integer('booking_item_id').unsigned().references('booking_items.id')
       table.time('book_time').notNullable()
       table.date('book_date').notNullable()
