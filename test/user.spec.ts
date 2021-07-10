@@ -40,6 +40,6 @@ test.group('Testing user module', (group) => {
     })
 
     test('Ensure user password gets hashed during save', async(assert) => {
-        assert.notEqual(user.password, 'pw')
+        assert.notEqual(user.password, 'abc')
     })
 })
