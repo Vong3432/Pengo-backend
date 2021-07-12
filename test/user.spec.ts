@@ -1,10 +1,11 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import User from 'App/Models/User';
+import { UserFactory } from 'Database/factories/user';
 import test, { group } from 'japa'
 
 test.group('Testing user module', (group) => {
     
-    const user = new User();
+    let user;
 
     group.before(async() => {
         await Database.beginGlobalTransaction()
@@ -15,12 +16,7 @@ test.group('Testing user module', (group) => {
     })
 
     test('Ensure user can be created', async(assert) => {
-        user.email = 'abc@gmail.com'
-        user.username = 'abc'
-        user.password = 'password'
-        user.phone = '012345689'
-        user.avatar = 'sss'
-        await user.save()
+        user = await UserFactory.create();
 
         assert.isTrue(user.$isPersisted)
     })
