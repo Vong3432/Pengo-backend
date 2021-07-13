@@ -31,6 +31,12 @@ async function rollbackMigrations() {
     })
 }
 
+async function runSeeder() {
+    await execa.node('ace', ['db:seed'], {
+        stdio: 'inherit',
+    })
+}
+
 async function startHttpServer() {
     const { Ignitor } = await import('@adonisjs/core/build/src/Ignitor')
     process.env.PORT = String(await getPort())
@@ -44,6 +50,7 @@ configure({
     files: getTestFiles(),
     before: [
         runMigrations,
+        runSeeder,
         startHttpServer
     ],
     after: [rollbackMigrations]

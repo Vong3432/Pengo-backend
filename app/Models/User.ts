@@ -30,7 +30,7 @@ export default class User extends BaseModel {
   public dob: Date
 
   @column({ columnName: 'role_id' })
-  public roleID: Number
+  public roleId: Number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

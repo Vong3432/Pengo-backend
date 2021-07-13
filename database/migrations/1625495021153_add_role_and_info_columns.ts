@@ -9,7 +9,6 @@ export default class Users extends BaseSchema {
       table.string('phone').notNullable()
       table.string('avatar').notNullable()
       table.date('dob').nullable()
-      table.integer('role_id').unsigned().references('id').inTable('roles')
     })
   }
 
@@ -19,7 +18,6 @@ export default class Users extends BaseSchema {
       table.dropColumn('phone')
       table.dropColumn('avatar')
       table.dropColumn('dob')
-      table.dropColumn('role_id')
     })
   }
 }
