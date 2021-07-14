@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import GooCardLog from './GooCardLog'
 import BookingRecord from './BookingRecord'
 import User from './User'
+import Coupon from './Coupon'
 
 export default class GooCard extends BaseModel {
   @column({ isPrimary: true })
@@ -22,6 +23,12 @@ export default class GooCard extends BaseModel {
 
   @hasMany(() => BookingRecord)
   public records: HasMany<typeof BookingRecord>
+
+  @manyToMany(() => Coupon, {
+    pivotTable: 'goocard_coupon',
+    pivotColumns: ['is_used']
+  })
+  public coupons: ManyToMany<typeof Coupon>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

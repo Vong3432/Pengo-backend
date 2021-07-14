@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, Has, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingItem from './BookingItem'
 import GooCard from './GooCard'
+import Feedback from './Feedback'
 
 export default class BookingRecord extends BaseModel {
   @column({ isPrimary: true })
@@ -24,6 +25,9 @@ export default class BookingRecord extends BaseModel {
 
   @column()
   public bookDate: Date
+
+  @hasMany(() => Feedback)
+  public feedbacks: HasMany<typeof Feedback>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

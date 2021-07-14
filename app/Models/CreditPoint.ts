@@ -1,18 +1,21 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-export default class GooCardLog extends BaseModel {
+export default class CreditPoint extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column({ columnName: 'goocard_id' })
   public goocardId: number
 
+  @column({ columnName: 'penger_id' })
+  public pengerId: number
+
   @column()
-  public title: string
-  
+  public totalCreditPoints: number
   @column()
-  public body: string
+
+  public availableCreditPoints: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

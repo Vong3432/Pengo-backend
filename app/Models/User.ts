@@ -5,6 +5,7 @@ import GooCard from './GooCard'
 import Penger from './Penger'
 import Location from './Location'
 import Role from './Role'
+import Notification from './Notification'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -49,6 +50,12 @@ export default class User extends BaseModel {
     pivotColumns: ['name']
   })
   public locations: ManyToMany<typeof Location>
+
+  @manyToMany(() => Notification, {
+    pivotTable: 'notification_user',
+    pivotColumns: ['is_read', 'is_sent', 'send_at']
+  }) 
+  public notifications: ManyToMany<typeof Notification>
 
   @beforeSave()
   public static async hashPassword(user: User) {
