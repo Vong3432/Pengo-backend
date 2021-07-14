@@ -2,7 +2,6 @@ import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingOption from './BookingOption'
 import BookingItem from './BookingItem'
-import User from './User'
 import Penger from './Penger'
 
 export default class BookingCategory extends BaseModel {
@@ -17,6 +16,9 @@ export default class BookingCategory extends BaseModel {
 
   @hasMany(() => BookingItem)
   public bookingItems: HasMany<typeof BookingItem>
+
+  @column({columnName: 'created_by'})
+  public pengerId: Number
 
   @belongsTo(() => Penger)
   public createdBy: BelongsTo<typeof Penger>

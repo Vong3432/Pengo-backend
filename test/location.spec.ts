@@ -1,4 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database';
+import Location from 'App/Models/Location';
 import User from 'App/Models/User';
 import { LocationFactory } from 'Database/factories/location';
 import { UserFactory } from 'Database/factories/user';
@@ -20,8 +21,17 @@ test.group('Testing location module', (group) => {
     })
 
     test('Ensure Pengoo can save location.', async(assert) => {
-        const user = await UserFactory.apply('user').with('locations').create();
-        assert.isTrue(user.locations.length !== 0);
+        const user = await UserFactory.apply('user').create();
+        const location = await Location.firstOrFail();
+
+        await user.related('locations').attach({
+            [location.id]: {
+                name: 'New Penger'
+            }
+        });
+
+        const l = (await user.related('locations').query()).length
+        assert.isAbove(l, 0)
     })
 
     test('Ensure lng and lng of user can be accessed.', async(assert) => {

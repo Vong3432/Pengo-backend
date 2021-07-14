@@ -45,7 +45,8 @@ export default class User extends BaseModel {
   public role: BelongsTo<typeof Role>
   
   @manyToMany(() => Location, {
-    pivotTable: 'user_location'
+    pivotTable: 'user_location',
+    pivotColumns: ['name']
   })
   public locations: ManyToMany<typeof Location>
 

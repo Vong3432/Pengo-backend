@@ -4,6 +4,7 @@ import Location from './Location'
 import BookingOption from './BookingOption'
 import BookingCategory from './BookingCategory'
 import User from './User'
+import BookingItem from './BookingItem'
 
 export default class Penger extends BaseModel {
   @column({ isPrimary: true })
@@ -18,14 +19,26 @@ export default class Penger extends BaseModel {
   @column()
   public logo: string
 
-  @hasMany(() => Location)
-  public locations: HasMany<typeof Location>
+  @manyToMany(() => Location, {
+    pivotTable: 'penger_location',
+    pivotColumns: ['name']
+  })
+  public locations: ManyToMany<typeof Location>
+
+  @hasMany(() => BookingCategory)
+  public bookingCategories: HasMany<typeof BookingCategory>
 
   @hasManyThrough([
     () => BookingOption,
     () => BookingCategory
   ])
   public bookingOptions: HasManyThrough<typeof BookingOption>
+
+  @hasManyThrough([
+    () => BookingItem,
+    () => BookingCategory
+  ])
+  public bookingItems: HasManyThrough<typeof BookingItem>
 
   @manyToMany(() => User)
   public pengerUsers: ManyToMany<typeof User>
