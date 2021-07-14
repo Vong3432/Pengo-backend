@@ -23,16 +23,26 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x, 16.x]
+        
+    container: ubuntu
+    
+    services:
+      mydb:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
-      - uses: ankane/setup-mysql@v1
-        with:
-          mysql-version: 8.0
-          database: pengo
+      - name: Verify MySQL connection from container 
+        run: |
+          apt-get update
+          apt-get install -y mysql-client
+          mysql --host pengo -uroot -e "SHOW DATABASES"
           
       - name: Create env file
         run: |
@@ -42,7 +52,7 @@ jobs:
           echo DB_CONNECTION="mysql" >> .env
           echo MYSQL_HOST="localhost" >> .env
           echo MYSQL_PORT="3306" >> .env
-          echo MYSQL_USER="developer" >> .env
+          echo MYSQL_USER="root" >> .env
           echo MYSQL_PASSWORD="" >> .env
           echo MYSQL_DB_NAME="pengo" >> .env
           echo REDIS_CONNECTION="local" >> .env
