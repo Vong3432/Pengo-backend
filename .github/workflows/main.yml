@@ -44,6 +44,8 @@ jobs:
       - name: Create env file
         run: |
           touch .env
+          echo PORT="3333" >> .env
+          echo APP_KEY=${{secrets.AppKey}} >> .env
           echo DB_CONNECTION="mysql" >> .env
           echo MYSQL_HOST="localhost" >> .env
           echo MYSQL_PORT="3306" >> .env
