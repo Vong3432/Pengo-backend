@@ -1,18 +1,14 @@
-import Bouncer from '@ioc:Adonis/Addons/Bouncer';
 import Database from '@ioc:Adonis/Lucid/Database';
 import BookingItem from 'App/Models/BookingItem';
 import Penger from 'App/Models/Penger';
-import Role, { Roles } from 'App/Models/Role';
+import { Roles } from 'App/Models/Role';
 import User from 'App/Models/User';
 import { BookingCategoryFactory } from 'Database/factories/booking-category';
-import { BookingItemFactory } from 'Database/factories/booking-item';
 import { PengerFactory } from 'Database/factories/penger';
 import { UserFactory } from 'Database/factories/user';
-import test, { group } from 'japa'
+import test from 'japa'
 
 test.group('Testing booking module', (group) => {
-    
-    const penger = new Penger();
 
     group.before(async() => {
         await Database.beginGlobalTransaction()

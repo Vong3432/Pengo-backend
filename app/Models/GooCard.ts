@@ -1,14 +1,21 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import GooCardLog from './GooCardLog'
 import BookingRecord from './BookingRecord'
+import User from './User'
 
 export default class GooCard extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
+  public userId: Number
+
+  @column()
   public pin: string
+
+  @belongsTo(() => User)
+  public user: BelongsTo<typeof User>
 
   @hasMany(() => GooCardLog)
   public logs: HasMany<typeof GooCardLog>

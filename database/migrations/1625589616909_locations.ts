@@ -6,6 +6,7 @@ export default class Locations extends BaseSchema {
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
+      table.string('name').notNullable();
       table.string('address1').notNullable()
       table.string('address2').nullable()
       table.json('geolocation').notNullable();

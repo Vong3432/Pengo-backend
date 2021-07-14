@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import BookingItem from './BookingItem'
+import GooCard from './GooCard'
 
 export default class BookingRecord extends BaseModel {
   @column({ isPrimary: true })
@@ -8,6 +9,15 @@ export default class BookingRecord extends BaseModel {
 
   @belongsTo(() => BookingItem)
   public item: BelongsTo<typeof BookingItem>
+
+  @belongsTo(() => GooCard)
+  public goocard: BelongsTo<typeof GooCard>
+
+  @column({columnName: 'booking_item_id'})
+  public bookingItemId: Number
+
+  @column({columnName: 'goocard_id'})
+  public gooCardId: Number
 
   @column()
   public bookTime: string

@@ -6,7 +6,6 @@ export default class UserLocations extends BaseSchema {
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
-      table.string('name').notNullable()
       table.integer('user_id').unsigned().references('users.id')
       table.integer('location_id').unsigned().references('locations.id')
       

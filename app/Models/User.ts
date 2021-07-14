@@ -41,13 +41,12 @@ export default class User extends BaseModel {
   @hasOne(() => GooCard)
   public goocard: HasOne<typeof GooCard>
 
-  @manyToMany(() => Penger)
-  public pengers: ManyToMany<typeof Penger>
-
   @belongsTo(() => Role)
   public role: BelongsTo<typeof Role>
   
-  @manyToMany(() => Location)
+  @manyToMany(() => Location, {
+    pivotTable: 'user_location'
+  })
   public locations: ManyToMany<typeof Location>
 
   @beforeSave()

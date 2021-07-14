@@ -1,9 +1,13 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import User from './User'
 
 export default class Location extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public name: string
 
   @column()
   public address1: string
@@ -12,7 +16,10 @@ export default class Location extends BaseModel {
   public address2: string
 
   @column()
-  public geolocation: JSON
+  public geolocation: string
+
+  @manyToMany(() => User)
+  public userLocations: ManyToMany<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
