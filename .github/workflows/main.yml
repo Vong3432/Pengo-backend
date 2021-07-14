@@ -40,6 +40,21 @@ jobs:
           mysql root password: ${{ secrets.RootPassword }} # Required if "mysql user" is empty, default is empty. The root superuser password
           mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: ${{ secrets.DatabasePassword }} # Required if "mysql user" exists. The password for the "mysql user"
+          
+      - name: Create env file
+        run: |
+          touch .env
+          echo DB_CONNECTION="mysql" >> .env
+          echo MYSQL_HOST="localhost" >> .env
+          echo MYSQL_PORT="3306" >> .env
+          echo MYSQL_USER="developer" >> .env
+          echo MYSQL_PASSWORD="" >> .env
+          echo MYSQL_DB_NAME="pengo" >> .env
+          echo REDIS_CONNECTION="local" >> .env
+          echo REDIS_HOST="127.0.0.1" >> .env
+          echo REDIS_PORT="6379" >> .env
+          echo REDIS_PASSWORD="" >> .env
+          cat .env
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
