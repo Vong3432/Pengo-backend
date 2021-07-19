@@ -21,12 +21,20 @@
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.resource('booking-items', 'BookingItemsController').middleware({
-  '*': ['auth'],
-  'create': ['penger_role'],
-  'update': ['penger_role'],
-  'destroy': ['penger_role'],
-})
+// ---------------------------
+// Pengers Route
+// ---------------------------
+Route.group(() => {
+  Route.resource('booking-items', 'BookingItemsController').middleware({
+    '*': ['auth'],
+    'create': ['penger_role'],
+    'update': ['penger_role'],
+    'destroy': ['penger_role'],
+  })
+}).namespace('App/Controllers/Http/penger')
+// ---------------------------
+// Pengers Route End
+// ---------------------------
 
 Route.get('health', async({ response }) => {
   const report = await HealthCheck.getReport()

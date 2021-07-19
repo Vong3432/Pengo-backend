@@ -29,7 +29,7 @@ export default class BookingItemsController {
     }
   }
 
-  public async create ({request, response, bouncer}: HttpContextContract) {
+  public async store ({request, response, bouncer}: HttpContextContract) {
     try {
       // validate request body 
       const payload = await request.validate(CreateBookingItemValidator);
@@ -113,4 +113,9 @@ export default class BookingItemsController {
 
   public async destroy ({}: HttpContextContract) {
   }
+
+  public async getItemsByCategories({}: HttpContextContract) {
+    // TODO: Based on category, filter, and return list of booking items
+  }
+
 }
