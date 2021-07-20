@@ -20,6 +20,8 @@
 
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import Route from '@ioc:Adonis/Core/Route'
+import './routes/core'
+import './routes/auth'
 
 // ---------------------------
 // Pengers Route
@@ -36,7 +38,8 @@ Route.group(() => {
 // Pengers Route End
 // ---------------------------
 
-Route.get('health', async({ response }) => {
+
+Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
 
   return report.healthy

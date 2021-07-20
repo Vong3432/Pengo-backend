@@ -6,7 +6,7 @@ export default class GoocardCoupons extends BaseSchema {
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('goocard_id').unsigned().references('goocards.id').onDelete('CASCADE')
+      table.integer('goocard_id').unsigned().references('goo_cards.id').onDelete('CASCADE')
       table.integer('coupon_id').unsigned().references('coupons.id').onDelete('CASCADE')
       table.integer('is_used').unsigned().notNullable().defaultTo(0)
 

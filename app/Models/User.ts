@@ -2,7 +2,6 @@ import { DateTime } from 'luxon'
 import { BaseModel, beforeSave, belongsTo, BelongsTo, column, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import GooCard from './GooCard'
-import Penger from './Penger'
 import Location from './Location'
 import Role from './Role'
 import Notification from './Notification'
@@ -19,10 +18,10 @@ export default class User extends BaseModel {
   public password: string
 
   @column()
-  public phone: string 
+  public phone: string
 
   @column()
-  public email: string 
+  public email: string
 
   @column()
   public avatar: string
@@ -44,7 +43,7 @@ export default class User extends BaseModel {
 
   @belongsTo(() => Role)
   public role: BelongsTo<typeof Role>
-  
+
   @manyToMany(() => Location, {
     pivotTable: 'user_location',
     pivotColumns: ['name']
@@ -54,12 +53,12 @@ export default class User extends BaseModel {
   @manyToMany(() => Notification, {
     pivotTable: 'notification_user',
     pivotColumns: ['is_read', 'is_sent', 'send_at']
-  }) 
+  })
   public notifications: ManyToMany<typeof Notification>
 
   @beforeSave()
   public static async hashPassword(user: User) {
-    if(user.$dirty.password) {
+    if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
   }

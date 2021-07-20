@@ -30,6 +30,7 @@
     "@adonisjs/lucid": "^15.0.3",
     "@adonisjs/redis": "^7.0.7",
     "@adonisjs/repl": "^3.1.4",
+    "cloudinary": "^1.26.2",
     "luxon": "^1.27.0",
     "mysql": "^2.18.1",
     "phc-bcrypt": "^1.0.7",
