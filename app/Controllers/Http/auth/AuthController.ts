@@ -7,9 +7,10 @@ import LoginUserValidator from "App/Validators/auth/LoginUserValidator";
 import RegisterUserValidator from "App/Validators/auth/RegisterUserValidator";
 import Hash from '@ioc:Adonis/Core/Hash'
 import { destroyFromCloudinary, uploadToCloudinary } from "App/Services/CloudinaryImageService";
+import RegisterPenderValidator from "App/Validators/auth/RegisterPengerValidator";
 
 export default class AuthController {
-  public async register({ response, request }: HttpContextContract) {
+  public async register({ response, request, auth }: HttpContextContract) {
     const trx = await Database.transaction();
     let publicId: string = "";
 
@@ -43,7 +44,11 @@ export default class AuthController {
 
       trx.commit();
 
-      return response.status(200).json({ msg: "Register successfully!" })
+      const token = await auth.use("api").attempt(payload.phone, payload.password, {
+        expiresIn: "10 days"
+      })
+
+      return response.status(200).json({ msg: "Register successfully!", data: { token } })
 
     } catch (error) {
       trx.rollback();
@@ -54,21 +59,53 @@ export default class AuthController {
     }
   }
 
-  public async registerAsPengerFounder({ response, request }: HttpContextContract) {
+  public async registerAsPengerFounder({ response, request, auth }: HttpContextContract) {
+    const trx = await Database.transaction();
+    let publicId: string = "";
+
     try {
-      const payload = await request.validate(RegisterUserValidator);
+      const payload = await request.validate(RegisterPenderValidator);
       const role = await Role.findByOrFail('name', Roles.Founder);
 
       // save image to cloud
-      const url = "http";
+      const result = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "pengoo" });
+      const url = result.secure_url;
+      publicId = result.public_id;
 
-      await (await User.create({ ...payload, avatar: url, roleId: role.id })).save();
+      // create user 
+      const user = new User()
+      user.fill({
+        avatar: url,
+        roleId: role.id,
+        email: payload.email,
+        phone: payload.phone,
+        username: payload.username,
+        password: payload.password
+      });
+
+      user.useTransaction(trx);
+
+      await user.save();
+
+      trx.commit();
+
+      const token = await auth.use("api").attempt(payload.phone, payload.password, {
+        expiresIn: "10 days"
+      })
+
+      return response.status(200).json({ msg: "Register successfully!", data: { token } })
+
     } catch (error) {
-      return response.json({ msg: error });
+      trx.rollback();
+      console.log(error)
+      if (publicId) {
+        destroyFromCloudinary(publicId);
+      }
+      return response.status(500).json({ msg: error.messages || error });
     }
   }
 
-  public async login({ request, response }: HttpContextContract) {
+  public async login({ request, response, auth }: HttpContextContract) {
     try {
       const payload = await request.validate(LoginUserValidator);
       const role = await Role.findByOrFail('name', Roles.Pengoo);
@@ -85,12 +122,43 @@ export default class AuthController {
         throw "Password is incorrect";
       }
 
-      return response.status(200).json({ msg: "Login successfully!", data: user })
+      const token = await auth.use("api").attempt(payload.phone, payload.password, {
+        expiresIn: "10 days"
+      })
+
+      return response.status(200).json({ msg: "Login successfully!", data: { user, token } })
 
     } catch (error) {
       return response.status(500).json({ msg: error.messages || error });
     }
   }
 
-  public async loginPenger({ }: HttpContextContract) { }
+  public async loginPenger({ request, response, auth }: HttpContextContract) {
+    try {
+      const payload = await request.validate(LoginUserValidator);
+      const founder = await Role.findByOrFail('name', Roles.Founder);
+      const staff = await Role.findByOrFail('name', Roles.Staff);
+
+      // get user
+      const user = await User.query().where('phone', payload.phone).first();
+
+      if (!user) throw "No account found, please try again.";
+
+      if (user.roleId !== staff.id && user.roleId !== founder.id)
+        throw "Pengoo is not allowed."
+
+      if (await Hash.verify(user.password, payload.password) === false) {
+        throw "Password is incorrect";
+      }
+
+      const token = await auth.use("api").attempt(payload.phone, payload.password, {
+        expiresIn: "10 days"
+      })
+
+      return response.status(200).json({ msg: "Login successfully!", data: { user, token } })
+
+    } catch (error) {
+      return response.status(500).json({ msg: error.messages || error });
+    }
+  }
 }
