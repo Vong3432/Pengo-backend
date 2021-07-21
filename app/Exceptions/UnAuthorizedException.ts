@@ -1,5 +1,6 @@
 import { Exception } from '@adonisjs/core/build/standalone'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ErrorResponse } from 'App/Services/ResponseService'
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 |
 */
 export default class UnAuthorizedException extends Exception {
-    public async handle(ctx: HttpContextContract) {
-        ctx.response.status(403).send('You are not authorized')
+    public async handle(error: this, ctx: HttpContextContract) {
+        ErrorResponse({ response: ctx.response, code: error.status, msg: 'You are not authorzied' })
     }
 }

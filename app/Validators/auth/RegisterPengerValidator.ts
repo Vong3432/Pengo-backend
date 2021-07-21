@@ -28,6 +28,10 @@ export default class RegisterPenderValidator {
 	public schema = schema.create({
 		email: schema.string({}, [
 			rules.email(),
+			rules.unique({
+				table: "users",
+				column: "email",
+			}),
 		]),
 		password: schema.string({}, [rules.confirmed(), rules.minLength(8)]),
 		username: schema.string(),
@@ -35,6 +39,10 @@ export default class RegisterPenderValidator {
 			rules.mobile({
 				strict: true,
 				locales: ["ms-MY"],
+			}),
+			rules.unique({
+				table: "users",
+				column: "phone",
 			}),
 		]),
 		avatar: schema.file({
@@ -57,6 +65,8 @@ export default class RegisterPenderValidator {
 	public messages = {
 		required: 'The {{field}} is required to create account',
 		'phone.mobile': 'This phone number is using incorrect format.',
+		'phone.unique': 'This phone is registered.',
+		'email.unique': 'This email is already used.',
 		'password_confirmation.confirmed': 'Password is not same.',
 		'*': (field, rule) => {
 			return `${rule} validation error on ${field} for registration.`

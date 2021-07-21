@@ -4,8 +4,8 @@ import UnAuthorizedPengerException from 'App/Exceptions/UnAuthorizedPengerExcept
 import BookingCategory from 'App/Models/BookingCategory';
 import BookingItem from 'App/Models/BookingItem'
 import Penger from 'App/Models/Penger';
-import CreateBookingItemValidator from 'App/Validators/CreateBookingItemValidator';
-import UpdateBookingItemValidator from 'App/Validators/UpdateBookingItemValidator';
+import CreateBookingItemValidator from 'App/Validators/penger/CreateBookingItemValidator';
+import UpdateBookingItemValidator from 'App/Validators/penger/UpdateBookingItemValidator';
 
 export default class BookingItemsController {
   public async index({ response }: HttpContextContract) {

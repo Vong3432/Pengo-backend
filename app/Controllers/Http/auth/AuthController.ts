@@ -8,6 +8,7 @@ import RegisterUserValidator from "App/Validators/auth/RegisterUserValidator";
 import Hash from '@ioc:Adonis/Core/Hash'
 import { destroyFromCloudinary, uploadToCloudinary } from "App/Services/CloudinaryImageService";
 import RegisterPenderValidator from "App/Validators/auth/RegisterPengerValidator";
+import { ErrorResponse, SuccessResponse } from "App/Services/ResponseService";
 
 export default class AuthController {
   public async register({ response, request, auth }: HttpContextContract) {
@@ -48,14 +49,13 @@ export default class AuthController {
         expiresIn: "10 days"
       })
 
-      return response.status(200).json({ msg: "Register successfully!", data: { token } })
-
+      return SuccessResponse({ response, msg: "Register successfully", data: { user, token } })
     } catch (error) {
       trx.rollback();
       if (publicId) {
         destroyFromCloudinary(publicId);
       }
-      return response.status(500).json({ msg: error.messages || error });
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
@@ -68,7 +68,7 @@ export default class AuthController {
       const role = await Role.findByOrFail('name', Roles.Founder);
 
       // save image to cloud
-      const result = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "pengoo" });
+      const result = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/founder" });
       const url = result.secure_url;
       publicId = result.public_id;
 
@@ -83,9 +83,7 @@ export default class AuthController {
         password: payload.password
       });
 
-      user.useTransaction(trx);
-
-      await user.save();
+      await user.useTransaction(trx).save();
 
       trx.commit();
 
@@ -93,7 +91,7 @@ export default class AuthController {
         expiresIn: "10 days"
       })
 
-      return response.status(200).json({ msg: "Register successfully!", data: { token } })
+      return SuccessResponse({ response, msg: "Register successfully", data: { user, token } })
 
     } catch (error) {
       trx.rollback();
@@ -101,7 +99,7 @@ export default class AuthController {
       if (publicId) {
         destroyFromCloudinary(publicId);
       }
-      return response.status(500).json({ msg: error.messages || error });
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
@@ -126,10 +124,10 @@ export default class AuthController {
         expiresIn: "10 days"
       })
 
-      return response.status(200).json({ msg: "Login successfully!", data: { user, token } })
+      return SuccessResponse({ response, msg: "Login successfully", data: { user, token } })
 
     } catch (error) {
-      return response.status(500).json({ msg: error.messages || error });
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
@@ -155,10 +153,10 @@ export default class AuthController {
         expiresIn: "10 days"
       })
 
-      return response.status(200).json({ msg: "Login successfully!", data: { user, token } })
+      return SuccessResponse({ response, msg: "Login successfully", data: { user, token } })
 
     } catch (error) {
-      return response.status(500).json({ msg: error.messages || error });
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 }

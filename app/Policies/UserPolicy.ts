@@ -5,13 +5,17 @@ import User from 'App/Models/User';
 
 export default class UserPolicy extends BasePolicy {
     public async isPenger(user: User) {
-        return user.role.name === Roles.Staff 
-        || user.role.name === Roles.Founder
+        return user.role.name === Roles.Staff
+            || user.role.name === Roles.Founder
+    }
+
+    public async isFounder(user: User) {
+        return user.role.name === Roles.Founder
     }
 
     public async canPerformActionOnPenger(user: User, penger: Penger) {
-        return penger.related('pengerUsers').query().wherePivot('user_id', user.id) 
-        ? true
-        : false;
+        return penger.related('pengerUsers').query().wherePivot('user_id', user.id)
+            ? true
+            : false;
     }
 }

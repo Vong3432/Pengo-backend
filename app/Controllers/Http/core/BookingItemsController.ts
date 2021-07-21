@@ -1,6 +1,7 @@
 import Redis from '@ioc:Adonis/Addons/Redis';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BookingItem from 'App/Models/BookingItem'
+import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class BookingItemsController {
   public async index({ response }: HttpContextContract) {
@@ -8,11 +9,10 @@ export default class BookingItemsController {
 
       // if not in cache, get booking items from db.
       const bookingItems = await BookingItem.all().then(item => item);
-      return response.status(200).json({ data: bookingItems })
+      return SuccessResponse({ response, data: bookingItems, code: 200 })
     }
     catch (error) {
-      console.log(error)
-      return response.status(500).json(error)
+      return ErrorResponse({ response, msg: "error", code: 500 })
     }
   }
 
