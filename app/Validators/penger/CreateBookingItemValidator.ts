@@ -73,6 +73,7 @@ export default class CreateBookingItemValidator {
 	 *
 	 */
 	public messages = {
+		required: 'The {{field}} is required to create item',
 		'*': (field, rule) => {
 			return `${rule} validation error on ${field} for updating booking item.›`
 		},

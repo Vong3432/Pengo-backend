@@ -3,6 +3,10 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.group(() => {
     // booking items
     Route.resource('booking-items', 'BookingItemsController').apiOnly()
+
+    // booking categories
+    Route.resource('booking-categories', 'BookingCategoriesController').apiOnly()
+
     // pengers
     Route.post('/create', 'PengersController.createPenger').as('penger')
 

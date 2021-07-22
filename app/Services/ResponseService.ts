@@ -19,5 +19,5 @@ export const SuccessResponse = ({ response, code, msg, data }: ISuccessRes) => {
 }
 
 export const ErrorResponse = ({ response, code, msg }: IErrorRes) => {
-    return response.status(code || 500).json({ msg })
+    return response.status(code || 500).json({ msg: msg && Object.keys(msg).length === 0 ? "Error occured." : msg })
 }
