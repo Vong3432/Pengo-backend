@@ -11,13 +11,20 @@ export default class BookingCategory extends BaseModel {
   @column()
   public name: string
 
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isEnable: number
+
   @hasMany(() => BookingOption)
   public bookingOptions: HasMany<typeof BookingOption>
 
-  @hasMany(() => BookingItem)
+  @hasMany(() => BookingItem, { serializeAs: 'booking_items' })
   public bookingItems: HasMany<typeof BookingItem>
 
-  @column({columnName: 'created_by'})
+  @column({ columnName: 'created_by', serializeAs: null })
   public pengerId: Number
 
   @belongsTo(() => Penger)
