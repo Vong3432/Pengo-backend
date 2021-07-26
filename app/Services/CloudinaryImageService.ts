@@ -6,9 +6,10 @@ type Option = {
 }
 
 interface ICloudinary {
-    file: string;
+    file: string | undefined;
     folder: string;
     options?: Option;
+    placeholderUrl?: string;
 }
 
 cloudinary.v2.config({
@@ -18,8 +19,13 @@ cloudinary.v2.config({
     secure: true
 })
 
-export async function uploadToCloudinary({ file, folder, options }: ICloudinary) {
+export async function uploadToCloudinary({ file, folder, options, placeholderUrl }: ICloudinary) {
     try {
+        if (!file) {
+            return {
+                secure_url: placeholderUrl ?? 'https://res.cloudinary.com/dpjso4bmh/image/upload/v1626867341/pengo/penger/staff/3192c5a13626653bffeb2c1171df716f_wrchju.png'
+            }
+        }
         const result = await cloudinary.v2.uploader.upload(file, {
             ...options,
             folder: "pengo/" + folder

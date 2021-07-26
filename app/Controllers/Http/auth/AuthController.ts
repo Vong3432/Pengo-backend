@@ -20,9 +20,8 @@ export default class AuthController {
       const role = await Role.findByOrFail('name', Roles.Pengoo);
 
       // save image to cloud
-      const result = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "pengoo" });
-      const url = result.secure_url;
-      publicId = result.public_id;
+      const { secure_url: url, public_id } = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "pengoo" });
+      if (public_id) publicId = public_id;
 
       // create user 
       const user = new User()
@@ -68,9 +67,8 @@ export default class AuthController {
       const role = await Role.findByOrFail('name', Roles.Founder);
 
       // save image to cloud
-      const result = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/founder" });
-      const url = result.secure_url;
-      publicId = result.public_id;
+      const { secure_url: url, public_id } = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/founder" });
+      if (public_id) publicId = public_id;
 
       // create user 
       const user = new User()

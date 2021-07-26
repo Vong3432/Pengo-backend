@@ -21,9 +21,8 @@ export default class PengersController {
       await PengerVerifyAuthorizationService.isPenger(bouncer);
 
       // save image to cloud
-      const result = await uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
-      const url = result.secure_url;
-      publicId = result.public_id;
+      const { secure_url: url, public_id } = await uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
+      if (public_id) publicId = public_id;
 
       // create penger
       const newPenger = new Penger();
@@ -48,7 +47,7 @@ export default class PengersController {
     }
   }
 
-  public async addStaff({ request, response, auth, bouncer }: HttpContextContract) {
+  public async addStaff({ request, response, bouncer }: HttpContextContract) {
     const trx = await Database.transaction();
     let publicId: string = "";
 
@@ -59,16 +58,8 @@ export default class PengersController {
       await PengerVerifyAuthorizationService.isPenger(bouncer);
       await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
 
-      let url = "";
-
-      if (payload.avatar) {
-        // save image to cloud
-        const result = await uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/staff" });
-        url = result.secure_url;
-        publicId = result.public_id;
-      } else {
-        url = 'https://res.cloudinary.com/dpjso4bmh/image/upload/v1626867341/pengo/penger/staff/3192c5a13626653bffeb2c1171df716f_wrchju.png'
-      }
+      let { secure_url: url, public_id } = await uploadToCloudinary({ file: payload.avatar?.tmpPath, folder: "penger/staff" });
+      if (public_id) publicId = public_id;
 
       // create staff 
       const staff = new User()
