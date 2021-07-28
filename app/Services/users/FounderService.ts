@@ -1,9 +1,12 @@
 import User from "App/Models/User";
+import { userRepository } from "App/Repositories/UserRepository";
 import { ICreateFounderData } from "./IUser";
+
+type Repository = typeof userRepository;
 
 export class FounderService {
 
-    userRepository: any;
+    userRepository: Repository;
 
     constructor({ userRepository }) {
         this.userRepository = userRepository;

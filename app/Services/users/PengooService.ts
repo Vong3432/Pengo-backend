@@ -1,10 +1,13 @@
 import GooCard from "App/Models/GooCard";
 import User from "App/Models/User";
+import { userRepository } from "App/Repositories/UserRepository";
 import { ICreateUserData, IUpdateUserData } from "./IUser";
+
+type Repository = typeof userRepository;
 
 export class PengooService {
 
-    userRepository: any;
+    userRepository: Repository;
 
     constructor({ userRepository }) {
         this.userRepository = userRepository;

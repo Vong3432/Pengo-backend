@@ -1,10 +1,13 @@
 
 import GooCard from "App/Models/GooCard";
 import { ICreateGooCard } from "./IGooCard";
+import { gooCardRepository } from "App/Repositories/GooCardRepository";
+
+type Repository = typeof gooCardRepository;
 
 export class GooCardService {
 
-    gooCardRepository: any;
+    gooCardRepository: Repository;
 
     constructor({ gooCardRepository }) {
         this.gooCardRepository = gooCardRepository
