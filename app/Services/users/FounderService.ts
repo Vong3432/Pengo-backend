@@ -1,19 +1,98 @@
 import User from "App/Models/User";
-import { userRepository } from "App/Repositories/UserRepository";
-import { ICreateFounderData } from "./IUser";
+import RegisterPenderValidator from "App/Validators/auth/RegisterPengerValidator";
+import FounderInterface from "Contracts/interfaces/Founder.interface";
+import { DBTransactionService } from "../DBTransactionService";
+import { RequestContract } from "@ioc:Adonis/Core/Request";
+import { Roles } from "App/Models/Role";
+import { AuthContract } from "@ioc:Adonis/Addons/Auth";
+import { RoleService } from "../role/RoleService";
+import { CloudinaryService } from "../cloudinary/CloudinaryService";
+import CreatePengerValidator from "App/Validators/penger/CreatePengerValidator";
+import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
+import { ActionsAuthorizerContract } from "@ioc:Adonis/Addons/Bouncer";
+import Penger from "App/Models/Penger";
 
-type Repository = typeof userRepository;
+export class FounderService implements FounderInterface {
 
-export class FounderService {
+    private readonly roleService: RoleService;
+    private readonly cloudinaryService: CloudinaryService;
 
-    userRepository: Repository;
-
-    constructor({ userRepository }) {
-        this.userRepository = userRepository;
+    constructor() {
+        this.roleService = new RoleService();
+        this.cloudinaryService = new CloudinaryService();
     }
 
-    async create(data: ICreateFounderData): Promise<User> {
-        return await this.userRepository.create(data);
+    async createPenger(request: RequestContract, auth: AuthContract, bouncer: ActionsAuthorizerContract<User>) {
+        const trx = await DBTransactionService.init();
+        let publicId: string = "";
+
+        const payload = await request.validate(CreatePengerValidator);
+        const user = await auth.authenticate();
+
+        await PengerVerifyAuthorizationService.isPenger(bouncer);
+
+        // save image to cloud
+        const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
+        if (public_id) publicId = public_id;
+
+        // create penger
+        const newPenger = new Penger();
+        newPenger.useTransaction(trx);
+
+        try {
+            await newPenger.fill({ ...payload, logo: url }).save();
+
+            // link founder to penger.
+            await newPenger.related('pengerUsers').attach([user.id]);
+
+            // commit new data to db
+            await trx.commit();
+        } catch (error) {
+            if (publicId) {
+                this.cloudinaryService.destroyFromCloudinary(publicId);
+            }
+            await trx.rollback();
+            throw error;
+        }
+    }
+
+    async createFounder(request: RequestContract, auth: AuthContract) {
+        let publicId;
+        const payload = await request.validate(RegisterPenderValidator);
+        const role = await this.roleService.findRole(Roles.Founder);
+
+        // save image to cloud
+        const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/founder" });
+        if (public_id) publicId = public_id;
+
+        const data = {
+            avatar: url,
+            roleId: role.id,
+            email: payload.email,
+            phone: payload.phone,
+            username: payload.username,
+            password: payload.password
+        }
+
+        const user = new User();
+        const trx = await DBTransactionService.init();
+        try {
+            await user.useTransaction(trx).fill({ ...data }).save();
+            await trx.commit();
+
+            const token = await auth.use("api").attempt(payload.phone, payload.password, {
+                expiresIn: "10 days"
+            })
+            return {
+                user,
+                token
+            };
+        } catch (error) {
+            await trx.rollback();
+            if (publicId)
+                await this.cloudinaryService.destroyFromCloudinary(publicId);
+            throw "Something went wrong"
+        }
     }
 
 }

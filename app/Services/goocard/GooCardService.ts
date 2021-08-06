@@ -1,19 +1,18 @@
 
 import GooCard from "App/Models/GooCard";
-import { ICreateGooCard } from "./IGooCard";
-import { gooCardRepository } from "App/Repositories/GooCardRepository";
-
-type Repository = typeof gooCardRepository;
-
-export class GooCardService {
-
-    gooCardRepository: Repository;
-
-    constructor({ gooCardRepository }) {
-        this.gooCardRepository = gooCardRepository
-    }
-
-    async create(data: ICreateGooCard): Promise<GooCard> {
-        return await this.gooCardRepository.create(data);
+import GoocardInterface from "Contracts/interfaces/Goocard.interface";
+import { DBTransactionService } from "../DBTransactionService";
+export class GooCardService implements GoocardInterface {
+    async create(pin: string): Promise<GooCard> {
+        const card = new GooCard();
+        const trx = await DBTransactionService.init();
+        try {
+            await card.useTransaction(trx).fill({ pin }).save();
+            await trx.commit();
+            return card;
+        } catch (error) {
+            await trx.rollback();
+            throw "Something went wrong"
+        }
     }
 }

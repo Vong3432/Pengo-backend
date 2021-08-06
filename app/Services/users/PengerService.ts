@@ -1,14 +1,14 @@
 import Penger from "App/Models/Penger";
+import PengerInterface from "Contracts/interfaces/Penger.interface";
 
-export class PengerService {
-    pengerRepository: any;
-
-    constructor({ pengerRepository }) {
-        this.pengerRepository = pengerRepository
-    }
-
-    async findById(id: number): Promise<Penger> {
-        return await this.pengerRepository.findById(id);
+export class PengerService implements PengerInterface {
+    async findById(id: number) {
+        try {
+            const penger = await Penger.findByOrFail('id', id)
+            return penger;
+        } catch (error) {
+            throw "Something went wrong"
+        }
     }
 
 }
