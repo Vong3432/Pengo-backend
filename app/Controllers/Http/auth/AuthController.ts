@@ -6,19 +6,21 @@ import { PengooService } from "App/Services/users/PengooService";
 
 export default class AuthController {
 
-  public async register({ response, request, auth }: HttpContextContract) {
+  public async register(contract: HttpContextContract) {
+    const { response } = contract;
     try {
-      const { user, token } = await new PengooService().createPengoo(request, auth);
+      const { user, token } = await new PengooService().createPengoo(contract);
       return SuccessResponse({ response, msg: "Register successfully", data: { user, token } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
-  public async registerAsPengerFounder({ response, request, auth }: HttpContextContract) {
+  public async registerAsPengerFounder(contract: HttpContextContract) {
+    const { response } = contract;
     try {
       // create user 
-      const { user, token } = await new FounderService().createFounder(request, auth);
+      const { user, token } = await new FounderService().createFounder(contract);
       return SuccessResponse({ response, msg: "Register successfully", data: { user, token } })
 
     } catch (error) {
@@ -26,9 +28,11 @@ export default class AuthController {
     }
   }
 
-  public async login({ request, response, auth }: HttpContextContract) {
+  public async login(contract: HttpContextContract) {
+    const { response } = contract;
+
     try {
-      const { user, token } = await new AuthService().login(request, auth);
+      const { user, token } = await new AuthService().login(contract);
       return SuccessResponse({ response, msg: "Login successfully", data: { user, token } })
 
     } catch (error) {
@@ -36,9 +40,11 @@ export default class AuthController {
     }
   }
 
-  public async loginPenger({ request, response, auth }: HttpContextContract) {
+  public async loginPenger(contract: HttpContextContract) {
+    const { response } = contract;
+
     try {
-      const { user, token } = await new AuthService().loginPenger(request, auth);
+      const { user, token } = await new AuthService().loginPenger(contract);
       return SuccessResponse({ response, msg: "Login successfully", data: { user, token } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })

@@ -1,13 +1,12 @@
 import User from "App/Models/User";
 import PengooInterface from "Contracts/interfaces/Pengoo.interface";
 import { DBTransactionService } from "../DBTransactionService";
-import { RequestContract } from "@ioc:Adonis/Core/Request";
-import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 import RegisterUserValidator from "App/Validators/auth/RegisterUserValidator";
 import { Roles } from "App/Models/Role";
 import { RoleService } from "../role/RoleService";
 import { CloudinaryService } from "../cloudinary/CloudinaryService";
 import { GooCardService } from "../goocard/GooCardService";
+import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 export class PengooService implements PengooInterface {
 
     private readonly roleService: RoleService;
@@ -20,7 +19,7 @@ export class PengooService implements PengooInterface {
         this.goocardService = new GooCardService();
     }
 
-    async createPengoo(request: RequestContract, auth: AuthContract) {
+    async createPengoo({ request, auth }: HttpContextContract) {
         const payload = await request.validate(RegisterUserValidator);
         const role = await this.roleService.findRole(Roles.Pengoo);
         let publicId;

@@ -1,13 +1,14 @@
 import User from "App/Models/User";
 import StaffInterface from "Contracts/interfaces/Staff.interface";
 import { DBTransactionService } from "../DBTransactionService";
-import { RequestContract } from "@ioc:Adonis/Core/Request";
 import RegisterPengerStaffValidator from "App/Validators/auth/RegisterPengerStaffValidator";
 import { PengerService } from "./PengerService";
 import { CloudinaryService } from "../cloudinary/CloudinaryService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import { RoleService } from "../role/RoleService";
 import { Roles } from "App/Models/Role";
+import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+
 export class StaffService implements StaffInterface {
 
     private readonly pengerService: PengerService;
@@ -20,7 +21,7 @@ export class StaffService implements StaffInterface {
         this.roleService = new RoleService();
     }
 
-    async createStaff(request: RequestContract, bouncer): Promise<User | any> {
+    async createStaff({ request, bouncer }: HttpContextContract): Promise<User | any> {
         let publicId: string = "";
         const payload = await request.validate(RegisterPengerStaffValidator);
         const penger = await this.pengerService.findById(payload.penger_id);

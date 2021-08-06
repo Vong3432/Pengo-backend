@@ -2,14 +2,12 @@ import User from "App/Models/User";
 import RegisterPenderValidator from "App/Validators/auth/RegisterPengerValidator";
 import FounderInterface from "Contracts/interfaces/Founder.interface";
 import { DBTransactionService } from "../DBTransactionService";
-import { RequestContract } from "@ioc:Adonis/Core/Request";
 import { Roles } from "App/Models/Role";
-import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 import { RoleService } from "../role/RoleService";
 import { CloudinaryService } from "../cloudinary/CloudinaryService";
 import CreatePengerValidator from "App/Validators/penger/CreatePengerValidator";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
-import { ActionsAuthorizerContract } from "@ioc:Adonis/Addons/Bouncer";
+import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Penger from "App/Models/Penger";
 
 export class FounderService implements FounderInterface {
@@ -22,7 +20,7 @@ export class FounderService implements FounderInterface {
         this.cloudinaryService = new CloudinaryService();
     }
 
-    async createPenger(request: RequestContract, auth: AuthContract, bouncer: ActionsAuthorizerContract<User>) {
+    async createPenger({ request, auth, bouncer }: HttpContextContract) {
         const trx = await DBTransactionService.init();
         let publicId: string = "";
 
@@ -56,7 +54,7 @@ export class FounderService implements FounderInterface {
         }
     }
 
-    async createFounder(request: RequestContract, auth: AuthContract) {
+    async createFounder({ request, auth }: HttpContextContract) {
         let publicId;
         const payload = await request.validate(RegisterPenderValidator);
         const role = await this.roleService.findRole(Roles.Founder);

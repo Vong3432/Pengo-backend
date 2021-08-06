@@ -1,7 +1,5 @@
-import Penger from "App/Models/Penger";
+import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import User from "App/Models/User";
-import { ICreateStaffData } from "App/Services/users/IUser";
-
 export default interface StaffInterface {
-    createStaff(data: ICreateStaffData, penger: Penger): Promise<User>;
+    createStaff(contract: HttpContextContract): Promise<User>;
 }

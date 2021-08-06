@@ -4,18 +4,20 @@ import { FounderService } from 'App/Services/users/FounderService';
 import { StaffService } from 'App/Services/users/StaffService';
 export default class PengersController {
 
-  public async createPenger({ request, response, auth, bouncer }: HttpContextContract) {
+  public async createPenger(contract: HttpContextContract) {
+    const { response } = contract;
     try {
-      await new FounderService().createPenger(request, auth, bouncer);
+      await new FounderService().createPenger(contract);
       return SuccessResponse({ response, msg: "Created Penger!" })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
-  public async addStaff({ request, response, bouncer }: HttpContextContract) {
+  public async addStaff(contract: HttpContextContract) {
+    const { response } = contract;
     try {
-      const staff = await new StaffService().createStaff(request, bouncer)
+      const staff = await new StaffService().createStaff(contract)
       return SuccessResponse({ response, msg: "New staff created successfully", data: { staff } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
