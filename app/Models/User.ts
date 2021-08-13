@@ -2,7 +2,6 @@ import { DateTime } from 'luxon'
 import { BaseModel, beforeSave, belongsTo, BelongsTo, column, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import GooCard from './GooCard'
-import Location from './Location'
 import Role from './Role'
 import Notification from './Notification'
 
@@ -43,12 +42,6 @@ export default class User extends BaseModel {
 
   @belongsTo(() => Role)
   public role: BelongsTo<typeof Role>
-
-  @manyToMany(() => Location, {
-    pivotTable: 'user_location',
-    pivotColumns: ['name']
-  })
-  public locations: ManyToMany<typeof Location>
 
   @manyToMany(() => Notification, {
     pivotTable: 'notification_user',

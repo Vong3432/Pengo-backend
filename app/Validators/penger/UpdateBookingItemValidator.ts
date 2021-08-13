@@ -25,6 +25,14 @@ export default class UpdateBookingItemValidator {
 	 *    ```
 	 */
 	public schema = schema.create({
+		penger_id: schema.number(),
+		priority_option_id: schema.number.optional([rules.requiredWhen('is_preservable', '=', '1')]),
+		geolocation: schema.object.optional([
+			rules.requiredWhen('location_id', '=', '1')]
+		).members({
+			latitude: schema.number(),
+			longitude: schema.number(),
+		}),
 		booking_category_id: schema.string.optional(),
 		name: schema.string.optional(),
 		poster: schema.file.optional({ size: '5mb', extnames: ['jpg', 'png'] }),
@@ -36,10 +44,10 @@ export default class UpdateBookingItemValidator {
 		description: schema.string.optional(),
 		maximum_book: schema.number.optional(),
 		maximum_transfer: schema.number.optional([
-			rules.requiredIfExists('is_transferable')
+			rules.requiredWhen('is_transferable', '=', '1')
 		]),
-		preserved_book: schema.boolean.optional([
-			rules.requiredIfExists('is_preservable')
+		preserved_book: schema.number.optional([
+			rules.requiredWhen('is_preservable', '=', '1')
 		]),
 		credit_points: schema.number.optional(),
 		is_preservable: schema.number.optional(),
@@ -48,11 +56,11 @@ export default class UpdateBookingItemValidator {
 		is_countable: schema.number.optional(),
 		is_discountable: schema.number.optional(),
 		quantity: schema.number.optional([
-			rules.requiredIfExists('is_countable')
+			rules.requiredWhen('is_countable', '=', '1')
 		]),
-		price: schema.number.optional(),
+		price: schema.number.optional([rules.requiredWhen('is_discountable', '=', '1')]),
 		discount_amount: schema.number.optional([
-			rules.requiredIfExists('is_discountable')
+			rules.requiredWhen('is_discountable', '=', '1')
 		]),
 		available_from_time: schema.date.optional({ format: 'HH:mm' }),
 		available_to_time: schema.date.optional({ format: 'HH:mm' }),

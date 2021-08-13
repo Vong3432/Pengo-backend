@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import BookingRecord from './BookingRecord'
 import BookingItemImg from './BookingItemImg'
 import BookingCategory from './BookingCategory'
@@ -10,6 +10,15 @@ export default class BookingItem extends BaseModel {
 
   @column()
   public bookingCategoryId: Number
+
+  @column()
+  public locationId: Number
+
+  @column()
+  public parentBookingItem: Number
+
+  @column()
+  public priorityOptionId: Number
 
   @column()
   public uniqueId: string
@@ -31,43 +40,55 @@ export default class BookingItem extends BaseModel {
 
   @column()
   public maximumTransfer: Number
-  
+
   @column()
   public preservedBook: Number
-  
+
   @column()
   public creditPoints: Number
 
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isPreservable: Number
 
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isActive: Number
-  
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isBookable: Number
-  
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isTransferable: Number
-  
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isCountable: Number
-  
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isDiscountable: Number
-  
+
   @column()
   public quantity: Number
 
@@ -77,17 +98,20 @@ export default class BookingItem extends BaseModel {
   @column()
   public discountAmount: Number
 
-  @column()
+  @column.dateTime()
   public availableFromTime: DateTime
 
-  @column()
+  @column.dateTime()
   public availableToTime: DateTime
 
   @column.dateTime()
   public startFrom: DateTime
-  
+
   @column.dateTime()
   public endAt: DateTime
+
+  @column()
+  public geolocation: string
 
   @hasMany(() => BookingRecord)
   public records: HasMany<typeof BookingRecord>

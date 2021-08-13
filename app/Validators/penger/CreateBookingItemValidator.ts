@@ -32,15 +32,21 @@ export default class CreateBookingItemValidator {
 				size: '5mb', extnames: ['jpg', 'png']
 			})
 		),
-		booking_category_id: schema.string(),
-		name: schema.string.optional(),
+		priority_option_id: schema.number.optional([rules.requiredWhen('is_preservable', '=', '1')]),
+		geolocation: schema.object().members({
+			latitude: schema.number(),
+			longitude: schema.number(),
+		}),
+		parent_booking_item: schema.number.optional(),
+		booking_category_id: schema.number(),
+		name: schema.string(),
 		description: schema.string.optional(),
 		maximum_book: schema.number.optional(),
 		maximum_transfer: schema.number.optional([
-			rules.requiredIfExists('is_transferable')
+			rules.requiredWhen('is_transferable', '=', '1')
 		]),
-		preserved_book: schema.boolean.optional([
-			rules.requiredIfExists('is_preservable')
+		preserved_book: schema.number.optional([
+			rules.requiredWhen('is_preservable', '=', '1')
 		]),
 		credit_points: schema.number.optional(),
 		is_preservable: schema.number.optional(),
@@ -49,16 +55,18 @@ export default class CreateBookingItemValidator {
 		is_countable: schema.number.optional(),
 		is_discountable: schema.number.optional(),
 		quantity: schema.number.optional([
-			rules.requiredIfExists('is_countable')
+			rules.requiredWhen('is_countable', '=', '1')
 		]),
-		price: schema.number.optional(),
+		price: schema.number.optional([
+			rules.requiredWhen('is_discountable', '=', '1')
+		]),
 		discount_amount: schema.number.optional([
-			rules.requiredIfExists('is_discountable')
+			rules.requiredWhen('is_discountable', '=', '1')
 		]),
-		available_from_time: schema.date.optional({ format: 'HH:mm' }),
-		available_to_time: schema.date.optional({ format: 'HH:mm' }),
-		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
-		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
+		available_from_time: schema.date.optional({ format: 'HH:mm' }, [rules.requiredIfNotExistsAny(['start_from', 'end_at'])]),
+		available_to_time: schema.date.optional({ format: 'HH:mm' }, [rules.requiredIfNotExistsAny(['start_from', 'end_at'])]),
+		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, []),
+		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, []),
 	})
 
 	/**
@@ -75,7 +83,7 @@ export default class CreateBookingItemValidator {
 	public messages = {
 		required: 'The {{field}} is required to create item',
 		'*': (field, rule) => {
-			return `${rule} validation error on ${field} for updating booking item.›`
+			return `${rule} validation error on ${field} for creating booking item.`
 		},
 	}
 }

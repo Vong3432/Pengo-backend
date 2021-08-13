@@ -49,8 +49,8 @@ async function startHttpServer() {
 configure({
     files: getTestFiles(),
     before: [
-        runMigrations,
-        runSeeder,
+        // runMigrations,
+        // runSeeder,
         startHttpServer
     ],
     after: [rollbackMigrations]

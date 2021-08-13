@@ -1,96 +1,65 @@
-import Redis from '@ioc:Adonis/Addons/Redis';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import UnAuthorizedPengerException from 'App/Exceptions/UnAuthorizedPengerException';
-import BookingCategory from 'App/Models/BookingCategory';
-import BookingItem from 'App/Models/BookingItem'
-import Penger from 'App/Models/Penger';
-import CreateBookingItemValidator from 'App/Validators/penger/CreateBookingItemValidator';
-import UpdateBookingItemValidator from 'App/Validators/penger/UpdateBookingItemValidator';
+import { BookingItemService } from 'App/Services/booking/BookingItemService';
+import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class BookingItemsController {
-  public async index({ response }: HttpContextContract) {
+
+  private readonly bookingItemService: BookingItemService;
+
+  constructor() {
+    this.bookingItemService = new BookingItemService();
+  }
+
+  public async index(contract: HttpContextContract) {
+    const { response } = contract;
     try {
-      // if not in cache, get booking items from db.
-      const bookingItems = await BookingItem.all().then(item => item);
-      return response.status(200).json(bookingItems)
+      const bookingItems = await this.bookingItemService.findAllByPenger(contract);
+      return SuccessResponse({ response, data: bookingItems })
     }
     catch (error) {
-      return response.status(500).json(error)
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
-  public async store({ request, response, bouncer }: HttpContextContract) {
+  public async store(contract: HttpContextContract) {
+    const { response } = contract;
     try {
-      // validate request body 
-      const payload = await request.validate(CreateBookingItemValidator);
-
-      // find category and current penger.
-      const bookingCategory = await BookingCategory.findByOrFail('id', payload.booking_category_id);
-      const penger = await Penger.findByOrFail('id', payload.penger_id);
-
-      // verify authorization of current user.
-      if (await bouncer.with('UserPolicy').denies('canPerformActionOnPenger', penger)) {
-        throw new UnAuthorizedPengerException('You are not authorized to this Penger', 403, 'E_UNAUTHORIZED')
-      }
-
-      // create a new booking item
-      const bookingItem = new BookingItem();
-      bookingItem.fill({
-        ...payload
-      })
-
-      // save booking item into category
-      await bookingCategory.related('bookingItems').save(bookingItem);
-
-      return response.status(200).json({ msg: 'Updated successfully', item: bookingItem })
+      const bookingItem = await this.bookingItemService.create(contract);
+      return SuccessResponse({ response, msg: 'Added successfully', data: bookingItem })
     } catch (error) {
-      return response.json(error)
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
-  public async show({ response, request }: HttpContextContract) {
+  public async show(contract: HttpContextContract) {
+    const { response, request } = contract;
     try {
-      const bookingItemId = request.params().uniqueId;
-
-      // item is not in the cache, do query
-      const bookingItem = await BookingItem.findByOrFail('uniqueId', bookingItemId)
-
-      return response.status(200).json(bookingItem)
+      const id = request.param('id')
+      const bookingItem = await this.bookingItemService.findById(id);
+      return SuccessResponse({ response, data: bookingItem })
     } catch (error) {
-      return response.status(500).json(error)
+      console.log(error)
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
-  public async update({ response, request, bouncer }: HttpContextContract) {
+  public async update(contract: HttpContextContract) {
+    const { response } = contract;
     try {
-      const bookingItemId = request.params().uniqueId;
-
-      // validate request body
-      const payload = await request.validate(UpdateBookingItemValidator);
-
-      // find booking item
-      const bookingItem = await BookingItem.findByOrFail('uniqueId', bookingItemId)
-      // get the Penger through relationship
-      const penger = bookingItem.category.createdBy
-
-      // verify if current user is authorized.
-      if (await bouncer.with('UserPolicy').denies('canPerformActionOnPenger', penger)) {
-        throw new UnAuthorizedPengerException('You are not authorized to this Penger', 403, 'E_UNAUTHORIZED')
-      }
-
-      // dynamically update fields
-      await bookingItem.merge({ ...payload }).save();
-
-      // set the updated booking item into cache.
-      await Redis.set(`booking_item/${bookingItemId}`, JSON.stringify(bookingItem), 'EX', 60 * 1)
-
-      return response.status(200).json({ msg: 'Updated successfully', item: bookingItem })
+      const bookingItem = await this.bookingItemService.update(contract)
+      return SuccessResponse({ response, msg: 'Updated successfully', data: bookingItem })
     } catch (error) {
-      return response.json(error)
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
-  public async destroy({ }: HttpContextContract) {
+  public async destroy(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      return SuccessResponse({ response, msg: 'Deleted successfully' })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 
   public async getItemsByCategories({ }: HttpContextContract) {

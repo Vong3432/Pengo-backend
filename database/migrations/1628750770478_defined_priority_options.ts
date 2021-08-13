@@ -1,13 +1,16 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class UserLocations extends BaseSchema {
-  protected tableName = 'user_location'
+export default class DefinedPriorityOptions extends BaseSchema {
+  protected tableName = 'defined_priority_options'
 
   public async up() {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
       table.increments('id').primary()
-      table.string('name').notNullable()
-      table.integer('user_id').unsigned().references('users.id')
+      table.string('table_name').notNullable()
+      table.string('column').notNullable()
+      table.string('column_type').notNullable()
+      table.string('related_table').nullable()
+      table.integer('is_active').unsigned().notNullable().defaultTo(1)
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
