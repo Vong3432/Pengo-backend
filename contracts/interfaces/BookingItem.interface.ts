@@ -5,7 +5,7 @@ export default interface BookingItemInterface {
     findAll(contract: HttpContextContract): Promise<BookingItem[]>;
     findAllByPenger(contract: HttpContextContract): Promise<BookingItem[]>;
     findAllByPengerAndCategory(contract: HttpContextContract): Promise<BookingItem[]>;
-    findById(id: number): Promise<BookingItem>;
+    findById(id: number): Promise<BookingItem | null>;
     findByPengerAndId(contract: HttpContextContract): Promise<BookingItem>;
     create(contract: HttpContextContract): Promise<BookingItem>;
     update(contract: HttpContextContract): Promise<BookingItem>;

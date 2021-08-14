@@ -12,7 +12,12 @@ export class BookingCategoryService implements BookingCategoryInterface {
 
     }
 
-    async findAll({ }: HttpContextContract) {
+    async findAll({ request }: HttpContextContract) {
+        const pengerId = request.qs().penger_id;
+
+        if (pengerId)
+            return await BookingCategory.query().where('created_by', pengerId)
+
         return await BookingCategory.all();
     };
 
@@ -35,9 +40,8 @@ export class BookingCategoryService implements BookingCategoryInterface {
         return bookingCategories;
     }
 
-    async findById({ request }: HttpContextContract) {
-        const id = request.params().uniqueId;
-        return await BookingCategory.firstOrFail(id);
+    async findById(id: number) {
+        return await BookingCategory.find(id);
     };
 
     async findByIdAndPenger({ request, bouncer }: HttpContextContract) {

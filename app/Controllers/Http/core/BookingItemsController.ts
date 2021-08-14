@@ -1,44 +1,30 @@
-import Redis from '@ioc:Adonis/Addons/Redis';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import BookingItem from 'App/Models/BookingItem'
+import { BookingItemService } from 'App/Services/booking/BookingItemService';
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class BookingItemsController {
-  public async index({ response }: HttpContextContract) {
-    try {
+  private readonly service: BookingItemService = new BookingItemService();
 
-      // if not in cache, get booking items from db.
-      const bookingItems = await BookingItem.all().then(item => item);
+  public async index(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      const bookingItems = await this.service.findAll(contract);
       return SuccessResponse({ response, data: bookingItems, code: 200 })
     }
     catch (error) {
-      return ErrorResponse({ response, msg: "error", code: 500 })
+      return ErrorResponse({ response, msg: error, code: 500 })
     }
   }
 
-  public async show({ response, request }: HttpContextContract) {
+  public async show(contract: HttpContextContract) {
+    const { response, request } = contract;
     try {
-      const bookingItemId = request.params().uniqueId;
-
-      // // check if the item is in the cache
-      // const cachedItem = await Redis.get(`booking_item/${bookingItemId}`)
-      // if (cachedItem) {
-      //   return response.status(200).json(JSON.parse(cachedItem))
-      // }
-
-      // item is not in the cache, do query
-      const bookingItem = await BookingItem.findByOrFail('uniqueId', bookingItemId)
-
-      // cached the new booking item into redis.
-      // await Redis.set(`booking_item/${bookingItemId}`, JSON.stringify(bookingItem), 'EX', 60 * 1)
+      const id = request.param('id');
+      const bookingItem = await this.service.findById(id)
       return response.status(200).json(bookingItem)
     } catch (error) {
       return response.status(500).json(error)
     }
-  }
-
-  public async getItemsByCategories({ }: HttpContextContract) {
-    // TODO: Based on category, filter, and return list of booking items
   }
 
 }

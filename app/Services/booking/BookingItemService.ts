@@ -10,11 +10,13 @@ import { DBTransactionService } from "../DBTransactionService";
 import { BookingCategoryService } from "./BookingCategoryService";
 import { CloudinaryService } from "../cloudinary/CloudinaryService";
 import { PriorityService } from "../priority/PriorityService";
+import { ORMFilterService } from "../ORMService";
 
 export class BookingItemService implements BookingItemInterface {
 
-    async findAll(contract: HttpContextContract) {
-        return await BookingItem.all();
+    async findAll({ request }: HttpContextContract) {
+        const bookingItems = await new ORMFilterService(BookingItem, request.qs()).getFilteredResults()
+        return bookingItems as BookingItem[];
     };
 
     async findAllByPenger(contract: HttpContextContract) {
