@@ -14,7 +14,7 @@ export default class Service extends BaseCommand {
   /**
    * Command description is displayed in the "help" output
    */
-  public static description = 'Generate service file that handles orm logic for controller'
+  public static description = 'Make a service file that handles orm logic for controller'
 
   public static settings = {
     /**

@@ -7,7 +7,7 @@
       },
       "commandPath": "./commands/Interface",
       "commandName": "make:interface",
-      "description": "Generate interface file for Services",
+      "description": "Make a interface file for Services",
       "args": [],
       "aliases": [],
       "flags": []
@@ -19,7 +19,7 @@
       },
       "commandPath": "./commands/Service",
       "commandName": "make:service",
-      "description": "Generate service file that handles orm logic for controller",
+      "description": "Make a service file that handles orm logic for controller",
       "args": [],
       "aliases": [],
       "flags": []

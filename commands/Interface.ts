@@ -11,7 +11,7 @@ export default class Interface extends BaseCommand {
   /**
    * Command description is displayed in the "help" output
    */
-  public static description = 'Generate interface file for Services'
+  public static description = 'Make a interface file for Services'
 
   public static settings = {
     /**
