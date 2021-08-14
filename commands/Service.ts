@@ -32,7 +32,8 @@ export default class Service extends BaseCommand {
 
   public async run() {
     const name = await this.prompt.ask('Enter file name', { hint: 'Coupon' })
-    const filePath = 'app/Services/' + name.toLowerCase();
+    const folderName = await this.prompt.ask('Enter folder name')
+    const filePath = 'app/Services/' + (!folderName || folderName.length === 0 ? name.toLowerCase() : folderName.toLowerCase());
 
     this.generator
       .addFile(name, {
@@ -44,7 +45,7 @@ export default class Service extends BaseCommand {
       .destinationDir(filePath)
       .useMustache()
       .stub(join(__dirname, './templates/service.txt'))
-      .apply({ name })
+      .apply({ name, resourceful: true })
 
     await this.generator.run();
   }

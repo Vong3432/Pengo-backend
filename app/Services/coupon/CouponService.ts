@@ -2,7 +2,7 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { ErrorResponse } from "../ResponseService";
 import { DBTransactionService } from "../DBTransactionService";
 
-export class Coupon {
+export class CouponService {
 
     constructor() {
 
