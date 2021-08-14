@@ -5,6 +5,7 @@ import BookingCategory from './BookingCategory'
 import User from './User'
 import BookingItem from './BookingItem'
 import BookingCloseDate from './BookingCloseDate'
+import Coupon from './Coupon'
 
 export default class Penger extends BaseModel {
   @column({ isPrimary: true })
@@ -39,6 +40,9 @@ export default class Penger extends BaseModel {
 
   @hasMany(() => BookingCloseDate)
   public closeDates: HasMany<typeof BookingCloseDate>
+
+  @hasMany(() => Coupon)
+  public coupons: HasMany<typeof Coupon>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -6,7 +6,7 @@ export default class Coupon extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column({columnName: 'created_by'})
+  @column({ columnName: 'created_by' })
   public pengerId: Number
 
   @column()
@@ -20,19 +20,21 @@ export default class Coupon extends BaseModel {
 
   @column()
   public requiredCreditPoints: number
-  
-  @column()
-  public validFrom: string
 
-  @column()
-  public validTo: string
+  @column.dateTime()
+  public validFrom: DateTime
+
+  @column.dateTime()
+  public validTo: DateTime
 
   @column()
   public quantity: number
 
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isRedeemable: number
 
   @manyToMany(() => GooCard)

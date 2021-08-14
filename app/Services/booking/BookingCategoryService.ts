@@ -18,7 +18,7 @@ export class BookingCategoryService implements BookingCategoryInterface {
 
     async findAllByPenger({ request, response, bouncer }: HttpContextContract) {
         const pengerId = request.qs().penger_id;
-        const pageNum = request.qs().page_num || 1;
+        const pageNum = request.qs().page || 1;
 
         if (!pengerId) {
             throw "Penger id is missing.";

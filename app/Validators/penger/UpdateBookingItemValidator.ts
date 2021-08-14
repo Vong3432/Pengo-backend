@@ -42,30 +42,41 @@ export default class UpdateBookingItemValidator {
 			})
 		),
 		description: schema.string.optional(),
-		maximum_book: schema.number.optional(),
+		maximum_book: schema.number.optional([
+			rules.unsigned()
+		]),
 		maximum_transfer: schema.number.optional([
-			rules.requiredWhen('is_transferable', '=', '1')
+			rules.requiredWhen('is_transferable', '=', '1'),
+			rules.unsigned()
 		]),
 		preserved_book: schema.number.optional([
-			rules.requiredWhen('is_preservable', '=', '1')
+			rules.requiredWhen('is_preservable', '=', '1'),
+			rules.unsigned()
 		]),
-		credit_points: schema.number.optional(),
+		credit_points: schema.number.optional([
+			rules.unsigned()
+		]),
 		is_preservable: schema.number.optional(),
 		is_active: schema.number.optional(),
 		is_transferable: schema.number.optional(),
 		is_countable: schema.number.optional(),
 		is_discountable: schema.number.optional(),
 		quantity: schema.number.optional([
-			rules.requiredWhen('is_countable', '=', '1')
+			rules.requiredWhen('is_countable', '=', '1'),
+			rules.unsigned()
 		]),
-		price: schema.number.optional([rules.requiredWhen('is_discountable', '=', '1')]),
+		price: schema.number.optional([
+			rules.requiredWhen('is_discountable', '=', '1'),
+			rules.unsigned()
+		]),
 		discount_amount: schema.number.optional([
-			rules.requiredWhen('is_discountable', '=', '1')
+			rules.requiredWhen('is_discountable', '=', '1'),
+			rules.unsigned()
 		]),
-		available_from_time: schema.date.optional({ format: 'HH:mm' }),
-		available_to_time: schema.date.optional({ format: 'HH:mm' }),
-		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
-		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }),
+		available_from_time: schema.date.optional({ format: 'HH:mm' }, [rules.after('today')]),
+		available_to_time: schema.date.optional({ format: 'HH:mm' }, [rules.after('today')]),
+		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
+		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 	})
 
 	/**
