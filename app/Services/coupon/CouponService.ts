@@ -1,8 +1,9 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { ErrorResponse } from "../ResponseService";
 import { DBTransactionService } from "../DBTransactionService";
+import CouponInterface from "Contracts/interfaces/Coupon.interface";
 
-export class CouponService {
+export class CouponService implements CouponInterface {
 
     constructor() {
 

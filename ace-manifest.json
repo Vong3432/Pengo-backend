@@ -1,12 +1,24 @@
 {
   "commands": {
-    "service": {
+    "make:interface": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/Interface",
+      "commandName": "make:interface",
+      "description": "Generate interface file for Services",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "make:service": {
       "settings": {
         "loadApp": false,
         "stayAlive": false
       },
       "commandPath": "./commands/Service",
-      "commandName": "service",
+      "commandName": "make:service",
       "description": "Generate service file that handles orm logic for controller",
       "args": [],
       "aliases": [],

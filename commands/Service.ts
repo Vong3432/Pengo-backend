@@ -6,7 +6,7 @@ export default class Service extends BaseCommand {
   /**
    * Command name is used to run the command
    */
-  public static commandName = 'service'
+  public static commandName = 'make:service'
 
   // @args.string({ description: 'File name for the service' })
   // public name: string
