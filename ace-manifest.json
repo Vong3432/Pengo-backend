@@ -1,5 +1,17 @@
 {
   "commands": {
+    "service": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/Service",
+      "commandName": "service",
+      "description": "Generate service file that handles orm logic for controller",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/commands/DumpRc",

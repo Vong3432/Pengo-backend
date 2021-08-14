@@ -1,13 +1,10 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import UnAuthorizedPengerException from "App/Exceptions/UnAuthorizedPengerException";
 import BookingCategory from "App/Models/BookingCategory";
-import BookingItem from "App/Models/BookingItem";
 import Penger from "App/Models/Penger";
 import CreateBookingCategoryValidator from "App/Validators/penger/CreateBookingCategoryValidator";
 import BookingCategoryInterface from "Contracts/interfaces/BookingCategory.interface";
 import { DBTransactionService } from "../DBTransactionService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
-import { ErrorResponse } from "../ResponseService";
 
 export class BookingCategoryService implements BookingCategoryInterface {
 
