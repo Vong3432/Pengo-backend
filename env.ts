@@ -15,8 +15,8 @@
 import Env from '@ioc:Adonis/Core/Env'
 
 export default Env.rules({
-	DB_CONNECTION: Env.schema.string(),
-	MYSQL_HOST: Env.schema.string({ format: 'host' }),
+    DB_CONNECTION: Env.schema.string(),
+    MYSQL_HOST: Env.schema.string({ format: 'host' }),
     MYSQL_PORT: Env.schema.number(),
     MYSQL_USER: Env.schema.string(),
     MYSQL_PASSWORD: Env.schema.string.optional(),
@@ -25,4 +25,5 @@ export default Env.rules({
     REDIS_HOST: Env.schema.string({ format: 'host' }),
     REDIS_PORT: Env.schema.number(),
     REDIS_PASSWORD: Env.schema.string.optional(),
+    MAP_API_KEY: Env.schema.string()
 })

@@ -9,6 +9,9 @@ import CreatePengerValidator from "App/Validators/penger/CreatePengerValidator";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Penger from "App/Models/Penger";
+import UpdatePengerValidator from "App/Validators/penger/UpdatePengerValidator";
+import PengerLocation from "App/Models/PengerLocation";
+import GeoService from "../GeoService";
 
 export class FounderService implements FounderInterface {
 
@@ -18,6 +21,69 @@ export class FounderService implements FounderInterface {
     constructor() {
         this.roleService = new RoleService();
         this.cloudinaryService = new CloudinaryService();
+    }
+
+    async updatePenger({ request, auth, bouncer }: HttpContextContract) {
+        const trx = await DBTransactionService.init();
+        let publicId: string = "";
+        let newurl;
+
+        try {
+            const payload = await request.validate(UpdatePengerValidator);
+            const pengerId = request.param('id');
+
+            if (!pengerId)
+                throw "Penger id is required"
+
+            const penger = await Penger.findByOrFail('id', pengerId);
+
+            // verify authorization of current user.
+            await PengerVerifyAuthorizationService.isPenger(bouncer);
+            await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+
+
+            // save image to cloud
+            if (payload.logo?.tmpPath) {
+                const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
+                if (public_id) publicId = public_id;
+                newurl = url;
+            }
+
+            const { geolocation, location_name, ...data } = payload;
+
+            // update penger
+            await penger
+                .useTransaction(trx)
+                .merge({
+                    ...data,
+                    logo: newurl ?? penger.logo
+                }).save();
+
+            if (geolocation) {
+                const address = await new GeoService().coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
+
+                await penger.related('location').updateOrCreate({
+                    pengerId: pengerId
+                }, {
+                    name: location_name,
+                    address: address,
+                    geolocation: JSON.stringify(geolocation)
+                });
+            }
+
+            // commit new data to db
+            await trx.commit();
+
+            await (await penger.refresh()).load('location')
+
+            return penger;
+        } catch (error) {
+            if (publicId) {
+                this.cloudinaryService.destroyFromCloudinary(publicId);
+            }
+            await trx.rollback();
+            throw error;
+        }
     }
 
     async createPenger({ request, auth, bouncer }: HttpContextContract) {
@@ -33,18 +99,35 @@ export class FounderService implements FounderInterface {
         const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
         if (public_id) publicId = public_id;
 
+        const { location_name, geolocation, ...data } = payload;
+
         // create penger
         const newPenger = new Penger();
         newPenger.useTransaction(trx);
 
         try {
-            await newPenger.fill({ ...payload, logo: url }).save();
+            await newPenger.fill({ ...data, logo: url }).save();
 
             // link founder to penger.
             await newPenger.related('pengerUsers').attach([user.id]);
 
+            const address = await new GeoService().coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
+
+            // link location
+            await newPenger.related('location').updateOrCreate({
+                pengerId: newPenger.id.toString()
+            }, {
+                name: location_name,
+                address: address,
+                geolocation: JSON.stringify(geolocation)
+            });
+
             // commit new data to db
             await trx.commit();
+
+            await (await newPenger.refresh()).load('location')
+
+            return newPenger;
         } catch (error) {
             if (publicId) {
                 this.cloudinaryService.destroyFromCloudinary(publicId);

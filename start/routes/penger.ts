@@ -12,6 +12,7 @@ Route.group(() => {
 
     // pengers
     Route.post('/create', 'PengersController.createPenger').as('penger')
+    Route.put('/update/:id', 'PengersController.updatePenger').as('updatePenger')
 
     // staff
     Route.group(() => {

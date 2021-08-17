@@ -7,8 +7,18 @@ export default class PengersController {
   public async createPenger(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      await new FounderService().createPenger(contract);
-      return SuccessResponse({ response, msg: "Created Penger!" })
+      const penger = await new FounderService().createPenger(contract);
+      return SuccessResponse({ response, msg: "Created Penger!", data: penger })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
+  }
+
+  public async updatePenger(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      const penger = await new FounderService().updatePenger(contract);
+      return SuccessResponse({ response, msg: "Updated successfully!", data: penger })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }

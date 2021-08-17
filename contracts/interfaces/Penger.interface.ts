@@ -7,6 +7,6 @@ export default interface PengerInterface {
 export interface PengerClientInterface {
     findById(id: number): Promise<Penger | any>;
     findAll(contract: HttpContextContract): Promise<Penger[]>;
-    findNearestPengers(contract: HttpContextContract): Promise<Penger[]>;
-    findPopularPengers(contract: HttpContextContract): Promise<Penger[]>;
+    findNearestPengers(contract: HttpContextContract): Promise<any[]>;
+    findPopularPengers(contract: HttpContextContract): Promise<any[]>;
 }

@@ -1,7 +1,7 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class CreatePengerValidator {
+export default class UpdatePengerValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
 
@@ -25,16 +25,16 @@ export default class CreatePengerValidator {
 	 *    ```
 	 */
 	public schema = schema.create({
-		name: schema.string(),
-		location_name: schema.string(),
-		geolocation: schema.object([
+		name: schema.string.optional(),
+		location_name: schema.string.optional(),
+		geolocation: schema.object.optional([
 			rules.requiredWhen('location_id', '=', '1')]
 		).members({
 			latitude: schema.number(),
 			longitude: schema.number(),
 		}),
 		description: schema.string.optional(),
-		logo: schema.file({
+		logo: schema.file.optional({
 			extnames: ['png', 'jpg'],
 			size: '1mb'
 		})

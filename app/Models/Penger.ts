@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeFetch, column, HasMany, hasMany, HasManyThrough, hasManyThrough, hasOne, HasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingOption from './BookingOption'
 import BookingCategory from './BookingCategory'
 import User from './User'
 import BookingItem from './BookingItem'
 import BookingCloseDate from './BookingCloseDate'
 import Coupon from './Coupon'
+import PengerLocation from './PengerLocation'
 
 export default class Penger extends BaseModel {
   @column({ isPrimary: true })
@@ -19,6 +20,10 @@ export default class Penger extends BaseModel {
 
   @column()
   public logo: string
+
+  @hasOne(() => PengerLocation)
+  public location: HasOne<typeof PengerLocation>
+
 
   @hasMany(() => BookingCategory)
   public bookingCategories: HasMany<typeof BookingCategory>
