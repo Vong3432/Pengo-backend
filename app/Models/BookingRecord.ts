@@ -3,6 +3,7 @@ import { BaseModel, BelongsTo, belongsTo, column, Has, HasMany, hasMany } from '
 import BookingItem from './BookingItem'
 import GooCard from './GooCard'
 import Feedback from './Feedback'
+import Penger from './Penger'
 
 export default class BookingRecord extends BaseModel {
   @column({ isPrimary: true })
@@ -14,10 +15,13 @@ export default class BookingRecord extends BaseModel {
   @belongsTo(() => GooCard)
   public goocard: BelongsTo<typeof GooCard>
 
-  @column({columnName: 'booking_item_id'})
+  @column({ columnName: 'booking_item_id' })
   public bookingItemId: Number
 
-  @column({columnName: 'goocard_id'})
+  @column({ columnName: 'penger_id' })
+  public pengerId: Number
+
+  @column({ columnName: 'goocard_id' })
   public gooCardId: Number
 
   @column()
@@ -28,6 +32,9 @@ export default class BookingRecord extends BaseModel {
 
   @hasMany(() => Feedback)
   public feedbacks: HasMany<typeof Feedback>
+
+  @belongsTo(() => Penger)
+  public penger: BelongsTo<typeof Penger>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
