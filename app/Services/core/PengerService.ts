@@ -6,7 +6,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 
 export class PengerService implements PengerClientInterface {
     async findById(id: number) {
-        return await Penger.findOrFail(id);
+        return await (await Penger.query().preload('bookingItems').where('id', id));
     }
     async findAll({ request }: HttpContextContract) {
         const pageNum = request.qs().page || 1
@@ -14,15 +14,18 @@ export class PengerService implements PengerClientInterface {
     }
 
     async findNearestPengers({ request }: HttpContextContract) {
-        return (await Penger.query().preload('location').limit(3)).map(p => p.serialize({
-            relations: {
-                location: {
-                    fields: {
-                        pick: ['geolocation', 'address']
+        return (await Penger.query()
+            .preload('location')
+            .preload('bookingItems')
+            .limit(3)).map(p => p.serialize({
+                relations: {
+                    location: {
+                        fields: {
+                            pick: ['geolocation', 'address']
+                        }
                     }
                 }
-            }
-        }));
+            }));
     }
 
     async findPopularPengers({ request }: HttpContextContract) {
@@ -36,21 +39,21 @@ export class PengerService implements PengerClientInterface {
             .wrap('(', ')')
 
         const records = await BookingRecord.query()
-            .preload('penger', (query) => query.preload('location'))
+            .preload('penger', (query) => query.preload('location').preload('bookingItems', q => q.limit(6)))
             .groupBy('penger_id')
             .orderBy(pengersCountQuery, 'desc')
             .if(limit != null, query => query.limit(limit))
 
         // if no records, do usual find
         if (records.length === 0) {
-            const query = Penger.query().preload('location')
+            const query = Penger.query().preload('location').preload('bookingItems', q => q.limit(6))
 
             if (limit)
                 return (await query.limit(limit)).map((p => p.serialize({
                     relations: {
                         location: {
                             fields: {
-                                pick: ['geolocation', 'address']
+                                pick: ['geolocation', 'address', 'street']
                             }
                         }
                     }
@@ -59,7 +62,7 @@ export class PengerService implements PengerClientInterface {
             return await (await query.paginate(pageNum)).map((p) => p.serializeRelations({
                 location: {
                     fields: {
-                        pick: ['geolocation', 'address']
+                        pick: ['geolocation', 'address', 'street']
                     }
                 }
             }))
@@ -69,7 +72,7 @@ export class PengerService implements PengerClientInterface {
             relations: {
                 location: {
                     fields: {
-                        pick: ['address', 'geolocation']
+                        pick: ['address', 'geolocation', 'street']
                     }
                 }
             }

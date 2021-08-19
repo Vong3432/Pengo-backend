@@ -24,6 +24,9 @@ export default class PengerLocation extends BaseModel {
   public address: string
 
   @column()
+  public street: string
+
+  @column()
   public pengerId: string
 
   @column.dateTime({ autoCreate: true })

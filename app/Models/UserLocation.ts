@@ -19,6 +19,9 @@ export default class UserLocation extends BaseModel {
   public address: string
 
   @column()
+  public street: string
+
+  @column()
   public name: string
 
   @column.dateTime({ autoCreate: true })

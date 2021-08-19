@@ -61,12 +61,14 @@ export class FounderService implements FounderInterface {
 
             if (geolocation) {
                 const address = await new GeoService().coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
+                const street = await new GeoService().coordinateToStreet(geolocation.latitude, geolocation.longitude)
 
                 await penger.related('location').updateOrCreate({
                     pengerId: pengerId
                 }, {
                     name: location_name,
                     address: address,
+                    street,
                     geolocation: JSON.stringify(geolocation)
                 });
             }
@@ -112,6 +114,7 @@ export class FounderService implements FounderInterface {
             await newPenger.related('pengerUsers').attach([user.id]);
 
             const address = await new GeoService().coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
+            const street = await new GeoService().coordinateToStreet(geolocation.latitude, geolocation.longitude)
 
             // link location
             await newPenger.related('location').updateOrCreate({
@@ -119,6 +122,7 @@ export class FounderService implements FounderInterface {
             }, {
                 name: location_name,
                 address: address,
+                street,
                 geolocation: JSON.stringify(geolocation)
             });
 

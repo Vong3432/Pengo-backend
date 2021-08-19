@@ -37,7 +37,9 @@ export default class Penger extends BaseModel {
   @hasManyThrough([
     () => BookingItem,
     () => BookingCategory
-  ])
+  ], {
+    serializeAs: 'booking_items'
+  })
   public bookingItems: HasManyThrough<typeof BookingItem>
 
   @manyToMany(() => User)

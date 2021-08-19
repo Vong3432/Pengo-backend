@@ -43,9 +43,9 @@ export default class PengersController {
         try {
             const id = request.param('id');
             const penger = await this.service.findById(id)
-            return response.status(200).json(penger)
+            return SuccessResponse({ response, data: penger, code: 200 })
         } catch (error) {
-            return response.status(500).json(error)
+            return ErrorResponse({ response, msg: error, code: 500 })
         }
     }
 

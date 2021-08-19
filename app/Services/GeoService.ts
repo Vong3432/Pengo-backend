@@ -17,7 +17,7 @@ export default class GeoService {
         this.geocoder = NodeGeocoder(options);
     }
 
-    async coordinateToAddress(lat: Number, lng: Number): Promise<any> {
+    async coordinateToStreet(lat: Number, lng: Number): Promise<any> {
         const address = await this.geocoder.reverse({
             lat, lon: lng
         })
