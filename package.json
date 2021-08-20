@@ -30,6 +30,7 @@
     "@adonisjs/lucid": "^15.0.3",
     "@adonisjs/redis": "^7.0.7",
     "@adonisjs/repl": "^3.1.4",
+    "@types/socket.io": "^3.0.2",
     "cloudinary": "^1.26.2",
     "luxon": "^1.27.0",
     "mysql": "^2.18.1",
@@ -37,6 +38,7 @@
     "phc-bcrypt": "^1.0.7",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^2.3.0",
     "source-map-support": "^0.5.19"
   }
 }
