@@ -4,6 +4,7 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import GooCard from './GooCard'
 import Role from './Role'
 import Notification from './Notification'
+import Penger from './Penger'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -48,6 +49,9 @@ export default class User extends BaseModel {
     pivotColumns: ['is_read', 'is_sent', 'send_at']
   })
   public notifications: ManyToMany<typeof Notification>
+
+  @manyToMany(() => Penger)
+  public pengerUsers: ManyToMany<typeof Penger>
 
   @beforeSave()
   public static async hashPassword(user: User) {

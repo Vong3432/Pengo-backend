@@ -11,6 +11,7 @@ import { BookingCategoryService } from "./BookingCategoryService";
 import { CloudinaryService } from "../cloudinary/CloudinaryService";
 import { PriorityService } from "../priority/PriorityService";
 import { ORMFilterService } from "../ORMService";
+import { PengerService } from "../core/PengerService";
 
 export class BookingItemService implements BookingItemInterface {
 
@@ -19,17 +20,15 @@ export class BookingItemService implements BookingItemInterface {
         return bookingItems as BookingItem[];
     };
 
-    async findAllByPenger(contract: HttpContextContract) {
-        const bookingCategory = (await new BookingCategoryService().findAllByPenger(contract))
-            .map(c => c.serialize());
-        const items = bookingCategory.map(c => c.booking_items);
-        return items;
+    async findAllByPenger({ request }: HttpContextContract) {
+        const penger = await new PengerService().findById(request.qs().penger_id);
+        return await penger.related('bookingItems').query();
     };
 
     async findAllByPengerAndCategory(contract: HttpContextContract) {
-        const bookingCategory = (await new BookingCategoryService().findByIdAndPenger(contract));
-        const items = (await bookingCategory.related('bookingItems').query()).map(i => i)
-        console.log(items)
+        const bookingCategory = (await new BookingCategoryService().findAllByPenger(contract))
+            .map(c => c.serialize());
+        const items = bookingCategory.map(c => c.booking_items);
         return items;
     };
 

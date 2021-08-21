@@ -6,7 +6,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 
 export class PengerService implements PengerClientInterface {
     async findById(id: number) {
-        return await (await Penger.query().preload('bookingItems').where('id', id));
+        return Penger.findOrFail(id);
     }
     async findAll({ request }: HttpContextContract) {
         const pageNum = request.qs().page || 1

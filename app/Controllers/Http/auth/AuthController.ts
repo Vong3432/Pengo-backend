@@ -44,8 +44,8 @@ export default class AuthController {
     const { response } = contract;
 
     try {
-      const { user, token } = await new AuthService().loginPenger(contract);
-      return SuccessResponse({ response, msg: "Login successfully", data: { user, token } })
+      const { user, token, pengers } = await new AuthService().loginPenger(contract);
+      return SuccessResponse({ response, msg: "Login successfully", data: { user, token, pengers } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }

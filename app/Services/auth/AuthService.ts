@@ -65,8 +65,20 @@ export class AuthService implements AuthInterface {
                 expiresIn: "10 days"
             })
 
+            const pengers = (await user.related('pengerUsers').query().preload('location')).map(p => p.serialize({
+                relations: {
+                    location: {
+                        fields: {
+                            pick: ['geolocation', 'address', 'street']
+                        }
+                    }
+                }
+            }));
+
+
             return {
                 user,
+                pengers,
                 token
             }
         } catch (error) {
