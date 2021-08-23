@@ -25,6 +25,8 @@ import './routes/auth'
 import './routes/penger'
 import './routes/pengoo'
 
+Route.post('/socket-join', 'SocketsController.join').namespace('App/Controllers/Http')
+
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
 

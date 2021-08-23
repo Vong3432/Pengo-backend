@@ -12,9 +12,6 @@ export default interface BookingItemInterface {
     delete(contract: HttpContextContract): Promise<any>;
 }
 
-export interface BookingItemClientInterface {
-    findAll(contract: HttpContextContract): Promise<BookingItem[]>;
-    findAllByPenger(contract: HttpContextContract): Promise<any[]>;
-    findAllByPengerAndCategory(contract: HttpContextContract): Promise<BookingItem[]>;
-    findById(id: number): Promise<BookingItem | null>;
+export interface BookingItemClientInterface extends BookingItemInterface {
+
 }

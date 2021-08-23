@@ -27,8 +27,15 @@ export default class BookingRecord extends BaseModel {
   @column()
   public bookTime: string
 
-  @column()
-  public bookDate: Date
+  @column.date()
+  public bookDate: DateTime
+
+  @column({
+    serialize: (value: Number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isUsed: Number
 
   @hasMany(() => Feedback)
   public feedbacks: HasMany<typeof Feedback>
