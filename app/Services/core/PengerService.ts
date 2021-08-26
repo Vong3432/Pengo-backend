@@ -13,7 +13,7 @@ export class PengerService implements PengerClientInterface {
         return await Penger.query().paginate(pageNum);
     }
 
-    async findNearestPengers({ request }: HttpContextContract) {
+    async findNearestPengers({ }: HttpContextContract) {
         return (await Penger.query()
             .preload('location')
             .preload('bookingItems')

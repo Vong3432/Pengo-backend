@@ -1,4 +1,4 @@
-import { args, BaseCommand } from '@adonisjs/core/build/standalone'
+import { BaseCommand } from '@adonisjs/core/build/standalone'
 import { join } from 'path'
 
 export default class Service extends BaseCommand {
@@ -32,8 +32,14 @@ export default class Service extends BaseCommand {
 
   public async run() {
     const name = await this.prompt.ask('Enter file name', { hint: 'Coupon' })
+    const isRestful = await this.prompt.toggle('Make it RESTful?', ['Yes', 'No']);
     const folderName = await this.prompt.ask('Enter folder name')
     const filePath = 'app/Services/' + (!folderName || folderName.length === 0 ? name.toLowerCase() : folderName.toLowerCase());
+
+    if (isRestful)
+      await this.kernel.exec('make:interface', [name, '--restful=true'])
+    else
+      await this.kernel.exec('make:interface', [name])
 
     this.generator
       .addFile(name, {
@@ -44,8 +50,8 @@ export default class Service extends BaseCommand {
       .appRoot(this.application.appRoot)
       .destinationDir(filePath)
       .useMustache()
-      .stub(join(__dirname, './templates/service.txt'))
-      .apply({ name, resourceful: true })
+      .stub(join(__dirname, isRestful ? './templates/restful-service.txt' : './templates/service.txt'))
+      .apply({ name, resourceful: true, interface: name })
 
     await this.generator.run();
   }

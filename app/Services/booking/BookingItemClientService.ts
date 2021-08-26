@@ -9,15 +9,13 @@ export class BookingItemClientService implements BookingItemClientInterface {
 
     }
 
-    findAllByPengerAndCategory(contract: HttpContextContract): Promise<BookingItem[]> {
+    findAllByPengerAndCategory(): Promise<BookingItem[]> {
         throw new Error("Method not implemented.");
     }
 
-    async findAllByPenger({ request, response, bouncer }: HttpContextContract) {
+    async findAllByPenger({ request }: HttpContextContract) {
         // UNTESTED
         const pengerId = request.qs().penger_id;
-        const pageNum = request.qs().page || 1;
-        const limit = request.qs().limit || 6;
 
         if (!pengerId) {
             throw "Penger id is missing.";

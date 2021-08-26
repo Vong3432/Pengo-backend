@@ -10,7 +10,6 @@ import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationSe
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Penger from "App/Models/Penger";
 import UpdatePengerValidator from "App/Validators/penger/UpdatePengerValidator";
-import PengerLocation from "App/Models/PengerLocation";
 import GeoService from "../GeoService";
 
 export class FounderService implements FounderInterface {
@@ -23,7 +22,7 @@ export class FounderService implements FounderInterface {
         this.cloudinaryService = new CloudinaryService();
     }
 
-    async updatePenger({ request, auth, bouncer }: HttpContextContract) {
+    async updatePenger({ request, bouncer }: HttpContextContract) {
         const trx = await DBTransactionService.init();
         let publicId: string = "";
         let newurl;

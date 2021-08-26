@@ -1,12 +1,10 @@
-import Penger from "App/Models/Penger";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-export default interface PengerInterface {
-    findById(id: number): Promise<Penger | any>;
+import RestfulAPIInterface from "./RestfulAPI.interface";
+export default interface PengerInterface extends RestfulAPIInterface {
+
 }
 
 export interface PengerClientInterface {
-    findById(id: number): Promise<Penger>;
-    findAll(contract: HttpContextContract): Promise<Penger[]>;
     findNearestPengers(contract: HttpContextContract): Promise<any[]>;
     findPopularPengers(contract: HttpContextContract): Promise<any[]>;
 }

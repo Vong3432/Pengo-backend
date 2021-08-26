@@ -1,4 +1,4 @@
-import { BaseCommand } from '@adonisjs/core/build/standalone'
+import { BaseCommand, flags, args } from '@adonisjs/core/build/standalone'
 import { join } from 'path'
 
 export default class Interface extends BaseCommand {
@@ -12,6 +12,18 @@ export default class Interface extends BaseCommand {
    * Command description is displayed in the "help" output
    */
   public static description = 'Make a interface file for Services'
+
+  @flags.boolean({
+    name: 'restful',
+    description: "Determine is new interface is for RESTful operation",
+  })
+  public restful: boolean
+
+  @args.string({
+    name: 'interface',
+    description: "Name for the interface",
+  })
+  public name: string
 
   public static settings = {
     /**
@@ -28,21 +40,37 @@ export default class Interface extends BaseCommand {
   }
 
   public async run() {
-    const name = await this.prompt.ask('Enter interface name', { hint: 'Coupon' })
     const filePath = 'contracts/interfaces';
 
-    this.generator
-      .addFile(
-        name,
-        {
-          extname: '.interface.ts',
-          pattern: 'pascalcase'
-        })
-      .appRoot(this.application.appRoot)
-      .destinationDir(filePath)
-      .useMustache()
-      .stub(join(__dirname, './templates/interface.txt'))
-      .apply({ resourceful: true })
+    if (this.restful === true) {
+      this.generator
+        .addFile(
+          this.name,
+          {
+            extname: '.interface.ts',
+            pattern: 'pascalcase'
+          })
+        .appRoot(this.application.appRoot)
+        .destinationDir(filePath)
+        .useMustache()
+        .stub(join(__dirname, './templates/restful-interface.txt'))
+        .apply({ resourceful: true })
+    }
+    else {
+      this.generator
+        .addFile(
+          this.name,
+          {
+            extname: '.interface.ts',
+            pattern: 'pascalcase'
+          })
+        .appRoot(this.application.appRoot)
+        .destinationDir(filePath)
+        .useMustache()
+        .stub(join(__dirname, './templates/interface.txt'))
+        .apply({ resourceful: true })
+
+    }
 
     await this.generator.run();
   }

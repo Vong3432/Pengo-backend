@@ -1,7 +1,6 @@
 import Penger from "App/Models/Penger";
-import PengerInterface from "Contracts/interfaces/Penger.interface";
 
-export class PengerService implements PengerInterface {
+export class PengerService {
     async findById(id: number) {
         try {
             const penger = await Penger.findByOrFail('id', id)

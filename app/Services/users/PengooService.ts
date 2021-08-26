@@ -61,7 +61,7 @@ export class PengooService implements PengooInterface {
         }
     }
 
-    async update(data) {
+    async update() {
 
     }
 }

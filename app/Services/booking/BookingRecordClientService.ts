@@ -11,7 +11,7 @@ export class BookingRecordClientService implements BookingRecordClientInterface 
     private readonly goocardService = new GooCardService();
     private readonly itemService = new BookingItemClientService();
 
-    async findAll({ request, auth }: HttpContextContract) {
+    async findAll({ auth }: HttpContextContract) {
         try {
             const user = await auth.authenticate();
             await user.load('goocard');
@@ -44,7 +44,7 @@ export class BookingRecordClientService implements BookingRecordClientInterface 
         }
     };
 
-    async create({ request, bouncer, auth }: HttpContextContract) {
+    async create({ request, auth }: HttpContextContract) {
         const trx = await DBTransactionService.init();
         try {
             const user = await auth.authenticate();

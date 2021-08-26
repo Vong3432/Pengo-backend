@@ -12,6 +12,7 @@ import { CloudinaryService } from "../cloudinary/CloudinaryService";
 import { PriorityService } from "../priority/PriorityService";
 import { ORMFilterService } from "../ORMService";
 import { PengerService } from "../core/PengerService";
+import RestfulAPIInterface from "Contracts/interfaces/RestfulAPI.interface";
 
 export class BookingItemService implements BookingItemInterface {
 

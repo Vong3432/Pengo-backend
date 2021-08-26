@@ -13,7 +13,7 @@ export class CouponService implements CouponInterface {
 
     }
 
-    async findAll(contract: HttpContextContract) {
+    async findAll(_contract: HttpContextContract) {
         return await Coupon.all()
     };
 

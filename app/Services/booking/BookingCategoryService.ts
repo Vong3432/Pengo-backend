@@ -7,11 +7,6 @@ import { DBTransactionService } from "../DBTransactionService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 
 export class BookingCategoryService implements BookingCategoryInterface {
-
-    constructor() {
-
-    }
-
     async findAll({ request }: HttpContextContract) {
         const pengerId = request.qs().penger_id;
 
@@ -21,9 +16,8 @@ export class BookingCategoryService implements BookingCategoryInterface {
         return await BookingCategory.all();
     };
 
-    async findAllByPenger({ request, response, bouncer }: HttpContextContract) {
+    async findAllByPenger({ request, bouncer }: HttpContextContract) {
         const pengerId = request.qs().penger_id;
-        const pageNum = request.qs().page || 1;
 
         if (!pengerId) {
             throw "Penger id is missing.";

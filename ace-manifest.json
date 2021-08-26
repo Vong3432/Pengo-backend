@@ -8,9 +8,24 @@
       "commandPath": "./commands/Interface",
       "commandName": "make:interface",
       "description": "Make a interface file for Services",
-      "args": [],
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "name",
+          "name": "interface",
+          "required": true,
+          "description": "Name for the interface"
+        }
+      ],
       "aliases": [],
-      "flags": []
+      "flags": [
+        {
+          "name": "restful",
+          "propertyName": "restful",
+          "type": "boolean",
+          "description": "Determine is new interface is for RESTful operation"
+        }
+      ]
     },
     "make:service": {
       "settings": {
