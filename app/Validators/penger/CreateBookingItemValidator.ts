@@ -1,9 +1,11 @@
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CreateBookingItemValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
+
+	public reporter = validator.reporters.api
 
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.

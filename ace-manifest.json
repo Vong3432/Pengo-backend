@@ -39,6 +39,44 @@
       "aliases": [],
       "flags": []
     },
+    "make:test": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/Test",
+      "commandName": "make:test",
+      "description": "Make a new test file",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "name",
+          "name": "interface",
+          "required": true,
+          "description": "Name for the test file"
+        }
+      ],
+      "aliases": [],
+      "flags": []
+    },
+    "test:run": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/TestRunner",
+      "commandName": "test:run",
+      "description": "Run single/multiple test file(s)",
+      "args": [],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "file",
+          "propertyName": "file",
+          "type": "string"
+        }
+      ]
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/commands/DumpRc",

@@ -37,7 +37,6 @@ export class PengooService implements PengooInterface {
             password: payload.password
         }
 
-
         // create card
         const card = await this.goocardService.create(payload.pin);
         const user = new User();

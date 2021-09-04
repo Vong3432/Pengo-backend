@@ -49,6 +49,9 @@ Ws.io.on('connection', (socket) => {
                     return socket.emit('verified failed')
                 }
 
+                // Check if record is already verified before
+                // do something...
+
                 // check is pengoo/penger
                 if (role === Roles.Pengoo) {
 
@@ -84,7 +87,10 @@ Ws.io.on('connection', (socket) => {
                     }
                 }
 
+                // Update `booking_records`
+                // ... do something
 
+                // Emit to both pengoo/penger
                 socket.to(to).emit('verified success')
                 socket.emit('verified success')
             })

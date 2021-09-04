@@ -17,7 +17,8 @@ export default class BookingItemsController {
       return SuccessResponse({ response, data: bookingItems })
     }
     catch (error) {
-      return ErrorResponse({ response, msg: error.messages || error })
+      console.log(error.messages)
+      return ErrorResponse({ response, msg: error })
     }
   }
 
@@ -27,7 +28,8 @@ export default class BookingItemsController {
       const bookingItem = await this.bookingItemService.create(contract);
       return SuccessResponse({ response, msg: 'Added successfully', data: bookingItem })
     } catch (error) {
-      return ErrorResponse({ response, msg: error.messages || error })
+      console.log("errmsg", error.messages)
+      return ErrorResponse({ response, msg: error })
     }
   }
 
@@ -39,7 +41,8 @@ export default class BookingItemsController {
       return SuccessResponse({ response, data: bookingItem })
     } catch (error) {
       console.log(error)
-      return ErrorResponse({ response, msg: error.messages || error })
+      console.log(error.messages)
+      return ErrorResponse({ response, msg: error })
     }
   }
 
@@ -49,7 +52,8 @@ export default class BookingItemsController {
       const bookingItem = await this.bookingItemService.update(contract)
       return SuccessResponse({ response, msg: 'Updated successfully', data: bookingItem })
     } catch (error) {
-      return ErrorResponse({ response, msg: error.messages || error })
+      console.log(error.messages)
+      return ErrorResponse({ response, msg: error })
     }
   }
 
@@ -58,7 +62,8 @@ export default class BookingItemsController {
     try {
       return SuccessResponse({ response, msg: 'Deleted successfully' })
     } catch (error) {
-      return ErrorResponse({ response, msg: error.messages || error })
+      console.log(error.messages)
+      return ErrorResponse({ response, msg: error })
     }
   }
 

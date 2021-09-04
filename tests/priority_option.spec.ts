@@ -1,0 +1,19 @@
+import Database from '@ioc:Adonis/Lucid/Database';
+import test, { group } from 'japa'
+
+test.group('Testing priority_option module', (group) => {
+
+    group.before(async () => {
+        // save the current state of db before testing
+        await Database.beginGlobalTransaction()
+    })
+
+    group.after(async () => {
+        // restore db to the state before testing
+        await Database.rollbackGlobalTransaction()
+    })
+
+    test('Hello world', async (assert) => {
+        assert.isTrue(true)
+    })
+})

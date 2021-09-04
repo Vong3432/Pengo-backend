@@ -12,8 +12,9 @@ sourceMapSupport.install({ handleUncaughtExceptions: false })
 // Add this method to the file
 function getTestFiles() {
     let userDefined = process.argv.slice(2)[0]
+    console.log(userDefined)
     if (!userDefined) {
-        return 'test/**/*.spec.ts'
+        return 'tests/**/*.spec.ts'
     }
 
     return `${userDefined.replace(/\.ts$|\.js$/, '')}.ts`
@@ -53,5 +54,7 @@ configure({
         // runSeeder,
         startHttpServer
     ],
-    after: [rollbackMigrations]
+    after: [
+        // rollbackMigrations
+    ]
 })
