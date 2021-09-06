@@ -56,12 +56,13 @@ export class BookingItemService implements BookingItemInterface {
                 throw new UnAuthorizedPengerException('You are not authorized to this Penger', 403, 'E_UNAUTHORIZED')
             }
 
+            console.log('uploading')
+
             let { secure_url: url, public_id } = await new CloudinaryService().uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
             if (public_id) publicId = public_id;
 
             // create a new booking item
             const bookingItem = new BookingItem();
-            bookingItem.useTransaction(trx);
 
             if (payload.is_preservable) {
                 await new PriorityService().findById(payload.priority_option_id);
@@ -82,10 +83,8 @@ export class BookingItemService implements BookingItemInterface {
             })
 
             // save booking item into category
-            await bookingCategory.related('bookingItems').save(bookingItem);
-
+            await bookingCategory.useTransaction(trx).related('bookingItems').save(bookingItem);
             await trx.commit();
-
             return bookingItem;
 
         } catch (error) {
@@ -118,10 +117,10 @@ export class BookingItemService implements BookingItemInterface {
             // omit unused properties to prevent crashing during creating.
             const { penger_id, poster, ...data } = payload;
 
-            if (payload.poster?.tmpPath) {
-                let { secure_url: url, public_id } = await new CloudinaryService().uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
+            if (payload.poster) {
+                let { secure_url: updatedUrl, public_id } = await new CloudinaryService().uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
                 if (public_id) publicId = public_id;
-                url = url;
+                url = updatedUrl;
             }
 
             if (payload.is_preservable) {
@@ -133,7 +132,7 @@ export class BookingItemService implements BookingItemInterface {
             await bookingItem.useTransaction(trx).merge({
                 ...data,
                 geolocation: data.geolocation ? JSON.stringify(data.geolocation) : bookingItem.geolocation,
-                posterUrl: url ?? bookingItem.posterUrl
+                posterUrl: url == null ? bookingItem.posterUrl : url
             }).save();
 
             await trx.commit();

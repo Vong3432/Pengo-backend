@@ -30,6 +30,7 @@ export default class UpdateBookingItemValidator {
 		geolocation: schema.object.optional([
 			rules.requiredWhen('location_id', '=', '1')]
 		).members({
+			name: schema.string(),
 			latitude: schema.number(),
 			longitude: schema.number(),
 		}),
@@ -73,10 +74,18 @@ export default class UpdateBookingItemValidator {
 			rules.requiredWhen('is_discountable', '=', '1'),
 			rules.unsigned()
 		]),
-		available_from_time: schema.date.optional({ format: 'HH:mm' }, [rules.after('today')]),
-		available_to_time: schema.date.optional({ format: 'HH:mm' }, [rules.after('today')]),
-		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
-		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
+		available_from_time: schema.date.optional({ format: 'HH:mm' },
+			// [rules.after('today')]
+		),
+		available_to_time: schema.date.optional({ format: 'HH:mm' },
+			// [rules.after('today')]
+		),
+		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' },
+			// [rules.after('today')]
+		),
+		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' },
+			// [rules.after('today')]
+		),
 	})
 
 	/**

@@ -36,6 +36,7 @@ export default class CreateBookingItemValidator {
 		),
 		priority_option_id: schema.number.optional([rules.requiredWhen('is_preservable', '=', '1')]),
 		geolocation: schema.object().members({
+			name: schema.string(),
 			latitude: schema.number(),
 			longitude: schema.number(),
 		}),
