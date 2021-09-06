@@ -16,26 +16,26 @@ export default class BookingRecord extends BaseModel {
   public goocard: BelongsTo<typeof GooCard>
 
   @column({ columnName: 'booking_item_id' })
-  public bookingItemId: Number
+  public bookingItemId: number
 
   @column({ columnName: 'penger_id' })
-  public pengerId: Number
+  public pengerId: number
 
   @column({ columnName: 'goocard_id' })
-  public gooCardId: Number
+  public gooCardId: number
 
   @column()
   public bookTime: string
 
-  @column.date()
+  @column.dateTime()
   public bookDate: DateTime
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isUsed: Number
+  public isUsed: number
 
   @hasMany(() => Feedback)
   public feedbacks: HasMany<typeof Feedback>

@@ -22,11 +22,11 @@ export default class DefinedPriorityOption extends BaseModel {
   public relatedTable: string
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isActive: Number
+  public isActive: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

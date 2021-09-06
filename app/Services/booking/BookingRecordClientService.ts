@@ -37,7 +37,7 @@ export class BookingRecordClientService implements BookingRecordClientInterface 
                 .preload('item')
                 .where('id', id)
                 .where('goocard_id', user.goocard.id)
-                .first();
+                .firstOrFail();
             return item;
         } catch (error) {
             throw error

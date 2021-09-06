@@ -12,7 +12,7 @@ export default class BookingCategory extends BaseModel {
   public name: string
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
@@ -25,7 +25,7 @@ export default class BookingCategory extends BaseModel {
   public bookingItems: HasMany<typeof BookingItem>
 
   @column({ columnName: 'created_by', serializeAs: null })
-  public pengerId: Number
+  public pengerId: number
 
   @belongsTo(() => Penger)
   public createdBy: BelongsTo<typeof Penger>

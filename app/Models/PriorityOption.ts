@@ -30,11 +30,11 @@ export default class PriorityOption extends BaseModel {
   public conditions: PRIORITY_CONDITIONS
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isActive: Number
+  public isActive: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -9,10 +9,12 @@ export default class BookingOption extends BaseModel {
   @column()
   public systemFunctionKey: string
 
-  @column({ serialize: (num: Number) => {
-    return num === 1 ? true : false
-  }})
-  public isEnable: Number
+  @column({
+    serialize: (num: number) => {
+      return num === 1 ? true : false
+    }
+  })
+  public isEnable: number
 
   @hasOne(() => SystemFunction)
   public systemFunction: HasOne<typeof SystemFunction>

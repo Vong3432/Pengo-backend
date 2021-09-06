@@ -16,12 +16,14 @@ export default class Role extends BaseModel {
   @column()
   public name: string
 
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
-  public isActive: Number
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isActive: number
 
-  @hasMany(()=>User, {
+  @hasMany(() => User, {
     foreignKey: 'roleID'
   })
   public users: HasMany<typeof User>

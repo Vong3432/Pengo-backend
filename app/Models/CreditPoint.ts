@@ -6,15 +6,15 @@ export default class CreditPoint extends BaseModel {
   public id: number
 
   @column({ columnName: 'goocard_id' })
-  public goocardId: number
+  public gooCardId: number
 
   @column({ columnName: 'penger_id' })
   public pengerId: number
 
   @column()
   public totalCreditPoints: number
-  @column()
 
+  @column()
   public availableCreditPoints: number
 
   @column.dateTime({ autoCreate: true })

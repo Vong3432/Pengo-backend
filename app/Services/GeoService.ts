@@ -17,14 +17,14 @@ export default class GeoService {
         this.geocoder = NodeGeocoder(options);
     }
 
-    async coordinateToStreet(lat: Number, lng: Number): Promise<any> {
+    async coordinateToStreet(lat: number, lng: number): Promise<any> {
         const address = await this.geocoder.reverse({
             lat, lon: lng
         })
         return address[0]['formattedAddress']
     }
 
-    async coordinateToShortAddress(lat: Number, lng: Number): Promise<any> {
+    async coordinateToShortAddress(lat: number, lng: number): Promise<any> {
         const address = await this.geocoder.reverse({
             lat, lon: lng
         })

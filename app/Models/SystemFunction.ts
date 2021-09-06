@@ -11,18 +11,22 @@ export default class SystemFunction extends BaseModel {
   @column()
   public description: string
 
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
-  public isPremium: Number
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isPremium: number
 
-  @column({serialize: (value: Number) => {
-    return value === 1 ? true : false
-  }})
-  public isActive: Number
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isActive: number
 
   @column()
-  public price: Number
+  public price: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

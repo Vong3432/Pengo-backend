@@ -7,7 +7,7 @@ export default class Coupon extends BaseModel {
   public id: number
 
   @column({ columnName: 'created_by' })
-  public pengerId: Number
+  public pengerId: number
 
   @column()
   public title: string
@@ -31,7 +31,7 @@ export default class Coupon extends BaseModel {
   public quantity: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })

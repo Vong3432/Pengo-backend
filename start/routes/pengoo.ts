@@ -2,6 +2,7 @@ import Route from '@ioc:Adonis/Core/Route'
 
 Route.group(() => {
     Route.resource('booking-records', 'BookingRecordsController').apiOnly()
+    Route.resource('credit-points', 'CreditPointsController').apiOnly()
 })
     .namespace('App/Controllers/Http/pengoo')
     .prefix('/pengoo')

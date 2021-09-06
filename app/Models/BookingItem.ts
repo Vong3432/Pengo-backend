@@ -6,19 +6,19 @@ import BookingCategory from './BookingCategory'
 
 export default class BookingItem extends BaseModel {
   @column({ isPrimary: true })
-  public id: Number
+  public id: number
 
   @column()
-  public bookingCategoryId: Number
+  public bookingCategoryId: number
 
   @column()
-  public locationId: Number
+  public locationId: number
 
   @column()
-  public parentBookingItem: Number
+  public parentBookingItem: number
 
   @column()
-  public priorityOptionId: Number
+  public priorityOptionId: number
 
   @column()
   public uniqueId: string
@@ -36,67 +36,67 @@ export default class BookingItem extends BaseModel {
   public subImages: HasMany<typeof BookingItemImg>
 
   @column()
-  public maximumBook: Number
+  public maximumBook: number
 
   @column()
-  public maximumTransfer: Number
+  public maximumTransfer: number
 
   @column()
-  public preservedBook: Number
+  public preservedBook: number
 
   @column()
-  public creditPoints: Number
+  public creditPoints: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isPreservable: Number
+  public isPreservable: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isActive: Number
+  public isActive: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isBookable: Number
+  public isBookable: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isTransferable: Number
+  public isTransferable: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isCountable: Number
+  public isCountable: number
 
   @column({
-    serialize: (value: Number) => {
+    serialize: (value: number) => {
       return value === 1 ? true : false
     }
   })
-  public isDiscountable: Number
+  public isDiscountable: number
 
   @column()
-  public quantity: Number
+  public quantity: number
 
   @column()
-  public price: Number
+  public price: number
 
   @column()
-  public discountAmount: Number
+  public discountAmount: number
 
   @column.dateTime()
   public availableFromTime: DateTime

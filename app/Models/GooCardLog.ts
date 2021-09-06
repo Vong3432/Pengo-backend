@@ -6,11 +6,11 @@ export default class GooCardLog extends BaseModel {
   public id: number
 
   @column({ columnName: 'goocard_id' })
-  public goocardId: number
+  public gooCardId: number
 
   @column()
   public title: string
-  
+
   @column()
   public body: string
 
