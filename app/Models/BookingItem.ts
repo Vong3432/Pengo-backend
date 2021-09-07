@@ -110,7 +110,11 @@ export default class BookingItem extends BaseModel {
   @column.dateTime()
   public endAt: DateTime
 
-  @column()
+  @column({
+    serialize: (val: string | null) => {
+      return val ? JSON.parse(val) : val
+    }
+  })
   public geolocation: string
 
   @hasMany(() => BookingRecord)
