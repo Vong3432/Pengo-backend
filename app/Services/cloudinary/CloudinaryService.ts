@@ -10,7 +10,7 @@ cloudinary.v2.config({
     secure: true
 })
 
-export class CloudinaryService implements CloudinaryInterface {
+class CloudinaryService implements CloudinaryInterface {
     async uploadToCloudinary({ file, folder, options, placeholderUrl }: ICloudinary) {
         try {
             if (!file) {
@@ -39,3 +39,5 @@ export class CloudinaryService implements CloudinaryInterface {
 
     }
 }
+
+export default new CloudinaryService();

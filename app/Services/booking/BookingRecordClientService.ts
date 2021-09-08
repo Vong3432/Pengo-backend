@@ -3,13 +3,10 @@ import { DBTransactionService } from "../DBTransactionService";
 import { BookingRecordClientInterface } from "Contracts/interfaces/BookingRecord.interface";
 import BookingRecord from "App/Models/BookingRecord";
 import CreateBookingValidator from "App/Validators/pengoo/CreateBookingValidator";
-import { GooCardService } from "../goocard/GooCardService";
-import { BookingItemClientService } from "./BookingItemClientService";
+import BookingItemService from "./BookingItemService";
+import GooCardService from "../goocard/GooCardService";
 
-export class BookingRecordClientService implements BookingRecordClientInterface {
-
-    private readonly goocardService = new GooCardService();
-    private readonly itemService = new BookingItemClientService();
+class BookingRecordClientService implements BookingRecordClientInterface {
 
     async findAll({ auth }: HttpContextContract) {
         try {
@@ -50,8 +47,8 @@ export class BookingRecordClientService implements BookingRecordClientInterface 
             const user = await auth.authenticate();
             const payload = await request.validate(CreateBookingValidator);
 
-            const card = await this.goocardService.verify(payload.pin, user.id);
-            await this.itemService.findById(payload.booking_item_id);
+            const card = await GooCardService.verify(payload.pin, user.id);
+            await BookingItemService.findById(payload.booking_item_id);
 
             const record = new BookingRecord();
             await record.useTransaction(trx).fill({
@@ -85,3 +82,5 @@ export class BookingRecordClientService implements BookingRecordClientInterface 
 
     };
 }
+
+export default new BookingRecordClientService();

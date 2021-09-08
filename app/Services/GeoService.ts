@@ -10,7 +10,7 @@ const options = {
     formatter: null // 'gpx', 'string', ...
 };
 
-export default class GeoService {
+class GeoService {
     private readonly geocoder: NodeGeocoder;
 
     constructor() {
@@ -32,3 +32,5 @@ export default class GeoService {
         return address[0]['city'] + ", " + address[0]['country']
     }
 }
+
+export default new GeoService();

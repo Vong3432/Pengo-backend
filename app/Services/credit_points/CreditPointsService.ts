@@ -2,15 +2,15 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CreditPointsInterface from "Contracts/interfaces/CreditPoints.interface"
 import CreditPoint from "App/Models/CreditPoint";
 import AddCreditPointValidator from "App/Validators/pengoo/AddCreditPointValidator";
-import { BookingRecordClientService } from "../booking/BookingRecordClientService";
 import BookingItem from "App/Models/BookingItem";
 import BookingRecord from "App/Models/BookingRecord";
 import DeductCreditPointValidator from "App/Validators/pengoo/DeductCreditPointValidator";
 import Coupon from "App/Models/Coupon";
-import { CouponService } from "../coupon/CouponService";
 import InsufficientCreditPointException from "App/Exceptions/InsufficientCreditPointException";
+import BookingRecordClientService from "../booking/BookingRecordClientService";
+import CouponService from "../coupon/CouponService";
 
-export class CreditPointsService implements CreditPointsInterface {
+class CreditPointsService implements CreditPointsInterface {
     async add(contract: HttpContextContract): Promise<{
         credit: CreditPoint,
         amount: number
@@ -20,7 +20,7 @@ export class CreditPointsService implements CreditPointsInterface {
             const payload = await request.validate(AddCreditPointValidator)
 
             // get record
-            const record: BookingRecord = await new BookingRecordClientService().findById(payload.record_id, contract);
+            const record: BookingRecord = await BookingRecordClientService.findById(payload.record_id, contract);
 
             // validate record is already scanned and verified.
             if (record.isUsed === 0) throw 'Unable to add credit points'
@@ -72,10 +72,10 @@ export class CreditPointsService implements CreditPointsInterface {
             const payload = await request.validate(DeductCreditPointValidator)
 
             // get coupon
-            const coupon: Coupon = await new CouponService().findById(payload.coupon_id);
+            const coupon: Coupon = await CouponService.findById(payload.coupon_id);
 
             // get record
-            const record: BookingRecord = await new BookingRecordClientService().findById(payload.record_id, contract);
+            const record: BookingRecord = await BookingRecordClientService.findById(payload.record_id, contract);
 
             // validate user has sufficient credit points
             const user = await auth.authenticate();
@@ -105,3 +105,5 @@ export class CreditPointsService implements CreditPointsInterface {
     }
 
 }
+
+export default new CreditPointsService();

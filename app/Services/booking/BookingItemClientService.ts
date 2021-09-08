@@ -3,7 +3,7 @@ import { BookingItemClientInterface } from "Contracts/interfaces/BookingItem.int
 import Penger from "App/Models/Penger";
 import BookingItem from "App/Models/BookingItem";
 
-export class BookingItemClientService implements BookingItemClientInterface {
+class BookingItemClientService implements BookingItemClientInterface {
 
     constructor() {
 
@@ -38,3 +38,5 @@ export class BookingItemClientService implements BookingItemClientInterface {
     };
 
 }
+
+export default new BookingItemClientService();

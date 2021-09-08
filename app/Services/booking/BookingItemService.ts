@@ -7,14 +7,13 @@ import Penger from "App/Models/Penger";
 import UnAuthorizedPengerException from "App/Exceptions/UnAuthorizedPengerException";
 import UpdateBookingItemValidator from "App/Validators/penger/UpdateBookingItemValidator";
 import { DBTransactionService } from "../DBTransactionService";
-import { BookingCategoryService } from "./BookingCategoryService";
-import { CloudinaryService } from "../cloudinary/CloudinaryService";
-import { PriorityService } from "../priority/PriorityService";
+import CloudinaryService from "../cloudinary/CloudinaryService";
 import { ORMFilterService } from "../ORMService";
-import { PengerService } from "../core/PengerService";
-import RestfulAPIInterface from "Contracts/interfaces/RestfulAPI.interface";
+import PengerService from "../core/PengerService";
+import BookingCategoryService from "./BookingCategoryService";
+import PriorityService from "../priority/PriorityService";
 
-export class BookingItemService implements BookingItemInterface {
+class BookingItemService implements BookingItemInterface {
 
     async findAll({ request }: HttpContextContract) {
         const bookingItems = await new ORMFilterService(BookingItem, request.qs()).getFilteredResults()
@@ -22,12 +21,12 @@ export class BookingItemService implements BookingItemInterface {
     };
 
     async findAllByPenger({ request }: HttpContextContract) {
-        const penger = await new PengerService().findById(request.qs().penger_id);
+        const penger = await PengerService.findById(request.qs().penger_id);
         return await penger.related('bookingItems').query();
     };
 
     async findAllByPengerAndCategory(contract: HttpContextContract) {
-        const bookingCategory = (await new BookingCategoryService().findAllByPenger(contract))
+        const bookingCategory = (await BookingCategoryService.findAllByPenger(contract))
             .map(c => c.serialize());
         const items = bookingCategory.map(c => c.booking_items);
         return items;
@@ -58,14 +57,14 @@ export class BookingItemService implements BookingItemInterface {
 
             console.log('uploading')
 
-            let { secure_url: url, public_id } = await new CloudinaryService().uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
+            let { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
             if (public_id) publicId = public_id;
 
             // create a new booking item
             const bookingItem = new BookingItem();
 
             if (payload.is_preservable) {
-                await new PriorityService().findById(payload.priority_option_id);
+                await PriorityService.findById(payload.priority_option_id);
             }
 
             // omit unused properties to prevent crashing during creating.
@@ -89,7 +88,7 @@ export class BookingItemService implements BookingItemInterface {
 
         } catch (error) {
             if (publicId)
-                await new CloudinaryService().destroyFromCloudinary(publicId);
+                await CloudinaryService.destroyFromCloudinary(publicId);
             await trx.rollback();
             throw error;
         }
@@ -104,7 +103,7 @@ export class BookingItemService implements BookingItemInterface {
             const bookingItemId = request.param('id');
             const payload = await request.validate(UpdateBookingItemValidator);
             // find booking item
-            const bookingItem = await new BookingItemService().findById(bookingItemId)
+            const bookingItem = await this.findById(bookingItemId)
             const bookingCategory = await bookingItem.related('category').query().firstOrFail()
             // get the Penger through relationship
             const penger = await bookingCategory.related('createdBy').query().firstOrFail();
@@ -118,14 +117,14 @@ export class BookingItemService implements BookingItemInterface {
             const { penger_id, poster, ...data } = payload;
 
             if (payload.poster) {
-                let { secure_url: updatedUrl, public_id } = await new CloudinaryService().uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
+                let { secure_url: updatedUrl, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
                 if (public_id) publicId = public_id;
                 url = updatedUrl;
             }
 
             if (payload.is_preservable) {
                 // check priority
-                await new PriorityService().findById(payload.priority_option_id);
+                await PriorityService.findById(payload.priority_option_id);
             }
 
             // dynamically update fields
@@ -140,7 +139,7 @@ export class BookingItemService implements BookingItemInterface {
             return bookingItem;
         } catch (error) {
             if (publicId)
-                await new CloudinaryService().destroyFromCloudinary(publicId)
+                await CloudinaryService.destroyFromCloudinary(publicId)
             await trx.rollback();
             throw error;
         }
@@ -151,3 +150,5 @@ export class BookingItemService implements BookingItemInterface {
 
     };
 }
+
+export default new BookingItemService();

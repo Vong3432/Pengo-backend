@@ -3,29 +3,19 @@ import PengooInterface from "Contracts/interfaces/Pengoo.interface";
 import { DBTransactionService } from "../DBTransactionService";
 import RegisterUserValidator from "App/Validators/auth/RegisterUserValidator";
 import { Roles } from "App/Models/Role";
-import { RoleService } from "../role/RoleService";
-import { CloudinaryService } from "../cloudinary/CloudinaryService";
-import { GooCardService } from "../goocard/GooCardService";
+import RoleService from "../role/RoleService";
+import CloudinaryService from "../cloudinary/CloudinaryService";
+import GooCardService from "../goocard/GooCardService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-export class PengooService implements PengooInterface {
-
-    private readonly roleService: RoleService;
-    private readonly cloudinaryService: CloudinaryService;
-    private readonly goocardService: GooCardService;
-
-    constructor() {
-        this.roleService = new RoleService();
-        this.cloudinaryService = new CloudinaryService();
-        this.goocardService = new GooCardService();
-    }
+class PengooService implements PengooInterface {
 
     async createPengoo({ request, auth }: HttpContextContract) {
         const payload = await request.validate(RegisterUserValidator);
-        const role = await this.roleService.findRole(Roles.Pengoo);
+        const role = await RoleService.findRole(Roles.Pengoo);
         let publicId;
 
         // save image to cloud
-        const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "pengoo" });
+        const { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "pengoo" });
         if (public_id) publicId = public_id;
 
         const data = {
@@ -38,7 +28,7 @@ export class PengooService implements PengooInterface {
         }
 
         // create card
-        const card = await this.goocardService.create(payload.pin);
+        const card = await GooCardService.create(payload.pin);
         const user = new User();
         const trx = await DBTransactionService.init();
         try {
@@ -55,7 +45,7 @@ export class PengooService implements PengooInterface {
         } catch (error) {
             await trx.rollback();
             if (publicId)
-                await this.cloudinaryService.destroyFromCloudinary(publicId);
+                await CloudinaryService.destroyFromCloudinary(publicId);
             throw "Something went wrong"
         }
     }
@@ -64,3 +54,5 @@ export class PengooService implements PengooInterface {
 
     }
 }
+
+export default new PengooService();

@@ -3,7 +3,7 @@ import PriorityInterface from "Contracts/interfaces/Priority.interface";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import PriorityOption from "App/Models/PriorityOption";
 
-export class PriorityService implements PriorityInterface {
+class PriorityService implements PriorityInterface {
     async findAll({ }: HttpContextContract) {
         return PriorityOption.all();
     };
@@ -24,3 +24,5 @@ export class PriorityService implements PriorityInterface {
 
     };
 }
+
+export default new PriorityService();

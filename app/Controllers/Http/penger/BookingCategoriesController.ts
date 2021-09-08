@@ -1,19 +1,13 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { BookingCategoryService } from 'App/Services/booking/BookingCategoryService';
+import BookingCategoryService from 'App/Services/booking/BookingCategoryService';
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService'
 
 export default class BookingCategoriesController {
 
-  private readonly bookingCategoryService: BookingCategoryService;
-
-  constructor() {
-    this.bookingCategoryService = new BookingCategoryService();
-  }
-
   public async index(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      const bookingCategories = await this.bookingCategoryService.findAllByPenger(contract);
+      const bookingCategories = await BookingCategoryService.findAllByPenger(contract);
       return SuccessResponse({ response, data: bookingCategories })
     } catch (error) {
       return ErrorResponse({ response, msg: error })
@@ -24,7 +18,7 @@ export default class BookingCategoriesController {
     const { response } = contract;
     // Create category
     try {
-      const bookingCategory = await this.bookingCategoryService.create(contract);
+      const bookingCategory = await BookingCategoryService.create(contract);
       return SuccessResponse({ response, data: bookingCategory })
     } catch (error) {
       return ErrorResponse({ response, msg: error })
@@ -36,7 +30,7 @@ export default class BookingCategoriesController {
     // Show category
     try {
       // get
-      const bookingCategory = await this.bookingCategoryService.findByIdAndPenger(contract);
+      const bookingCategory = await BookingCategoryService.findByIdAndPenger(contract);
       return SuccessResponse({ response, data: bookingCategory })
     } catch (error) {
       return ErrorResponse({ response, msg: error })
@@ -47,7 +41,7 @@ export default class BookingCategoriesController {
     const { response } = contract;
     // Update category
     try {
-      const bookingCategory = await this.bookingCategoryService.update(contract)
+      const bookingCategory = await BookingCategoryService.update(contract)
       return SuccessResponse({ response, data: bookingCategory, msg: "Updated successfully" })
     } catch (error) {
       return ErrorResponse({ response, msg: error })

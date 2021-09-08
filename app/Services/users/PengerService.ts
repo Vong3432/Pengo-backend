@@ -1,6 +1,6 @@
 import Penger from "App/Models/Penger";
 
-export class PengerService {
+class PengerService {
     async findById(id: number) {
         try {
             const penger = await Penger.findByOrFail('id', id)
@@ -11,3 +11,5 @@ export class PengerService {
     }
 
 }
+
+export default new PengerService();

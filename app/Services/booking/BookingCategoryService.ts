@@ -6,7 +6,7 @@ import BookingCategoryInterface from "Contracts/interfaces/BookingCategory.inter
 import { DBTransactionService } from "../DBTransactionService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 
-export class BookingCategoryService implements BookingCategoryInterface {
+class BookingCategoryService implements BookingCategoryInterface {
     async findAll({ request }: HttpContextContract) {
         const pengerId = request.qs().penger_id;
 
@@ -117,3 +117,5 @@ export class BookingCategoryService implements BookingCategoryInterface {
 
     };
 }
+
+export default new BookingCategoryService();

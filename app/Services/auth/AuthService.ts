@@ -2,21 +2,16 @@ import AuthInterface from "Contracts/interfaces/Auth.interface";
 import LoginUserValidator from "App/Validators/auth/LoginUserValidator";
 import User from "App/Models/User";
 import Hash from "@ioc:Adonis/Core/Hash";
-import Role, { Roles } from "App/Models/Role";
-import { RoleService } from "../role/RoleService";
+import { Roles } from "App/Models/Role";
+import RoleService from "../role/RoleService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-export class AuthService implements AuthInterface {
+class AuthService implements AuthInterface {
 
-    private readonly roleService: RoleService;
-
-    constructor() {
-        this.roleService = new RoleService();
-    }
 
     async login({ request, auth }: HttpContextContract) {
         try {
             const payload = await request.validate(LoginUserValidator);
-            const role = await this.roleService.findRole(Roles.Pengoo);
+            const role = await RoleService.findRole(Roles.Pengoo);
 
             // get user
             const user = await User.query().where('phone', payload.phone).first();
@@ -46,8 +41,8 @@ export class AuthService implements AuthInterface {
     async loginPenger({ request, auth }: HttpContextContract) {
         try {
             const payload = await request.validate(LoginUserValidator);
-            const founder = await this.roleService.findRole(Roles.Founder);
-            const staff = await this.roleService.findRole(Roles.Staff);
+            const founder = await RoleService.findRole(Roles.Founder);
+            const staff = await RoleService.findRole(Roles.Staff);
 
             // get user
             const user = await User.query().where('phone', payload.phone).first();
@@ -86,3 +81,5 @@ export class AuthService implements AuthInterface {
         }
     };
 }
+
+export default new AuthService();

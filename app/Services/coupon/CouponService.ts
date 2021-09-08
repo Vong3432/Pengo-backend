@@ -7,17 +7,15 @@ import Coupon from "App/Models/Coupon";
 import CreateCouponValidator from "App/Validators/penger/CreateCouponValidator";
 import UpdateCouponValidator from "App/Validators/penger/UpdateCouponValidator";
 import { DateTime } from "luxon";
-import { DateConvertHelperService } from "../helpers/DateConvertHelperService";
-import { BoolConvertHelperService } from "../helpers/BoolConvertHelperService";
-import BookingItem from "App/Models/BookingItem";
+import BoolConvertHelperService from "../helpers/BoolConvertHelperService";
 
-export class CouponService implements CouponInterface {
+class CouponService implements CouponInterface {
 
     constructor() {
 
     }
 
-    async findAll(_contract: HttpContextContract) {
+    async findAll(contract: HttpContextContract) {
         return await Coupon.all()
     };
 
@@ -91,7 +89,7 @@ export class CouponService implements CouponInterface {
             const coupon = new Coupon();
             coupon.fill({
                 ...data,
-                isRedeemable: new BoolConvertHelperService().boolToInt(payload.is_redeemable) ?? 0,
+                isRedeemable: BoolConvertHelperService.boolToInt(payload.is_redeemable) ?? 0,
             });
             await penger.useTransaction(trx).related('coupons').save(coupon);
 
@@ -131,7 +129,7 @@ export class CouponService implements CouponInterface {
 
             await coupon.useTransaction(trx).merge({
                 ...data,
-                isRedeemable: new BoolConvertHelperService().boolToInt(payload.is_redeemable) ?? coupon.isRedeemable,
+                isRedeemable: BoolConvertHelperService.boolToInt(payload.is_redeemable) ?? coupon.isRedeemable,
             }).save();
 
             await trx.commit();
@@ -149,3 +147,5 @@ export class CouponService implements CouponInterface {
 
     };
 }
+
+export default new CouponService()

@@ -1,6 +1,6 @@
 import DateConvertHelperInterface from "Contracts/interfaces/DateConvertHelper.interface"
 
-export class DateConvertHelperService implements DateConvertHelperInterface {
+class DateConvertHelperService implements DateConvertHelperInterface {
     fromDateToReadableText(dt: number, option?: Intl.DateTimeFormatOptions): Promise<string> {
         try {
             let s = new Intl.DateTimeFormat('en-MY', {
@@ -15,3 +15,5 @@ export class DateConvertHelperService implements DateConvertHelperInterface {
     }
 
 }
+
+export default new DateConvertHelperService();

@@ -1,4 +1,4 @@
-import { DateConvertHelperService } from 'App/Services/helpers/DateConvertHelperService';
+import DateConvertHelperService from 'App/Services/helpers/DateConvertHelperService';
 import test, { group } from 'japa'
 
 test.group('Testing date_convert_helper module', (group) => {
@@ -14,14 +14,14 @@ test.group('Testing date_convert_helper module', (group) => {
     })
 
     test('Ensure Date is formatted to readable text', async (assert) => {
-        const s = await new DateConvertHelperService().fromDateToReadableText(Date.now(), { dateStyle: 'full', timeStyle: 'short' });
+        const s = await DateConvertHelperService.fromDateToReadableText(Date.now(), { dateStyle: 'full', timeStyle: 'short' });
         assert.isTrue(s.length > 0)
     })
 
     test('Ensure date to text can catch error and return message', async (assert) => {
         try {
             // This should throw error
-            await new DateConvertHelperService().fromDateToReadableText(number.parseInt('ad'), { dateStyle: 'full', timeStyle: 'short' });
+            await DateConvertHelperService.fromDateToReadableText(parseInt('ad'), { dateStyle: 'full', timeStyle: 'short' });
         } catch (error) {
             assert.equal(error, 'Please ensure date format is correct.')
         }

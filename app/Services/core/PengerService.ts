@@ -4,7 +4,7 @@ import Penger from "App/Models/Penger";
 import BookingRecord from "App/Models/BookingRecord";
 import Database from "@ioc:Adonis/Lucid/Database";
 
-export class PengerService implements PengerClientInterface {
+class PengerService implements PengerClientInterface {
     async findById(id: number) {
         return Penger.findOrFail(id);
     }
@@ -80,3 +80,5 @@ export class PengerService implements PengerClientInterface {
         return pengers;
     }
 }
+
+export default new PengerService();

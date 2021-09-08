@@ -3,8 +3,8 @@ import RegisterPenderValidator from "App/Validators/auth/RegisterPengerValidator
 import FounderInterface from "Contracts/interfaces/Founder.interface";
 import { DBTransactionService } from "../DBTransactionService";
 import { Roles } from "App/Models/Role";
-import { RoleService } from "../role/RoleService";
-import { CloudinaryService } from "../cloudinary/CloudinaryService";
+import RoleService from "../role/RoleService";
+import CloudinaryService from "../cloudinary/CloudinaryService";
 import CreatePengerValidator from "App/Validators/penger/CreatePengerValidator";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
@@ -12,15 +12,8 @@ import Penger from "App/Models/Penger";
 import UpdatePengerValidator from "App/Validators/penger/UpdatePengerValidator";
 import GeoService from "../GeoService";
 
-export class FounderService implements FounderInterface {
+class FounderService implements FounderInterface {
 
-    private readonly roleService: RoleService;
-    private readonly cloudinaryService: CloudinaryService;
-
-    constructor() {
-        this.roleService = new RoleService();
-        this.cloudinaryService = new CloudinaryService();
-    }
 
     async updatePenger({ request, bouncer }: HttpContextContract) {
         const trx = await DBTransactionService.init();
@@ -43,7 +36,7 @@ export class FounderService implements FounderInterface {
 
             // save image to cloud
             if (payload.logo?.tmpPath) {
-                const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
+                const { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
                 if (public_id) publicId = public_id;
                 newurl = url;
             }
@@ -59,8 +52,8 @@ export class FounderService implements FounderInterface {
                 }).save();
 
             if (geolocation) {
-                const address = await new GeoService().coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
-                const street = await new GeoService().coordinateToStreet(geolocation.latitude, geolocation.longitude)
+                const address = await GeoService.coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
+                const street = await GeoService.coordinateToStreet(geolocation.latitude, geolocation.longitude)
 
                 await penger.related('location').updateOrCreate({
                     pengerId: pengerId
@@ -80,7 +73,7 @@ export class FounderService implements FounderInterface {
             return penger;
         } catch (error) {
             if (publicId) {
-                this.cloudinaryService.destroyFromCloudinary(publicId);
+                CloudinaryService.destroyFromCloudinary(publicId);
             }
             await trx.rollback();
             throw error;
@@ -97,7 +90,7 @@ export class FounderService implements FounderInterface {
         await PengerVerifyAuthorizationService.isPenger(bouncer);
 
         // save image to cloud
-        const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
+        const { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.logo.tmpPath!, folder: "penger/logo" });
         if (public_id) publicId = public_id;
 
         const { location_name, geolocation, ...data } = payload;
@@ -112,8 +105,8 @@ export class FounderService implements FounderInterface {
             // link founder to penger.
             await newPenger.related('pengerUsers').attach([user.id]);
 
-            const address = await new GeoService().coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
-            const street = await new GeoService().coordinateToStreet(geolocation.latitude, geolocation.longitude)
+            const address = await GeoService.coordinateToShortAddress(geolocation.latitude, geolocation.longitude)
+            const street = await GeoService.coordinateToStreet(geolocation.latitude, geolocation.longitude)
 
             // link location
             await newPenger.related('location').updateOrCreate({
@@ -133,7 +126,7 @@ export class FounderService implements FounderInterface {
             return newPenger;
         } catch (error) {
             if (publicId) {
-                this.cloudinaryService.destroyFromCloudinary(publicId);
+                CloudinaryService.destroyFromCloudinary(publicId);
             }
             await trx.rollback();
             throw error;
@@ -143,10 +136,10 @@ export class FounderService implements FounderInterface {
     async createFounder({ request, auth }: HttpContextContract) {
         let publicId;
         const payload = await request.validate(RegisterPenderValidator);
-        const role = await this.roleService.findRole(Roles.Founder);
+        const role = await RoleService.findRole(Roles.Founder);
 
         // save image to cloud
-        const { secure_url: url, public_id } = await this.cloudinaryService.uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/founder" });
+        const { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.avatar.tmpPath!, folder: "penger/founder" });
         if (public_id) publicId = public_id;
 
         const data = {
@@ -174,9 +167,11 @@ export class FounderService implements FounderInterface {
         } catch (error) {
             await trx.rollback();
             if (publicId)
-                await this.cloudinaryService.destroyFromCloudinary(publicId);
+                await CloudinaryService.destroyFromCloudinary(publicId);
             throw "Something went wrong"
         }
     }
 
 }
+
+export default new FounderService();

@@ -1,6 +1,6 @@
 import Role, { Roles } from "App/Models/Role";
 import RoleInterface from "Contracts/interfaces/Role.interface";
-export class RoleService implements RoleInterface {
+class RoleService implements RoleInterface {
 
     async findRole(roleName: Roles): Promise<Role> {
         try {
@@ -11,3 +11,5 @@ export class RoleService implements RoleInterface {
         }
     }
 }
+
+export default new RoleService();

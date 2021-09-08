@@ -1,13 +1,13 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { BookingRecordClientService } from 'App/Services/booking/BookingRecordClientService';
+import BookingRecordClientService from 'App/Services/booking/BookingRecordClientService';
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class BookingRecordsController {
-  private readonly service = new BookingRecordClientService();
+
   public async index(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      const records = await this.service.findAll(contract);
+      const records = await BookingRecordClientService.findAll(contract);
       return SuccessResponse({ response, data: records })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error.message })
@@ -17,7 +17,7 @@ export default class BookingRecordsController {
   public async store(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      const record = await this.service.create(contract);
+      const record = await BookingRecordClientService.create(contract);
       return SuccessResponse({ response, msg: 'Booked successfully', data: record })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error.message })
@@ -27,7 +27,7 @@ export default class BookingRecordsController {
   public async show(contract: HttpContextContract) {
     const { response, request } = contract;
     try {
-      const record = await this.service.findById(request.param('id'), contract);
+      const record = await BookingRecordClientService.findById(request.param('id'), contract);
       return SuccessResponse({ response, data: record })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error.message })
