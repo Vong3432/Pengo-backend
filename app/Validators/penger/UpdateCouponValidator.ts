@@ -37,7 +37,7 @@ export default class UpdateCouponValidator {
 		valid_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		valid_to: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		quantity: schema.number.optional([rules.unsigned()]),
-		is_redeemable: schema.number.optional(),
+		is_redeemable: schema.boolean.optional(),
 	})
 
 	/**

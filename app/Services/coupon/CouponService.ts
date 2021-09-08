@@ -6,6 +6,9 @@ import Penger from "App/Models/Penger";
 import Coupon from "App/Models/Coupon";
 import CreateCouponValidator from "App/Validators/penger/CreateCouponValidator";
 import UpdateCouponValidator from "App/Validators/penger/UpdateCouponValidator";
+import { DateTime } from "luxon";
+import { DateConvertHelperService } from "../helpers/DateConvertHelperService";
+import { BoolConvertHelperService } from "../helpers/BoolConvertHelperService";
 
 export class CouponService implements CouponInterface {
 
@@ -21,6 +24,7 @@ export class CouponService implements CouponInterface {
         try {
             const pengerId = request.qs().penger_id;
             const pageNum = request.qs().page || 1;
+            const type = request.qs().type;
 
             if (!pengerId) {
                 throw "Penger id is missing.";
@@ -31,7 +35,14 @@ export class CouponService implements CouponInterface {
             await PengerVerifyAuthorizationService.isPenger(bouncer);
             await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
 
-            return await penger.related('coupons').query().paginate(pageNum);
+            const query = penger.related('coupons').query();
+
+            if (type === "expired") {
+                const formatted = DateTime.now().setLocale('zh').toLocaleString();
+                query.where('valid_to', '>', formatted)
+            }
+
+            return await query.paginate(pageNum)
         } catch (error) {
             throw error;
         }
@@ -74,7 +85,10 @@ export class CouponService implements CouponInterface {
 
             // coupon
             const coupon = new Coupon();
-            coupon.fill({ ...data });
+            coupon.fill({
+                ...data,
+                isRedeemable: new BoolConvertHelperService().boolToInt(payload.is_redeemable) ?? 0,
+            });
 
             await penger.useTransaction(trx).related('coupons').save(coupon);
             await trx.commit();
@@ -106,7 +120,10 @@ export class CouponService implements CouponInterface {
 
             // coupon
             const coupon = await penger.related('coupons').query().where('id', couponId).firstOrFail();
-            await coupon.useTransaction(trx).merge({ ...data }).save();
+            await coupon.useTransaction(trx).merge({
+                ...data,
+                isRedeemable: new BoolConvertHelperService().boolToInt(payload.is_redeemable) ?? coupon.isRedeemable,
+            }).save();
 
             await trx.commit();
             return coupon;
