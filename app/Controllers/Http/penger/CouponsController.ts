@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { CouponService } from 'App/Services/coupon/CouponService'
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
+import { MyReporter } from 'App/Validators/MyReporter';
 export default class CouponsController {
   private readonly couponService: CouponService = new CouponService();
 

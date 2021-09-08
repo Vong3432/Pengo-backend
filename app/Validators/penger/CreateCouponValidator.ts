@@ -1,9 +1,11 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
 export default class CreateCouponValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
+	public reporter = MyReporter
 
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
@@ -29,15 +31,21 @@ export default class CreateCouponValidator {
 		title: schema.string(),
 		description: schema.string.optional(),
 		min_credit_points: schema.number([
-			rules.range(0, 1000)
+			rules.range(0, 5000)
 		]),
 		required_credit_points: schema.number.optional([
-			rules.range(0, 1000)
+			rules.range(0, 5000)
 		]),
 		valid_from: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		valid_to: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		quantity: schema.number([rules.unsigned()]),
 		is_redeemable: schema.boolean.optional(),
+		discount_percentage: schema.number.optional(),
+		// discount_amount: schema.number.optional(),
+		only_to_items: schema.array.optional().members(
+			schema.number([
+				rules.exists({ table: 'booking_items', column: 'id' })
+			])),
 	})
 
 	/**
@@ -51,5 +59,9 @@ export default class CreateCouponValidator {
 	 * }
 	 *
 	 */
-	public messages = {}
+	public messages = {
+		'valid_from.after': 'Start at date is not valid, should be after current time.',
+		'min_credit_points.range': 'Min. credit points should range between 0-5000.',
+		'required_credit_points.range': 'Required credit points should range between 0-5000.'
+	}
 }

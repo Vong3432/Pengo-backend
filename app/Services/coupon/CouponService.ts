@@ -9,6 +9,7 @@ import UpdateCouponValidator from "App/Validators/penger/UpdateCouponValidator";
 import { DateTime } from "luxon";
 import { DateConvertHelperService } from "../helpers/DateConvertHelperService";
 import { BoolConvertHelperService } from "../helpers/BoolConvertHelperService";
+import BookingItem from "App/Models/BookingItem";
 
 export class CouponService implements CouponInterface {
 
@@ -36,10 +37,12 @@ export class CouponService implements CouponInterface {
             await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
 
             const query = penger.related('coupons').query();
+            const formatted = DateTime.now().setLocale('zh').toLocaleString();
 
             if (type === "expired") {
-                const formatted = DateTime.now().setLocale('zh').toLocaleString();
-                query.where('valid_to', '>', formatted)
+                query.where('valid_to', '<=', formatted)
+            } else {
+                query.where('valid_to', '>=', formatted)
             }
 
             return await query.paginate(pageNum)
@@ -71,7 +74,8 @@ export class CouponService implements CouponInterface {
         const trx = await DBTransactionService.init();
         try {
             const payload = await request.validate(CreateCouponValidator);
-            const { penger_id, ...data } = payload
+            console.log(payload)
+            const { penger_id, only_to_items, ...data } = payload
 
             const pengerId = penger_id;
             if (!pengerId) {
@@ -89,10 +93,12 @@ export class CouponService implements CouponInterface {
                 ...data,
                 isRedeemable: new BoolConvertHelperService().boolToInt(payload.is_redeemable) ?? 0,
             });
-
             await penger.useTransaction(trx).related('coupons').save(coupon);
-            await trx.commit();
 
+            await coupon.related('bookingItems').sync(only_to_items ?? []);
+
+            await trx.commit();
+            await coupon.load('bookingItems');
             return coupon;
         } catch (error) {
             await trx.rollback();
@@ -104,7 +110,7 @@ export class CouponService implements CouponInterface {
         const trx = await DBTransactionService.init();
         try {
             const payload = await request.validate(UpdateCouponValidator);
-            const { penger_id, ...data } = payload;
+            const { penger_id, only_to_items, ...data } = payload;
 
             const pengerId = penger_id;
             const couponId = request.param('id');
@@ -120,12 +126,17 @@ export class CouponService implements CouponInterface {
 
             // coupon
             const coupon = await penger.related('coupons').query().where('id', couponId).firstOrFail();
+
+            await coupon.related('bookingItems').sync(only_to_items ?? []);
+
             await coupon.useTransaction(trx).merge({
                 ...data,
                 isRedeemable: new BoolConvertHelperService().boolToInt(payload.is_redeemable) ?? coupon.isRedeemable,
             }).save();
 
             await trx.commit();
+
+            await coupon.load('bookingItems');
             return coupon;
         } catch (error) {
             await trx.rollback();

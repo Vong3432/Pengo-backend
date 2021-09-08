@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingRecord from './BookingRecord'
 import BookingItemImg from './BookingItemImg'
 import BookingCategory from './BookingCategory'
+import Coupon from './Coupon'
 
 export default class BookingItem extends BaseModel {
   @column({ isPrimary: true })
@@ -109,6 +110,11 @@ export default class BookingItem extends BaseModel {
 
   @column.dateTime()
   public endAt: DateTime
+
+  @manyToMany(() => Coupon, {
+    pivotTable: 'coupon_item'
+  })
+  public coupons: ManyToMany<typeof Coupon>
 
   @column({
     serialize: (val: string | null) => {

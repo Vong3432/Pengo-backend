@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import GooCard from './GooCard'
+import BookingItem from './BookingItem'
 
 export default class Coupon extends BaseModel {
   @column({ isPrimary: true })
@@ -30,6 +31,12 @@ export default class Coupon extends BaseModel {
   @column()
   public quantity: number
 
+  @column()
+  public discountPercentage: number
+
+  // @column()
+  // public discountAmount: number
+
   @column({
     serialize: (value: number) => {
       return value === 1 ? true : false
@@ -39,6 +46,11 @@ export default class Coupon extends BaseModel {
 
   @manyToMany(() => GooCard)
   public goocards: ManyToMany<typeof GooCard>
+
+  @manyToMany(() => BookingItem, {
+    pivotTable: 'coupon_item'
+  })
+  public bookingItems: ManyToMany<typeof BookingItem>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
