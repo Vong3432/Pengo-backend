@@ -2,7 +2,7 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { DBTransactionService } from "../DBTransactionService";
 import {{interface}}Interface from "Contracts/interfaces/{{interface}}.interface"
 
-export class {{filename}} implements {{interface}}Interface {
+class {{filename}} implements {{interface}}Interface {
 
     constructor() {
 
@@ -42,3 +42,5 @@ export class {{filename}} implements {{interface}}Interface {
     };
     
 }
+
+export default new {{filename}}()
