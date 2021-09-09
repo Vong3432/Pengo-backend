@@ -28,7 +28,6 @@ export default class UpdateCouponValidator {
 	 *    ```
 	 */
 	public schema = schema.create({
-		penger_id: schema.string(),
 		title: schema.string.optional(),
 		description: schema.string.optional(),
 		min_credit_points: schema.number.optional([
@@ -37,7 +36,9 @@ export default class UpdateCouponValidator {
 		required_credit_points: schema.number.optional([
 			rules.range(0, 1000)
 		]),
-		valid_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
+		valid_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [
+			// rules.after('today')
+		]),
 		valid_to: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		quantity: schema.number.optional([rules.unsigned()]),
 		is_redeemable: schema.boolean.optional(),
@@ -63,6 +64,7 @@ export default class UpdateCouponValidator {
 	public messages = {
 		'valid_from.after': 'Start at date is not valid, should be after current time.',
 		'min_credit_points.range': 'Min. credit points should range between 0-5000.',
-		'required_credit_points.range': 'Required credit points should range between 0-5000.'
+		'required_credit_points.range': 'Required credit points should range between 0-5000.',
+		'only_to_items.array': 'Invalid items',
 	}
 }

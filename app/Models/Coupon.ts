@@ -48,7 +48,8 @@ export default class Coupon extends BaseModel {
   public goocards: ManyToMany<typeof GooCard>
 
   @manyToMany(() => BookingItem, {
-    pivotTable: 'coupon_item'
+    pivotTable: 'coupon_item',
+    serializeAs: 'booking_items'
   })
   public bookingItems: ManyToMany<typeof BookingItem>
 

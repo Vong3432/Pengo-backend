@@ -64,8 +64,12 @@ class CouponService implements CouponInterface {
         // verify
         await PengerVerifyAuthorizationService.isPenger(bouncer);
         await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
-
-        return await penger.related('coupons').query().where('id', id).firstOrFail();
+        return await penger
+            .related('coupons')
+            .query()
+            .where('id', id)
+            .preload('bookingItems')
+            .firstOrFail();
     };
 
     async create({ request, bouncer }: HttpContextContract) {
@@ -108,14 +112,11 @@ class CouponService implements CouponInterface {
         const trx = await DBTransactionService.init();
         try {
             const payload = await request.validate(UpdateCouponValidator);
-            const { penger_id, only_to_items, ...data } = payload;
+            const { only_to_items, ...data } = payload;
 
-            const pengerId = penger_id;
+            const pengerId = request.qs().penger_id;
             const couponId = request.param('id');
 
-            if (!pengerId) {
-                throw "Penger id is missing.";
-            }
             const penger = await Penger.findByOrFail('id', pengerId);
 
             // verify
