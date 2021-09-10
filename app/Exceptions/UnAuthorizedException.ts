@@ -16,6 +16,6 @@ import { ErrorResponse } from 'App/Services/ResponseService'
 */
 export default class UnAuthorizedException extends Exception {
     public async handle(error: this, ctx: HttpContextContract) {
-        ErrorResponse({ response: ctx.response, code: error.status, msg: 'You are not authorzied' })
+        ErrorResponse({ response: ctx.response, code: error.status, msg: 'You are not authorized' })
     }
 }

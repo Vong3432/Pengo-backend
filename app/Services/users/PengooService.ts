@@ -1,6 +1,6 @@
 import User from "App/Models/User";
 import PengooInterface from "Contracts/interfaces/Pengoo.interface";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import RegisterUserValidator from "App/Validators/auth/RegisterUserValidator";
 import { Roles } from "App/Models/Role";
 import RoleService from "../role/RoleService";
@@ -24,7 +24,8 @@ class PengooService implements PengooInterface {
             email: payload.email,
             phone: payload.phone,
             username: payload.username,
-            password: payload.password
+            password: payload.password,
+            age: payload.age
         }
 
         // create card

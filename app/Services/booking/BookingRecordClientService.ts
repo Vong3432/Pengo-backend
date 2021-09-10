@@ -1,5 +1,5 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import { BookingRecordClientInterface } from "Contracts/interfaces/BookingRecord.interface";
 import BookingRecord from "App/Models/BookingRecord";
 import CreateBookingValidator from "App/Validators/pengoo/CreateBookingValidator";

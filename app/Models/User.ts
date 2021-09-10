@@ -27,7 +27,7 @@ export default class User extends BaseModel {
   public avatar: string
 
   @column()
-  public dob: Date
+  public age: number
 
   @column({ columnName: 'role_id' })
   public roleId: number

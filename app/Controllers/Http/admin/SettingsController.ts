@@ -1,24 +1,50 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class SettingsController {
-  public async index ({}: HttpContextContract) {
+  public async index(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      return SuccessResponse({ response, msg: 'Success' });
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
+    return 'settings'
   }
 
-  public async create ({}: HttpContextContract) {
+  public async store(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      return SuccessResponse({ response, msg: 'Success' });
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 
-  public async store ({}: HttpContextContract) {
+  public async show(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      return SuccessResponse({ response, msg: 'Success' });
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 
-  public async show ({}: HttpContextContract) {
+  public async update(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      return SuccessResponse({ response, msg: 'Success' });
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 
-  public async edit ({}: HttpContextContract) {
-  }
-
-  public async update ({}: HttpContextContract) {
-  }
-
-  public async destroy ({}: HttpContextContract) {
+  public async destroy(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      return SuccessResponse({ response, msg: 'Success' });
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 }

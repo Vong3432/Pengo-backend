@@ -41,7 +41,8 @@ export default class RegisterPengerStaffValidator {
             size: "1mb",
             extnames: ["jpg", "png"],
         }),
-        penger_id: schema.number()
+        penger_id: schema.number(),
+        age: schema.number(),
     });
 
     /**

@@ -1,24 +1,24 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import AdminService from 'App/Services/admin/AdminService';
+import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService'
 
 export default class AdminsController {
-  public async index ({}: HttpContextContract) {
+  public async getDBTables(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      const tables = await AdminService.getAllTables()
+      return SuccessResponse({ response, data: tables })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
-
-  public async create ({}: HttpContextContract) {
-  }
-
-  public async store ({}: HttpContextContract) {
-  }
-
-  public async show ({}: HttpContextContract) {
-  }
-
-  public async edit ({}: HttpContextContract) {
-  }
-
-  public async update ({}: HttpContextContract) {
-  }
-
-  public async destroy ({}: HttpContextContract) {
+  public async getDBColumns(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      const columns = await AdminService.getAllColumns(contract)
+      return SuccessResponse({ response, data: columns })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 }

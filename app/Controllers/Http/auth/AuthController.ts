@@ -1,7 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import AuthService from "App/Services/auth/AuthService";
 import { ErrorResponse, SuccessResponse } from "App/Services/ResponseService";
-import UserService from "App/Services/user/UserService";
+import UserRegValidateService from "App/Services/validation/UserRegValidateService";
 import FounderService from "App/Services/users/FounderService";
 import PengooService from "App/Services/users/PengooService";
 
@@ -11,7 +11,7 @@ export default class AuthController {
   public async checkPhone(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      const result = await UserService.checkPhone(contract);
+      const result = await UserRegValidateService.checkPhone(contract);
       return SuccessResponse({ response, data: { is_valid: result === null } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
@@ -21,7 +21,7 @@ export default class AuthController {
   public async checkEmail(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      const result = await UserService.checkEmail(contract);
+      const result = await UserRegValidateService.checkEmail(contract);
       return SuccessResponse({ response, data: { is_valid: result === null } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
@@ -68,6 +68,17 @@ export default class AuthController {
     try {
       const { user, token, pengers } = await AuthService.loginPenger(contract);
       return SuccessResponse({ response, msg: "Login successfully", data: { user, token, pengers } })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
+  }
+
+  public async loginAdmin(contract: HttpContextContract) {
+    const { response } = contract;
+
+    try {
+      const { admin, token } = await AuthService.loginAdmin(contract);
+      return SuccessResponse({ response, msg: "Login successfully", data: { admin, token } })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }

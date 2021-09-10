@@ -10,4 +10,6 @@ Route.group(() => {
 
     Route.post('/register', 'AuthController.registerAsPengerFounder').prefix('penger')
     Route.post('/login', 'AuthController.loginPenger').prefix('penger')
+
+    Route.post('/login', 'AuthController.loginAdmin').prefix('admin')
 }).namespace('App/Controllers/Http/auth').prefix('auth')

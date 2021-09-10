@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import BookingItem from './BookingItem'
+import DpoCol from './DpoCol'
+import Penger from './Penger'
 
-enum PRIORITY_CONDITIONS {
+export enum PRIORITY_CONDITIONS {
   LARGER = 'LARGER',
   LARGER_EQUAL = 'LARGER_EQUAL',
   EQUAL = 'EQUAL',
@@ -14,17 +16,14 @@ export default class PriorityOption extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column()
-  public dpoId: number
+  @column({ columnName: 'created_by' })
+  public pengerId: number
 
-  @column()
-  public column: string
+  @belongsTo(() => Penger)
+  public penger: BelongsTo<typeof Penger>
 
-  @column()
-  public strValue: string
-
-  @column()
-  public intValue: number
+  @hasOne(() => DpoCol)
+  public dpoCol: HasOne<typeof DpoCol>
 
   @column()
   public conditions: PRIORITY_CONDITIONS

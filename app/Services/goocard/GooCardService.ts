@@ -2,7 +2,7 @@
 import GoocardNotVerifiedException from "App/Exceptions/GoocardNotVerifiedException";
 import GooCard from "App/Models/GooCard";
 import GoocardInterface from "Contracts/interfaces/Goocard.interface";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 class GooCardService implements GoocardInterface {
     async create(pin: string): Promise<GooCard> {
         const card = new GooCard();

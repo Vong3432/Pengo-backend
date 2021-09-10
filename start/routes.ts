@@ -24,6 +24,7 @@ import './routes/core'
 import './routes/auth'
 import './routes/penger'
 import './routes/pengoo'
+import './routes/admin'
 
 Route.post('/socket-join', 'SocketsController.join').namespace('App/Controllers/Http')
 

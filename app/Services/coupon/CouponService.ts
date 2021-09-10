@@ -1,13 +1,13 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import CouponInterface from "Contracts/interfaces/Coupon.interface";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import Penger from "App/Models/Penger";
 import Coupon from "App/Models/Coupon";
-import CreateCouponValidator from "App/Validators/penger/CreateCouponValidator";
 import UpdateCouponValidator from "App/Validators/penger/UpdateCouponValidator";
 import { DateTime } from "luxon";
 import BoolConvertHelperService from "../helpers/BoolConvertHelperService";
+import CreateCouponValidator from "App/Validators/penger/CreateCouponValidator";
 
 class CouponService implements CouponInterface {
 

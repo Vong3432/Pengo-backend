@@ -1,7 +1,7 @@
 import User from "App/Models/User";
 import RegisterPenderValidator from "App/Validators/auth/RegisterPengerValidator";
 import FounderInterface from "Contracts/interfaces/Founder.interface";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import { Roles } from "App/Models/Role";
 import RoleService from "../role/RoleService";
 import CloudinaryService from "../cloudinary/CloudinaryService";
@@ -148,7 +148,8 @@ class FounderService implements FounderInterface {
             email: payload.email,
             phone: payload.phone,
             username: payload.username,
-            password: payload.password
+            password: payload.password,
+            age: payload.age,
         }
 
         const user = new User();

@@ -41,7 +41,6 @@ export default class CreateCouponValidator {
 		quantity: schema.number([rules.unsigned()]),
 		is_redeemable: schema.boolean.optional(),
 		discount_percentage: schema.number.optional(),
-		// discount_amount: schema.number.optional(),
 		only_to_items: schema.array.optional().members(
 			schema.number([
 				rules.exists({ table: 'booking_items', column: 'id' })
@@ -63,9 +62,6 @@ export default class CreateCouponValidator {
 		'valid_from.after': 'Start at date is not valid, should be after current time.',
 		'min_credit_points.range': 'Min. credit points should range between 0-5000.',
 		'required_credit_points.range': 'Required credit points should range between 0-5000.',
-		only_to_items: schema.array.optional().members(
-			schema.number([
-				rules.exists({ table: 'booking_items', column: 'id' })
-			])),
+		'only_to_items.array': 'Invalid items',
 	}
 }

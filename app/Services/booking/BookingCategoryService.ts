@@ -3,7 +3,7 @@ import BookingCategory from "App/Models/BookingCategory";
 import Penger from "App/Models/Penger";
 import CreateBookingCategoryValidator from "App/Validators/penger/CreateBookingCategoryValidator";
 import BookingCategoryInterface from "Contracts/interfaces/BookingCategory.interface";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 
 class BookingCategoryService implements BookingCategoryInterface {

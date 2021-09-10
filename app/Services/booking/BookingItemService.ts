@@ -6,7 +6,7 @@ import BookingCategory from "App/Models/BookingCategory";
 import Penger from "App/Models/Penger";
 import UnAuthorizedPengerException from "App/Exceptions/UnAuthorizedPengerException";
 import UpdateBookingItemValidator from "App/Validators/penger/UpdateBookingItemValidator";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import CloudinaryService from "../cloudinary/CloudinaryService";
 import { ORMFilterService } from "../ORMService";
 import PengerService from "../core/PengerService";

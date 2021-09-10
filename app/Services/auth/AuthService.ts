@@ -5,6 +5,7 @@ import Hash from "@ioc:Adonis/Core/Hash";
 import { Roles } from "App/Models/Role";
 import RoleService from "../role/RoleService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import UnAuthorizedException from "App/Exceptions/UnAuthorizedException";
 class AuthService implements AuthInterface {
 
 
@@ -80,6 +81,40 @@ class AuthService implements AuthInterface {
             throw error;
         }
     };
+
+    async loginAdmin({ request, auth }: HttpContextContract) {
+        try {
+            const { email, password } = request.body();
+
+            if (email == null || password == null)
+                throw "Bad request";
+
+            const role = await RoleService.findRole(Roles.Admin);
+
+            // get user
+            const admin = await User.query().where('email', email).first();
+
+            if (!admin) throw "No account found, please try again.";
+
+            if (admin.roleId !== role.id)
+                throw new UnAuthorizedException("");
+
+            if (await Hash.verify(admin.password, password) === false) {
+                throw new UnAuthorizedException("")
+            }
+
+            const token = await auth.use("api").attempt(email, password, {
+                expiresIn: "10 days"
+            })
+
+            return {
+                admin,
+                token
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new AuthService();

@@ -37,6 +37,7 @@ export default class RegisterUserValidator {
 			rules.minLength(6),
 			rules.maxLength(6)
 		]),
+		age: schema.number(),
 		password: schema.string({}, [rules.confirmed(), rules.minLength(8)]),
 		username: schema.string(),
 		phone: schema.string({}, [

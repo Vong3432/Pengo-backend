@@ -1,6 +1,6 @@
 import User from "App/Models/User";
 import StaffInterface from "Contracts/interfaces/Staff.interface";
-import { DBTransactionService } from "../DBTransactionService";
+import { DBTransactionService } from "../db/DBTransactionService";
 import RegisterPengerStaffValidator from "App/Validators/auth/RegisterPengerStaffValidator";
 import PengerService from "./PengerService";
 import CloudinaryService from "../cloudinary/CloudinaryService";
@@ -34,7 +34,8 @@ export class StaffService implements StaffInterface {
                 email: payload.email,
                 phone: payload.phone,
                 username: payload.username,
-                password: payload.password
+                password: payload.password,
+                age: payload.age
             }
 
             await staff.fill({ ...staffData }).save();

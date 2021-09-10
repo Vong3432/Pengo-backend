@@ -49,6 +49,7 @@ export default class RegisterPenderValidator {
 			size: "1mb",
 			extnames: ["jpg", "png"],
 		}),
+		age: schema.number(),
 	});
 
 	/**
