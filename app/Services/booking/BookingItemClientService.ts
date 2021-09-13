@@ -2,6 +2,9 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { BookingItemClientInterface } from "Contracts/interfaces/BookingItem.interface";
 import Penger from "App/Models/Penger";
 import BookingItem from "App/Models/BookingItem";
+import PengerService from "../core/PengerService";
+import { ORMFilterService } from "../ORMService";
+import BookingCategoryService from "./BookingCategoryService";
 
 class BookingItemClientService implements BookingItemClientInterface {
 
@@ -14,23 +17,30 @@ class BookingItemClientService implements BookingItemClientInterface {
     }
 
     async findAllByPenger({ request }: HttpContextContract) {
-        // UNTESTED
-        const pengerId = request.qs().penger_id;
-
-        if (!pengerId) {
-            throw "Penger id is missing.";
-        }
-
-        const penger = await Penger.findByOrFail('id', pengerId);
-
-        // get
-        const bookingCategories = await penger.related('bookingCategories').query().preload('bookingItems');
-        const items = bookingCategories.map(c => c.bookingItems);
-        return items;
+        const penger = await PengerService.findById(request.qs().penger_id);
+        return await penger.related('bookingItems').query();
     }
 
-    async findAll({ }: HttpContextContract) {
-        return await BookingItem.all();
+    async findAll(contract: HttpContextContract): Promise<BookingItem[]> {
+        const { request } = contract;
+        const { penger_id: pengerId, category_id: categoryId } = request.qs()
+
+        // if findAll by Penger
+        if (pengerId) {
+            return await this.findAllByPenger(contract);
+        }
+
+        // if has categoryId
+        if (categoryId) {
+            const category = await BookingCategoryService.findById(categoryId)
+            await category.load('bookingItems');
+
+            return category.bookingItems as BookingItem[];
+        }
+
+        // find all items
+        const bookingItems = await new ORMFilterService(BookingItem, request.qs()).getFilteredResults()
+        return bookingItems as BookingItem[];
     };
 
     async findById(id: number) {

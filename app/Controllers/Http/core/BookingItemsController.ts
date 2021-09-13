@@ -1,5 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import BookingItemService from 'App/Services/booking/BookingItemService';
+import BookingItemClientService from 'App/Services/booking/BookingItemClientService';
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class BookingItemsController {
@@ -7,7 +7,7 @@ export default class BookingItemsController {
   public async index(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      const bookingItems = await BookingItemService.findAll(contract);
+      const bookingItems = await BookingItemClientService.findAll(contract);
       return SuccessResponse({ response, data: bookingItems, code: 200 })
     }
     catch (error) {
@@ -19,10 +19,10 @@ export default class BookingItemsController {
     const { response, request } = contract;
     try {
       const id = request.param('id');
-      const bookingItem = await BookingItemService.findById(id)
-      return response.status(200).json(bookingItem)
+      const bookingItem = await BookingItemClientService.findById(id)
+      return SuccessResponse({ response, data: bookingItem })
     } catch (error) {
-      return response.status(500).json(error)
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 

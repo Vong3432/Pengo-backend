@@ -35,7 +35,7 @@ class BookingCategoryService implements BookingCategoryInterface {
     }
 
     async findById(id: number) {
-        return await BookingCategory.find(id);
+        return await BookingCategory.findOrFail(id);
     };
 
     async findByIdAndPenger({ request, bouncer }: HttpContextContract) {
