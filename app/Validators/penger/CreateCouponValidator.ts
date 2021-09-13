@@ -40,7 +40,7 @@ export default class CreateCouponValidator {
 		valid_to: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		quantity: schema.number([rules.unsigned()]),
 		is_redeemable: schema.boolean.optional(),
-		discount_percentage: schema.number.optional(),
+		discount_percentage: schema.number(),
 		only_to_items: schema.array.optional().members(
 			schema.number([
 				rules.exists({ table: 'booking_items', column: 'id' })
