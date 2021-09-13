@@ -31,10 +31,10 @@ export default class UpdateCouponValidator {
 		title: schema.string.optional(),
 		description: schema.string.optional(),
 		min_credit_points: schema.number.optional([
-			rules.range(0, 1000)
+			rules.range(0, 5000)
 		]),
 		required_credit_points: schema.number.optional([
-			rules.range(0, 1000)
+			rules.range(0, 5000)
 		]),
 		valid_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [
 			// rules.after('today')
