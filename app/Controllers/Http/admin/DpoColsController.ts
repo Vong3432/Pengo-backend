@@ -6,7 +6,8 @@ export default class DpoColsController {
   public async index(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      return SuccessResponse({ response, msg: 'Success' })
+      const cols = await DpoColService.findAll(contract);
+      return SuccessResponse({ response, data: cols })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }

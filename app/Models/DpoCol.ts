@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import DpoTable from './DpoTable'
+import PriorityOption from './PriorityOption'
 
 export default class DpoCol extends BaseModel {
   @column({ isPrimary: true })
@@ -9,8 +10,11 @@ export default class DpoCol extends BaseModel {
   @column({ columnName: 'dpo_table_id' })
   public dpoTableId: number
 
-  @belongsTo(() => DpoTable)
+  @belongsTo(() => DpoTable, { serializeAs: 'dpo_table' })
   public dpoTable: BelongsTo<typeof DpoTable>
+
+  @hasOne(() => PriorityOption)
+  public priorityOption: HasOne<typeof PriorityOption>
 
   @column()
   public relatedTable: string

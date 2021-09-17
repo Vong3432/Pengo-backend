@@ -19,11 +19,14 @@ export default class PriorityOption extends BaseModel {
   @column({ columnName: 'created_by' })
   public pengerId: number
 
+  @column()
+  public dpoColId: number
+
   @belongsTo(() => Penger)
   public penger: BelongsTo<typeof Penger>
 
-  @hasOne(() => DpoCol)
-  public dpoCol: HasOne<typeof DpoCol>
+  @belongsTo(() => DpoCol)
+  public dpoCol: BelongsTo<typeof DpoCol>
 
   @column()
   public conditions: PRIORITY_CONDITIONS
@@ -34,6 +37,9 @@ export default class PriorityOption extends BaseModel {
     }
   })
   public isActive: number
+
+  @column()
+  public value: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

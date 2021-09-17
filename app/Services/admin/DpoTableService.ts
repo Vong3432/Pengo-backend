@@ -13,7 +13,7 @@ class DpoTableService implements DPOTableInterface {
     };
 
     async findById(id: number): Promise<DpoTable> {
-        return await DpoTable.findOrFail(id);
+        return await DpoTable.query().preload('dpoCols').where('id', id).firstOrFail();
     };
 
     async create({ request }: HttpContextContract): Promise<DpoTable> {

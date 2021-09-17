@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingRecord from './BookingRecord'
 import BookingItemImg from './BookingItemImg'
 import BookingCategory from './BookingCategory'
 import Coupon from './Coupon'
+import PriorityOption from './PriorityOption'
 
 export default class BookingItem extends BaseModel {
   @column({ isPrimary: true })
@@ -128,6 +129,9 @@ export default class BookingItem extends BaseModel {
 
   @belongsTo(() => BookingCategory)
   public category: BelongsTo<typeof BookingCategory>
+
+  @belongsTo(() => PriorityOption)
+  public priorityOption: BelongsTo<typeof PriorityOption>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

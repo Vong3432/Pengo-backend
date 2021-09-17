@@ -16,7 +16,9 @@ export default class DpoTable extends BaseModel {
   })
   public isActive: number
 
-  @hasMany(() => DpoCol)
+  @hasMany(() => DpoCol, {
+    serializeAs: 'dpo_cols'
+  })
   public dpoCols: HasMany<typeof DpoCol>
 
   @column.dateTime({ autoCreate: true })

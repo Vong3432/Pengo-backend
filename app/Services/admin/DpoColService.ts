@@ -15,7 +15,7 @@ class DpoColService implements DPOColInterface {
     }
 
     async findAll({ }: HttpContextContract): Promise<DpoCol[]> {
-        return await DpoCol.all();
+        return await DpoCol.query().preload('dpoTable');
     };
 
     async findById(id: number): Promise<DpoCol> {
