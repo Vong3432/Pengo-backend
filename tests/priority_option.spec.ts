@@ -1,12 +1,15 @@
 import Database from '@ioc:Adonis/Lucid/Database';
+import { string } from '@ioc:Adonis/Core/Helpers'
 import BookingItem from 'App/Models/BookingItem';
 import DpoCol from 'App/Models/DpoCol';
 import Penger from 'App/Models/Penger';
 import PriorityOption, { PRIORITY_CONDITIONS } from 'App/Models/PriorityOption';
 import User from 'App/Models/User';
+import CheckPriorityConditionService from 'App/Services/priority/CheckPriorityConditionService';
 import { BookingItemFactory } from 'Database/factories/booking-item';
 import { DpoColFactory } from 'Database/factories/dpo-col';
 import test from 'japa'
+import { DateTime } from 'luxon';
 
 /*
     This test requires `dpo_cols` and `dpo_tables` in db which can be only set
@@ -101,6 +104,7 @@ test.group('Testing priority_option module', (group) => {
 
         // same payload as 'Ensure priority option is saved in DB' test case
         const savePayload = {
+            // value: DateTime.now().toString(),
             value: "4",
             conditions: PRIORITY_CONDITIONS.EQUAL,
             pengerId: penger.id
@@ -123,7 +127,34 @@ test.group('Testing priority_option module', (group) => {
         assert.isTrue(priority.$isPersisted && (priority.bookingItem.id === bookingItem.id))
     })
 
-    test('Ensure user with ID 4 can book', async (assert) => {
+    test('Ensure user can book', async (assert) => {
+        const bookingItem = await BookingItem.findOrFail(bid);
+        await bookingItem.load('priorityOption', q => q.preload('dpoCol')); // load priority options, dpo_col
+        const dpoCol = bookingItem.priorityOption.dpoCol;
+
+        /*
+            We check with user with id `4`, 
+            because the previous test `Ensure priorityOption can be saved in BookingItem` we save value `4` in PriorityOption
+         */
+        const user = await User.firstOrFail();
+
+        // check equality
+        // pseudo: user[KEY_TO_CHECK] === [VALUE]
+        // below eg: user[4] === 4
+
+        const valFromDB = user[string.camelCase(dpoCol.column)]
+
+        assert.isTrue(
+            CheckPriorityConditionService
+                .validateCondition(
+                    valFromDB.toString(),
+                    bookingItem.priorityOption.value,
+                    bookingItem.priorityOption.conditions
+                )
+        )
+    })
+
+    test.skip('Ensure user with ID 4 can book', async (assert) => {
         const bookingItem = await BookingItem.findOrFail(bid);
         await bookingItem.load('priorityOption', q => q.preload('dpoCol')); // load priority options, dpo_col
         const dpoCol = bookingItem.priorityOption.dpoCol;
@@ -133,11 +164,19 @@ test.group('Testing priority_option module', (group) => {
             because the previous test `Ensure priorityOption can be saved in BookingItem` we save value `4` in PriorityOption
          */
         const user = await User.findOrFail(4);
+        const valFromDB = user[string.camelCase(dpoCol.column)]
 
         // check equality
         // pseudo: user[KEY_TO_CHECK] === [VALUE]
         // below eg: user[4] === 4
-        assert.equal(user[dpoCol.column], bookingItem.priorityOption.value)
+        assert.isTrue(
+            CheckPriorityConditionService
+                .validateCondition(
+                    valFromDB.toString(),
+                    bookingItem.priorityOption.value,
+                    bookingItem.priorityOption.conditions
+                )
+        )
     })
 
     test.failing('Ensure user with ID not 4 cannot book', async (assert) => {
@@ -152,9 +191,18 @@ test.group('Testing priority_option module', (group) => {
          */
         const user = await User.query().whereNot('id', 4).firstOrFail();
 
+        const valFromDB = user[string.camelCase(dpoCol.column)]
+
         // check equality
         // pseudo: user[KEY_TO_CHECK] === [VALUE]
         // below eg: user[14] === 4
-        assert.equal(user[dpoCol.column], bookingItem.priorityOption.value)
+        assert.isTrue(
+            CheckPriorityConditionService
+                .validateCondition(
+                    valFromDB.toString(),
+                    bookingItem.priorityOption.value,
+                    bookingItem.priorityOption.conditions
+                )
+        )
     })
 })
