@@ -4,11 +4,9 @@ import CreditPoint from "App/Models/CreditPoint";
 import AddCreditPointValidator from "App/Validators/pengoo/AddCreditPointValidator";
 import BookingItem from "App/Models/BookingItem";
 import BookingRecord from "App/Models/BookingRecord";
-import DeductCreditPointValidator from "App/Validators/pengoo/DeductCreditPointValidator";
-import Coupon from "App/Models/Coupon";
 import InsufficientCreditPointException from "App/Exceptions/InsufficientCreditPointException";
 import BookingRecordClientService from "../booking/BookingRecordClientService";
-import CouponService from "../coupon/CouponService";
+import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 
 class CreditPointsService implements CreditPointsInterface {
     async add(contract: HttpContextContract): Promise<{
@@ -20,7 +18,7 @@ class CreditPointsService implements CreditPointsInterface {
             const payload = await request.validate(AddCreditPointValidator)
 
             // get record
-            const record: BookingRecord = await BookingRecordClientService.findById(payload.record_id, contract);
+            const record: BookingRecord = await BookingRecordClientService.findById(payload.record_id, auth);
 
             // validate record is already scanned and verified.
             if (record.isUsed === 0) throw 'Unable to add credit points'
@@ -63,19 +61,12 @@ class CreditPointsService implements CreditPointsInterface {
         }
     }
 
-    async deduct(contract: HttpContextContract): Promise<{
+    // This deduct() function can only be called internally via other service classes.
+    async deduct(amount: number, pengerId: number, auth: AuthContract): Promise<{
         credit: CreditPoint,
         amount: number
     }> {
-        const { request, auth } = contract;
         try {
-            const payload = await request.validate(DeductCreditPointValidator)
-
-            // get coupon
-            const coupon: Coupon = await CouponService.findById(payload.coupon_id);
-
-            // get record
-            const record: BookingRecord = await BookingRecordClientService.findById(payload.record_id, contract);
 
             // validate user has sufficient credit points
             const user = await auth.authenticate();
@@ -83,21 +74,21 @@ class CreditPointsService implements CreditPointsInterface {
 
             const credit = await CreditPoint.query()
                 .where('goocard_id', user.goocard.id)
-                .where('penger_id', record.pengerId)
+                .where('penger_id', pengerId)
                 .firstOrFail()
 
             if (credit.availableCreditPoints === 0 ||
-                credit.availableCreditPoints < coupon.minCreditPoints)
-                throw InsufficientCreditPointException
+                credit.availableCreditPoints < amount)
+                throw new InsufficientCreditPointException("You don't have enought credit points to redeem coupon under this penger.")
 
             // exist
             await credit.merge({
-                availableCreditPoints: credit.availableCreditPoints - coupon.minCreditPoints,
+                availableCreditPoints: credit.availableCreditPoints - amount,
             }).save();
 
             return {
                 credit,
-                amount: coupon.minCreditPoints
+                amount
             };
         } catch (error) {
             throw error;

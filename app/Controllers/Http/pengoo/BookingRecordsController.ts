@@ -25,9 +25,9 @@ export default class BookingRecordsController {
   }
 
   public async show(contract: HttpContextContract) {
-    const { response, request } = contract;
+    const { response, request, auth } = contract;
     try {
-      const record = await BookingRecordClientService.findById(request.param('id'), contract);
+      const record = await BookingRecordClientService.findById(request.param('id'), auth);
       return SuccessResponse({ response, data: record })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error.message })
@@ -37,7 +37,8 @@ export default class BookingRecordsController {
   public async update(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      return SuccessResponse({ response, msg: '', data: null })
+      await BookingRecordClientService.update(contract);
+      return SuccessResponse({ response })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error.message })
     }

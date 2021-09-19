@@ -1,6 +1,7 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import Penger from 'App/Models/Penger';
 import { BookingCategoryFactory } from './booking-category';
+import { CouponFactory } from './coupon';
 import { UserFactory } from './user';
 
 export const PengerFactory = Factory
@@ -12,4 +13,5 @@ export const PengerFactory = Factory
   })
   .relation('pengerUsers', () => UserFactory)
   .relation('bookingCategories', () => BookingCategoryFactory)
+  .relation('coupons', () => CouponFactory)
   .build()

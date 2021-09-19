@@ -1,4 +1,4 @@
-import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 import RestfulAPIInterface from "./RestfulAPI.interface";
 
 export default interface BookingRecordInterface extends RestfulAPIInterface {
@@ -6,5 +6,5 @@ export default interface BookingRecordInterface extends RestfulAPIInterface {
 }
 
 export interface BookingRecordClientInterface extends RestfulAPIInterface {
-    findById(id: number, contract?: HttpContextContract): Promise<any>;
+    findById(id: number, auth?: AuthContract): Promise<any>;
 }

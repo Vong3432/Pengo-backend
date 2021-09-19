@@ -1,6 +1,6 @@
 import { Exception } from '@adonisjs/core/build/standalone'
-import { ErrorResponse } from 'App/Services/ResponseService'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ErrorResponse } from 'App/Services/ResponseService'
 /*
 |--------------------------------------------------------------------------
 | Exception
@@ -10,11 +10,11 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 | a status code and error code for every exception.
 |
 | @example
-| new InsufficientCreditPointException('message', 500, 'E_RUNTIME_EXCEPTION')
+| new CouponNotRedeemableErrException('message', 500, 'E_RUNTIME_EXCEPTION')
 |
 */
-export default class InsufficientCreditPointException extends Exception {
+export default class CouponNotRedeemableErrException extends Exception {
     public async handle(error: this, ctx: HttpContextContract) {
-        ErrorResponse({ response: ctx.response, code: error.status, msg: error.message ?? 'You dont have sufficient credit points to perform this action.' })
+        ErrorResponse({ response: ctx.response, code: error.status, msg: error.message })
     }
 }

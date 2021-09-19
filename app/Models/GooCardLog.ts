@@ -1,6 +1,11 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
+export enum GoocardLogType {
+  COUPON = "coupon",
+  PASS = "pass"
+}
+
 export default class GooCardLog extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -13,6 +18,9 @@ export default class GooCardLog extends BaseModel {
 
   @column()
   public body: string
+
+  @column()
+  public type: GoocardLogType
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

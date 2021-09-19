@@ -3,7 +3,7 @@ import GooCardLog from 'App/Models/GooCardLog';
 import Penger from 'App/Models/Penger';
 import { Roles } from 'App/Models/Role';
 import User from 'App/Models/User';
-import { DateConvertHelperService } from 'App/Services/helpers/DateConvertHelperService';
+import DateConvertHelperService from 'App/Services/helpers/DateConvertHelperService';
 import Ws from '../app/Services/socket/SocketService'
 
 
@@ -83,19 +83,19 @@ Ws.io.on('connection', (socket) => {
                     }
 
 
-                    const getCurrentTime = await new DateConvertHelperService()
-                        .fromDateToReadableText(Date.now(), {
-                            dateStyle: 'full',
-                            timeStyle: 'medium'
-                        });
+                    // const getCurrentTime = await DateConvertHelperService
+                    //     .fromDateToReadableText(Date.now(), {
+                    //         dateStyle: 'full',
+                    //         timeStyle: 'medium'
+                    //     });
 
-                    // save log
-                    const log = new GooCardLog();
-                    log.title = `${item.item.name} booking pass verified successfully.`
-                    log.body = getCurrentTime;
-                    //log.extra = creditPoints
+                    // // save log
+                    // const log = new GooCardLog();
+                    // log.title = `${item.item.name} booking pass verified successfully.`
+                    // log.body = getCurrentTime;
+                    // //log.extra = creditPoints
 
-                    await pengoo!.goocard.related('logs').save(log);
+                    // await pengoo!.goocard.related('logs').save(log);
 
                 } else if (role === Roles.Founder || role === Roles.Staff) {
                     // is penger, check record and penger relationship

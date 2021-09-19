@@ -30,6 +30,7 @@ export default class GooCard extends BaseModel {
 
   @manyToMany(() => Coupon, {
     pivotTable: 'goocard_coupon',
+    pivotForeignKey: 'goocard_id',
     pivotColumns: ['is_used']
   })
   public coupons: ManyToMany<typeof Coupon>
