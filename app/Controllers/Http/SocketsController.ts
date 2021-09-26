@@ -6,7 +6,7 @@ import Ws from 'App/Services/socket/SocketService';
 // this controller is only used for joining user
 // into another room in socket
 export default class SocketsController {
-    public async join({ request, auth, response }: HttpContextContract) {
+    public async verifyPass({ request, auth, response }: HttpContextContract) {
         try {
             const user = await auth.authenticate();
             const {
@@ -19,12 +19,14 @@ export default class SocketsController {
             await user.load('role')
 
             const data = {
-                user: user,
+                auth: auth,
                 record_id: record_id,
                 pin,
+                user,
                 role: user.role.name,
             }
             Ws.io.emit('rest-join', data);
+            console.log('verifypass')
             return SuccessResponse({ response, msg: 'Connected' });
         } catch (error) {
             console.log('err:', error)
