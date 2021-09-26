@@ -53,9 +53,6 @@ function verifyPass(socket, payload: PassScanPayload) {
         socket.emit('joined room')
     })
 
-    // test
-    socket.emit('start verifying', socket.id)
-
     // ---------------------------------
     // listen for room socket events
     // ---------------------------------
@@ -71,7 +68,7 @@ function verifyPass(socket, payload: PassScanPayload) {
             return emitMsg(socket, to, 'verified failed')
         }
 
-        console.log("IsUsed:", data.isUsed)
+        console.log("Role:", role)
 
         // Check if record is already verified before
         // do something...
