@@ -18,6 +18,7 @@ class GeoService {
     }
 
     async coordinateToStreet(lat: number, lng: number): Promise<any> {
+        console.log(`lat, lng: ${lat}, ${lng}`)
         const address = await this.geocoder.reverse({
             lat, lon: lng
         })
@@ -25,6 +26,7 @@ class GeoService {
     }
 
     async coordinateToShortAddress(lat: number, lng: number): Promise<any> {
+        console.log(`lat, lng: ${lat}, ${lng}`)
         const address = await this.geocoder.reverse({
             lat, lon: lng
         })

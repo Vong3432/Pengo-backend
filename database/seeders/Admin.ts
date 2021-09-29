@@ -15,7 +15,8 @@ export default class AdminSeeder extends BaseSeeder {
       password: 'demoadmin',
       roleId: roleId.id,
       phone: '0000000000',
-      avatar: 'https://robohash.org/2627e0754741a35d48de82c34a4c6bd1?set=set4&bgset=&size=400x400'
+      avatar: 'https://robohash.org/2627e0754741a35d48de82c34a4c6bd1?set=set4&bgset=&size=400x400',
+      age: 99
     })
   }
 }

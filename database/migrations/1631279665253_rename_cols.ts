@@ -5,8 +5,7 @@ export default class DpoCols extends BaseSchema {
 
   public async up() {
     this.schema.table(this.tableName, (table) => {
-      table.dropUnique(['related_table_id'], 'dpo_cols_dpo_table_id_column_related_table_id_unique')
-      table.dropColumn('related_table_id')
+
     })
   }
 
