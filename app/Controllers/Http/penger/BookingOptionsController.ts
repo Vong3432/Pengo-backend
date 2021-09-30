@@ -15,7 +15,7 @@ export default class BookingOptionsController {
   public async store (contract: HttpContextContract) {
     const { response } = contract;
     try {
-      return SuccessResponse({response, data: await BookingOptionService.create(contract)})
+      return SuccessResponse({response, data: await BookingOptionService.create(contract), msg: "Create booking option successfully."})
     } catch (error) {
       return ErrorResponse({response, msg: error.messages || error})
     }
@@ -33,7 +33,7 @@ export default class BookingOptionsController {
   public async update (contract: HttpContextContract) {
     const { response } = contract;
     try {
-      return SuccessResponse({response, data: await BookingOptionService.update(contract)})
+      return SuccessResponse({response, data: await BookingOptionService.update(contract), msg: "Updated successfully"})
     } catch (error) {
       return ErrorResponse({response, msg: error.messages || error})
     }
@@ -43,7 +43,7 @@ export default class BookingOptionsController {
     const { response } = contract;
     try {
       await BookingOptionService.delete(contract);
-      return SuccessResponse({response})
+      return SuccessResponse({response, msg:"Deleted successfully."})
     } catch (error) {
       return ErrorResponse({response, msg: error.messages || error})
     }

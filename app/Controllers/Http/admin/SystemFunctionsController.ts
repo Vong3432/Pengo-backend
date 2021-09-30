@@ -16,7 +16,7 @@ export default class SystemFunctionsController {
     const { response } = contract
     try {
       const sysFunction = await SystemFunctionService.create(contract);
-      return SuccessResponse({response, data: sysFunction})
+      return SuccessResponse({response, data: sysFunction, msg: "Add system function successfully."})
     } catch (error) {
       return ErrorResponse({response, msg: error.messages || error})
     }
@@ -35,7 +35,7 @@ export default class SystemFunctionsController {
     const { response } = contract
     try {
       const sysFunction = await SystemFunctionService.update(contract);
-      return SuccessResponse({response, data: sysFunction})
+      return SuccessResponse({response, data: sysFunction, msg: "Updated successfully"})
     } catch (error) {
       return ErrorResponse({response, msg: error.messages || error})
     }
@@ -44,7 +44,8 @@ export default class SystemFunctionsController {
   public async destroy (contract: HttpContextContract) {
     const { response } = contract
     try {
-      return SuccessResponse({response, data: await SystemFunctionService.delete(contract)})
+      await SystemFunctionService.delete(contract)
+      return SuccessResponse({response, msg: "Deleted successfully"})
     } catch (error) {
       return ErrorResponse({response, msg: error.messages || error})
     }
