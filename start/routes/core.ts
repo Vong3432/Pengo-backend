@@ -7,6 +7,8 @@ Route.group(() => {
     Route.resource('pengers', 'PengersController').apiOnly()
     Route.get('/nearest-pengers', 'PengersController.findNearest').as('nearestPengers')
     Route.get('/popular-pengers', 'PengersController.findPopular').as('popularPengers')
+
+    Route.get('/time-units', 'TimeGapsController.getUnits').as('getTimeUnits')
 })
     .namespace('App/Controllers/Http/core')
     .prefix('/core')

@@ -5,6 +5,7 @@ import BookingItemImg from './BookingItemImg'
 import BookingCategory from './BookingCategory'
 import Coupon from './Coupon'
 import PriorityOption from './PriorityOption'
+import { TimeGapUnit } from 'Config/const'
 
 export default class BookingItem extends BaseModel {
   @column({ isPrimary: true })
@@ -48,6 +49,12 @@ export default class BookingItem extends BaseModel {
 
   @column()
   public creditPoints: number
+
+  @column()
+  public timeGapValue: number
+
+  @column()
+  public timeGapUnits: TimeGapUnit
 
   @column({
     serialize: (value: number) => {

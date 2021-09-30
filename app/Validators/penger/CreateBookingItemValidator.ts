@@ -1,5 +1,6 @@
 import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import TimeGapService from 'App/Services/core/TimeGapService'
 
 export default class CreateBookingItemValidator {
 	constructor(protected ctx: HttpContextContract) {
@@ -58,11 +59,26 @@ export default class CreateBookingItemValidator {
 		credit_points: schema.number.optional([
 			rules.unsigned()
 		]),
-		is_preservable: schema.number.optional(),
-		is_active: schema.number.optional(),
-		is_transferable: schema.number.optional(),
-		is_countable: schema.number.optional(),
-		is_discountable: schema.number.optional(),
+		is_preservable: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
+		is_active: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
+		is_transferable: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
+		is_countable: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
+		is_discountable: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
 		quantity: schema.number.optional([
 			rules.requiredWhen('is_countable', '=', '1'),
 			rules.unsigned()
@@ -83,6 +99,10 @@ export default class CreateBookingItemValidator {
 			rules.requiredIfNotExistsAny(['start_from', 'end_at']),
 			rules.after('today')
 		]),
+		time_gap_value: schema.number.optional([
+			rules.unsigned()
+		]),
+		time_gap_units: schema.enum.optional(TimeGapService.getTimeUnits()),
 		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 	})

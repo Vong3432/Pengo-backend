@@ -4,6 +4,9 @@ Route.group(() => {
     // booking items
     Route.resource('booking-items', 'BookingItemsController').apiOnly()
 
+    // booking options
+    Route.resource('booking-options', 'BookingOptionsController').apiOnly()
+
     // coupons
     Route.resource('coupons', 'CouponsController').apiOnly()
 

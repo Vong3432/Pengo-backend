@@ -57,7 +57,14 @@
         }
       ],
       "aliases": [],
-      "flags": []
+      "flags": [
+        {
+          "name": "https",
+          "propertyName": "https",
+          "type": "boolean",
+          "description": "Create test for HTTPs service"
+        }
+      ]
     },
     "test:run": {
       "settings": {

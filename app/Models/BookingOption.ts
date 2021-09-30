@@ -1,10 +1,17 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import SystemFunction from './SystemFunction'
+import BookingCategory from './BookingCategory'
 
 export default class BookingOption extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public systemFunctionId: number
+
+  @column()
+  public bookingCategoryId: number
 
   @column()
   public systemFunctionKey: string
@@ -18,6 +25,9 @@ export default class BookingOption extends BaseModel {
 
   @hasOne(() => SystemFunction)
   public systemFunction: HasOne<typeof SystemFunction>
+
+  @belongsTo(() => BookingCategory)
+  public bookingCategory: BelongsTo<typeof BookingCategory>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

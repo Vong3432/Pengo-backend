@@ -71,7 +71,6 @@ class AuthService implements AuthInterface {
                 }
             }));
 
-
             return {
                 user,
                 pengers,

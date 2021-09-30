@@ -1,5 +1,6 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import BookingItem from 'App/Models/BookingItem'
+import { TimeGapUnit } from 'Config/const';
 
 export const BookingItemFactory = Factory
 	.define(BookingItem, ({ faker }) => {
@@ -39,5 +40,14 @@ export const BookingItemFactory = Factory
 	})
 	.state('credit_points', (item) => {
 		item.creditPoints = 200;
+	})
+	.state('minGapUnits', (item) => {
+		item.timeGapUnits = TimeGapUnit.MINUTES
+	})
+	.state('hrsGapUnits', (item) => {
+		item.timeGapUnits = TimeGapUnit.HOURS
+	})
+	.state('secGapUnits', (item) => {
+		item.timeGapUnits = TimeGapUnit.SECONDS
 	})
 	.build()

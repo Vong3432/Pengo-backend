@@ -1,0 +1,90 @@
+import Database from '@ioc:Adonis/Lucid/Database';
+import test, { group } from 'japa'
+import supertest from 'supertest'
+import { BASE_URL } from 'Config/const';
+import Role, { Roles } from 'App/Models/Role';
+import User from 'App/Models/User';
+
+test.group('Testing {{filename}} module', (group) => {
+
+    /* 
+    * -----------------------------
+    * Uncomment for protected auth routes
+    * -----------------------------
+    */
+    //let user: User;
+    //let token: string;
+
+    group.before(async() => {
+        // save the current state of db before testing
+        await Database.beginGlobalTransaction()
+
+        /* 
+        * -----------------------------
+        * Uncomment for protected auth routes
+        * -----------------------------
+        */
+        //const role = await Role.findByOrFail('name', Roles.Admin)
+        // user = await User.updateOrCreate({
+        //     username: 'testadmin'
+        // }, {
+        //     email: 'testuser@gmail.com',
+        //     password: 'testuser',
+        //     roleId: role.id,
+        //     phone: '0000000000',
+        //     avatar: 'https://robohash.org/2627e0754741a35d48de82c34a4c6bd1?set=set4&bgset=&size=400x400',
+        //     age: 99
+        // })
+
+        /* 
+        * -----------------------------
+        * Uncomment for protected auth routes
+        * -----------------------------
+        */
+        // await supertest(BASE_URL).post('/auth/').send({
+        //     ...data 
+        // }).expect(200).then(response => {
+        //     token = response.body.data.token.token
+        // })
+    })
+
+    group.after(async() => {
+        // restore db to the state before testing
+        await Database.rollbackGlobalTransaction()
+    })
+
+    test('[GET]: Find all ...', async (assert) => {
+        const { statusCode } = await supertest(BASE_URL).get('').expect(200)
+        assert.isTrue(statusCode === 200)
+    })
+
+    test('[POST]: Create ...', async (assert) => {
+        const { statusCode } = await supertest(BASE_URL)
+        .post('')
+        .send({
+            // data
+        })
+        .expect(200)
+        assert.isTrue(statusCode === 200)
+    })
+
+    test('[GET]: Find a ...', async (assert) => {
+        const {statusCode} = await supertest(BASE_URL).get(``).expect(200)
+        assert.isTrue(statusCode === 200)
+    })
+
+    test('[UPDATE]: Update ...', async (assert) => {
+        const { statusCode } = await supertest(BASE_URL)
+            .put(``)
+            .send({
+                // data
+            })
+            .expect(200)
+        assert.isTrue(statusCode === 200)
+    })
+
+    test('[DELETE]: Delete ...', async (assert) => {
+        const {statusCode} = await supertest(BASE_URL).del(``).expect(200)
+        assert.isTrue(statusCode === 200)
+    })
+})

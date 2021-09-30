@@ -3,7 +3,9 @@ import BookingItem from 'App/Models/BookingItem';
 import Penger from 'App/Models/Penger';
 import { Roles } from 'App/Models/Role';
 import User from 'App/Models/User';
+import { TimeGapUnit } from 'Config/const';
 import { BookingCategoryFactory } from 'Database/factories/booking-category';
+import { BookingItemFactory } from 'Database/factories/booking-item';
 import { PengerFactory } from 'Database/factories/penger';
 import { UserFactory } from 'Database/factories/user';
 import test from 'japa'
@@ -65,6 +67,12 @@ test.group('Testing booking module', (group) => {
 
         assert.isTrue(item.name == newName);
     })
+
+    test('Ensure gap units of booking item can be set', async(assert) => {
+        const item = await BookingItemFactory.apply('hrsGapUnits').create()
+        assert.isTrue(item.timeGapUnits === TimeGapUnit.HOURS);
+    })
+    
     test('Delete/Deactive booking item', async(assert) => {
         const item = await BookingItem.findByOrFail('name', 'New Event');
         await item.merge({

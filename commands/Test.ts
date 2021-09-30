@@ -1,4 +1,4 @@
-import { BaseCommand, args } from '@adonisjs/core/build/standalone'
+import { BaseCommand, args, flags } from '@adonisjs/core/build/standalone'
 import { join } from 'path'
 
 export default class Test extends BaseCommand {
@@ -19,6 +19,9 @@ export default class Test extends BaseCommand {
   })
   public name: string
 
+  @flags.boolean({description: 'Create test for HTTPs service'})
+  public https: boolean
+
 
   public static settings = {
     /**
@@ -35,7 +38,7 @@ export default class Test extends BaseCommand {
   }
 
   public async run() {
-    const filePath = 'tests/';
+    const filePath = this.https ? 'tests/https/' : 'tests/';
 
     this.generator
       .addFile(
@@ -47,7 +50,7 @@ export default class Test extends BaseCommand {
       .appRoot(this.application.appRoot)
       .destinationDir(filePath)
       .useMustache()
-      .stub(join(__dirname, './templates/test.txt'))
+      .stub(join(__dirname, this.https ? './templates/test-http.txt' : './templates/test.txt'))
       .apply({ resourceful: true })
 
     await this.generator.run();

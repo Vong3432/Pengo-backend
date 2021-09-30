@@ -41,6 +41,7 @@ class BookingItemService implements BookingItemInterface {
         return await BookingItem.firstOrFail(id);
     };
 
+
     async create({ request, bouncer }: HttpContextContract) {
         const trx = await DBTransactionService.init();
         let publicId;

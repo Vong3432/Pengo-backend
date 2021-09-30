@@ -3,6 +3,7 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.group(() => {
     // booking items
     Route.resource('settings', 'SettingsController').apiOnly()
+    Route.resource('system-functions', 'SystemFunctionsController').apiOnly()
     Route.resource('dpo-tables', 'DpoTablesController').apiOnly()
     Route.resource('dpo-cols', 'DpoColsController').apiOnly()
 
