@@ -13,7 +13,6 @@ class DateConvertHelperService implements DateConvertHelperInterface {
             return Promise.reject('Please ensure date format is correct.');
         }
     }
-
 }
 
 export default new DateConvertHelperService();

@@ -9,7 +9,6 @@ import CheckPriorityConditionService from 'App/Services/priority/CheckPriorityCo
 import { BookingItemFactory } from 'Database/factories/booking-item';
 import { DpoColFactory } from 'Database/factories/dpo-col';
 import test from 'japa'
-import { DateTime } from 'luxon';
 
 /*
     This test requires `dpo_cols` and `dpo_tables` in db which can be only set

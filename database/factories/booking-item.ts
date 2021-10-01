@@ -1,6 +1,8 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import BookingItem from 'App/Models/BookingItem'
+import PriorityOption from 'App/Models/PriorityOption';
 import { TimeGapUnit } from 'Config/const';
+import { DateTime } from 'luxon';
 
 export const BookingItemFactory = Factory
 	.define(BookingItem, ({ faker }) => {
@@ -26,6 +28,9 @@ export const BookingItemFactory = Factory
 			end_at: "2021-01-02 23:59:59",
 		}
 	})
+	.state('expired', (item) => {
+		item.endAt = DateTime.fromFormat("2000-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss")
+	})
 	.state('discount', (item) => {
 		item.isDiscountable = 1;
 	})
@@ -37,6 +42,10 @@ export const BookingItemFactory = Factory
 	})
 	.state('deactive', (item) => {
 		item.isActive = 0;
+	})
+	.state('outOfStock', (item) => {
+		item.quantity = 0;
+		item.isCountable = 1
 	})
 	.state('credit_points', (item) => {
 		item.creditPoints = 200;
@@ -50,4 +59,5 @@ export const BookingItemFactory = Factory
 	.state('secGapUnits', (item) => {
 		item.timeGapUnits = TimeGapUnit.SECONDS
 	})
+	.relation('priorityOption', () => PriorityOption)
 	.build()
