@@ -13,9 +13,6 @@ export default class BookingOption extends BaseModel {
   @column()
   public bookingCategoryId: number
 
-  @column()
-  public systemFunctionKey: string
-
   @column({
     serialize: (num: number) => {
       return num === 1 ? true : false
@@ -23,10 +20,10 @@ export default class BookingOption extends BaseModel {
   })
   public isEnable: number
 
-  @hasOne(() => SystemFunction)
+  @hasOne(() => SystemFunction, { serializeAs: 'system_function' })
   public systemFunction: HasOne<typeof SystemFunction>
 
-  @belongsTo(() => BookingCategory)
+  @belongsTo(() => BookingCategory, { serializeAs: 'booking_category' })
   public bookingCategory: BelongsTo<typeof BookingCategory>
 
   @column.dateTime({ autoCreate: true })

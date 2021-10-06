@@ -7,7 +7,7 @@ import UpdateSystemFunctionValidator from "App/Validators/admin/UpdateSystemFunc
 
 class SystemFunctionService implements SystemFunctionInterface {
     async findAll(_: HttpContextContract) {
-        return await SystemFunction.all()
+        return await SystemFunction.query().orderBy('is_active', 'desc') // show actived functions > then inactived functions
     };
 
     async findById(id: number) {
@@ -19,7 +19,7 @@ class SystemFunctionService implements SystemFunctionInterface {
         try {
             const payload = await request.validate(CreateSystemFunctionValidator);
             const sysFunc = new SystemFunction()
-            await sysFunc.useTransaction(trx).fill({...payload}).save();
+            await sysFunc.useTransaction(trx).fill({ ...payload }).save();
             await trx.commit()
             return sysFunc;
         } catch (error) {
@@ -35,7 +35,7 @@ class SystemFunctionService implements SystemFunctionInterface {
             const payload = await request.validate(UpdateSystemFunctionValidator);
             const sysFunc = await this.findById(id);
 
-            await sysFunc.useTransaction(trx).merge({...payload}).save();
+            await sysFunc.useTransaction(trx).merge({ ...payload }).save();
             await trx.commit()
             return sysFunc;
         } catch (error) {

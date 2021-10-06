@@ -21,6 +21,12 @@ Route.group(() => {
     Route.group(() => {
         Route.post('/create', 'PengersController.addStaff').as('staff')
     }).prefix('staff')
+
+    // system functions
+    Route.get('/system-functions', 'SystemFunctionsController.index')
+        .namespace('App/Controllers/Http/admin')
+        .as('getSystemFunctions')
+
 })
     .namespace('App/Controllers/Http/penger')
     .prefix('/penger')

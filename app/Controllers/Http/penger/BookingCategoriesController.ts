@@ -19,7 +19,7 @@ export default class BookingCategoriesController {
     // Create category
     try {
       const bookingCategory = await BookingCategoryService.create(contract);
-      return SuccessResponse({ response, data: bookingCategory })
+      return SuccessResponse({ response, data: bookingCategory, msg: "Added successfully" })
     } catch (error) {
       return ErrorResponse({ response, msg: error })
     }

@@ -1,10 +1,12 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
 export default class CreateBookingCategoryValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
 
+	public reporter = MyReporter
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
 	 *
@@ -25,8 +27,8 @@ export default class CreateBookingCategoryValidator {
 	 *    ```
 	 */
 	public schema = schema.create({
-		penger_id: schema.string(),
 		name: schema.string(),
+		is_enable: schema.boolean(),
 	})
 
 	/**

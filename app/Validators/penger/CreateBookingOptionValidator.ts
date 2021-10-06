@@ -1,10 +1,11 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
 export default class CreateBookingOptionValidator {
-  constructor (protected ctx: HttpContextContract) {
-  }
-
+	constructor(protected ctx: HttpContextContract) {
+	}
+	public reporter = MyReporter
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
 	 *
@@ -24,23 +25,23 @@ export default class CreateBookingOptionValidator {
 	 *     ])
 	 *    ```
 	 */
-  public schema = schema.create({
-	  booking_category_id: schema.number([
-		  rules.unsigned(),
-		  rules.exists({table: 'booking_categories', column: 'id'})
-	  ]),
-	  system_function_id: schema.number([
-		  rules.unsigned(),
-		  rules.exists({table: 'system_functions', column: 'id'})
-	  ]),
-	  is_enable: schema.number.optional([
-		  rules.unsigned(),
-		  rules.range(0, 1)
-	  ])
-	//   system_function_key: schema.string({}, [
-	// 	rules.exists({table: 'system_functions', column: 'name'})
-	//   ])
-  })
+	public schema = schema.create({
+		// booking_category_id: schema.number([
+		// 	rules.unsigned(),
+		// 	rules.exists({ table: 'booking_categories', column: 'id' })
+		// ]),
+		system_function_ids: schema.array().members(schema.number([
+			rules.unsigned(),
+			rules.exists({ table: 'system_functions', column: 'id' })
+		])),
+		is_enable: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		])
+		//   system_function_key: schema.string({}, [
+		// 	rules.exists({table: 'system_functions', column: 'name'})
+		//   ])
+	})
 
 	/**
 	 * Custom messages for validation failures. You can make use of dot notation `(.)`
@@ -53,10 +54,10 @@ export default class CreateBookingOptionValidator {
 	 * }
 	 *
 	 */
-  public messages = {
-	required: 'The {{field}} is required to create booking option',
-	'*': (field, rule) => {
-		return `${rule} validation error on ${field} for creating booking option.`
-	},
-  }
+	public messages = {
+		required: 'The {{field}} is required to create booking option',
+		'*': (field, rule) => {
+			return `${rule} validation error on ${field} for creating booking option.`
+		},
+	}
 }
