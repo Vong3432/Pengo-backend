@@ -1,12 +1,13 @@
 import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import TimeGapService from 'App/Services/core/TimeGapService'
+import { MyReporter } from '../MyReporter'
 
 export default class CreateBookingItemValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
 
-	public reporter = validator.reporters.api
+	public reporter = MyReporter
 
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.

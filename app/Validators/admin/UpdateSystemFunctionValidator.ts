@@ -1,10 +1,12 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
 export default class UpdateSystemFunctionValidator {
-  constructor (protected ctx: HttpContextContract) {
-  }
+	constructor(protected ctx: HttpContextContract) {
+	}
 
+	public reporter = MyReporter
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
 	 *
@@ -24,21 +26,21 @@ export default class UpdateSystemFunctionValidator {
 	 *     ])
 	 *    ```
 	 */
-  public schema = schema.create({
-	name: schema.string.optional(),
-	description: schema.string.optional(),
-	is_premium: schema.number.optional([
-		rules.unsigned(),
-		rules.range(0, 1)
-	]),
-	is_active: schema.number.optional([
-		rules.unsigned(),
-		rules.range(0, 1)
-	]),
-	price: schema.number.optional([
-		rules.requiredWhen('is_premium', '=', 1)
-	])
-  })
+	public schema = schema.create({
+		name: schema.string.optional(),
+		description: schema.string.optional(),
+		is_premium: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
+		is_active: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1)
+		]),
+		price: schema.number.optional([
+			rules.requiredWhen('is_premium', '=', 1)
+		])
+	})
 
 	/**
 	 * Custom messages for validation failures. You can make use of dot notation `(.)`
@@ -51,11 +53,11 @@ export default class UpdateSystemFunctionValidator {
 	 * }
 	 *
 	 */
-  public messages = {
-	required: 'The {{field}} is required to update system function',
-	'price.requiredWhen': 'Price cannot be empty since it is premium',
-	'*': (field, rule) => {
-		return `${rule} validation error on ${field} for updating system function.`
-	},
-  }
+	public messages = {
+		required: 'The {{field}} is required to update system function',
+		'price.requiredWhen': 'Price cannot be empty since it is premium',
+		'*': (field, rule) => {
+			return `${rule} validation error on ${field} for updating system function.`
+		},
+	}
 }
