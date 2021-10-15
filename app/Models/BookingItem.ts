@@ -137,7 +137,7 @@ export default class BookingItem extends BaseModel {
   @belongsTo(() => BookingCategory)
   public category: BelongsTo<typeof BookingCategory>
 
-  @belongsTo(() => PriorityOption)
+  @belongsTo(() => PriorityOption, { serializeAs: 'priority_option' })
   public priorityOption: BelongsTo<typeof PriorityOption>
 
   @column.dateTime({ autoCreate: true })

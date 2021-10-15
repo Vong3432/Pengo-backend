@@ -4,9 +4,9 @@ import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class CreditPointsController {
     async store(contract: HttpContextContract) {
-        const { response } = contract;
+        const { request, auth, response } = contract;
         try {
-            const { credit, amount } = await CreditPointsClientService.add(contract);
+            const { credit, amount } = await CreditPointsClientService.add(request.body().record_id, auth);
             return SuccessResponse({ response, data: credit, msg: `Redeemed ${amount} credit points` })
         } catch (error) {
             return ErrorResponse({ response, msg: error })

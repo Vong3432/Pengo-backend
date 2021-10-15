@@ -81,7 +81,7 @@ export class MyReporter implements ErrorReporterContract<ErrorNode> {
      * Get error messages as JSON
      */
     public toJSON(): string {
-        console.log(this.errors)
+        console.log("MyReporter:", this.errors)
         return this.errors[0];
         // return {
         //     errors: this.errors,

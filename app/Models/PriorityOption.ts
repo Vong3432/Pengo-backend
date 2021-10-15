@@ -25,7 +25,7 @@ export default class PriorityOption extends BaseModel {
   @belongsTo(() => Penger)
   public penger: BelongsTo<typeof Penger>
 
-  @belongsTo(() => DpoCol)
+  @belongsTo(() => DpoCol, { serializeAs: 'dpo_col' })
   public dpoCol: BelongsTo<typeof DpoCol>
 
   @column()

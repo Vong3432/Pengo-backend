@@ -2,6 +2,7 @@ import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import TimeGapService from 'App/Services/core/TimeGapService'
 import { MyReporter } from '../MyReporter'
+import { PRIORITY_CONDITIONS } from 'App/Models/PriorityOption'
 
 export default class CreateBookingItemValidator {
 	constructor(protected ctx: HttpContextContract) {
@@ -36,7 +37,13 @@ export default class CreateBookingItemValidator {
 				size: '5mb', extnames: ['jpg', 'png']
 			})
 		),
-		priority_option_id: schema.number.optional([rules.requiredWhen('is_preservable', '=', '1')]),
+		priority_option: schema.object.optional([
+			rules.requiredWhen('is_preservable', '=', '1')
+		]).members({
+			dpo_col_id: schema.number(),
+			value: schema.string(),
+			condition: schema.enum(Object.values(PRIORITY_CONDITIONS)),
+		}),
 		geolocation: schema.object().members({
 			name: schema.string(),
 			latitude: schema.number(),
@@ -93,11 +100,11 @@ export default class CreateBookingItemValidator {
 			rules.unsigned()
 		]),
 		available_from_time: schema.date.optional({ format: 'HH:mm' }, [
-			rules.requiredIfNotExistsAny(['start_from', 'end_at']),
+			// rules.requiredIfNotExistsAny(['start_from', 'end_at']),
 			rules.after('today')
 		]),
 		available_to_time: schema.date.optional({ format: 'HH:mm' }, [
-			rules.requiredIfNotExistsAny(['start_from', 'end_at']),
+			// rules.requiredIfNotExistsAny(['start_from', 'end_at']),
 			rules.after('today')
 		]),
 		time_gap_value: schema.number.optional([

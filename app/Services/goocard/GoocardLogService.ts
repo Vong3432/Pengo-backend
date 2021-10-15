@@ -9,6 +9,7 @@ class GoocardLogService implements GoocardLogInterface {
         const trx = await DBTransactionService.init()
         try {
             const pengoo = await auth.authenticate()
+            await pengoo.load('goocard')
             const { title, body, type } = data;
 
             const log = new GooCardLog()

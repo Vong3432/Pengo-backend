@@ -1,10 +1,14 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import TimeGapService from 'App/Services/core/TimeGapService'
+import { MyReporter } from '../MyReporter'
+import { PRIORITY_CONDITIONS } from 'App/Models/PriorityOption'
 
 export default class UpdateBookingItemValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
+
+	public reporter = MyReporter
 
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
@@ -27,7 +31,13 @@ export default class UpdateBookingItemValidator {
 	 */
 	public schema = schema.create({
 		penger_id: schema.number(),
-		priority_option_id: schema.number.optional([rules.requiredWhen('is_preservable', '=', '1')]),
+		priority_option: schema.object.optional([
+			rules.requiredWhen('is_preservable', '=', '1')
+		]).members({
+			dpo_col_id: schema.number(),
+			value: schema.string(),
+			condition: schema.enum(Object.values(PRIORITY_CONDITIONS)),
+		}),
 		geolocation: schema.object.optional([
 			rules.requiredWhen('location_id', '=', '1')]
 		).members({

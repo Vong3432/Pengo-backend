@@ -12,7 +12,6 @@ export default class BookingItemsController {
       return SuccessResponse({ response, data: bookingItems })
     }
     catch (error) {
-      console.log(error.messages)
       return ErrorResponse({ response, msg: error })
     }
   }
@@ -23,8 +22,7 @@ export default class BookingItemsController {
       const bookingItem = await BookingItemService.create(contract);
       return SuccessResponse({ response, msg: 'Added successfully', data: bookingItem })
     } catch (error) {
-      console.log("errmsg", error.messages)
-      return ErrorResponse({ response, msg: error })
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
@@ -33,11 +31,33 @@ export default class BookingItemsController {
     try {
       const id = request.param('id')
       const bookingItem = await BookingItemService.findById(id);
-      return SuccessResponse({ response, data: bookingItem })
+      return SuccessResponse({
+        response, data: bookingItem.serialize({
+          relations: {
+            priority_option: {
+              fields: {
+                omit: ["created_at", "updated_at", "dpo_col_id"]
+              },
+              relations: {
+                dpo_col: {
+                  fields: {
+                    omit: ["created_at", "updated_at"]
+                  },
+                  relations: {
+                    dpo_table: {
+                      fields: {
+                        omit: ["created_at", "updated_at"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        })
+      })
     } catch (error) {
-      console.log(error)
-      console.log(error.messages)
-      return ErrorResponse({ response, msg: error })
+      return ErrorResponse({ response, msg: error.messages || error })
     }
   }
 
@@ -47,7 +67,6 @@ export default class BookingItemsController {
       const bookingItem = await BookingItemService.update(contract)
       return SuccessResponse({ response, msg: 'Updated successfully', data: bookingItem })
     } catch (error) {
-      console.log(error.messages)
       return ErrorResponse({ response, msg: error })
     }
   }
@@ -57,7 +76,6 @@ export default class BookingItemsController {
     try {
       return SuccessResponse({ response, msg: 'Deleted successfully' })
     } catch (error) {
-      console.log(error.messages)
       return ErrorResponse({ response, msg: error })
     }
   }

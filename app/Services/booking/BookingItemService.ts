@@ -11,7 +11,7 @@ import CloudinaryService from "../cloudinary/CloudinaryService";
 import { ORMFilterService } from "../ORMService";
 import PengerService from "../core/PengerService";
 import BookingCategoryService from "./BookingCategoryService";
-import PriorityService from "../priority/PriorityService";
+import DpoColService from "../admin/DpoColService";
 
 class BookingItemService implements BookingItemInterface {
 
@@ -33,7 +33,9 @@ class BookingItemService implements BookingItemInterface {
     };
 
     async findById(id: number) {
-        return await BookingItem.findOrFail(id);
+        const bookingItem = await BookingItem.findOrFail(id)
+        await bookingItem.load('priorityOption', (q) => q.preload('dpoCol', (q) => q.preload('dpoTable')))
+        return bookingItem;
     };
 
     async findByPengerAndId({ request }: HttpContextContract) {
@@ -56,34 +58,49 @@ class BookingItemService implements BookingItemInterface {
                 throw new UnAuthorizedPengerException('You are not authorized to this Penger', 403, 'E_UNAUTHORIZED')
             }
 
-            console.log('uploading')
-
             let { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
             if (public_id) publicId = public_id;
 
             // create a new booking item
             const bookingItem = new BookingItem();
 
-            if (payload.is_preservable) {
-                await PriorityService.findById(payload.priority_option_id);
-            }
-
             // omit unused properties to prevent crashing during creating.
-            const { penger_id, poster, ...data } = payload;
+            const { penger_id, poster, priority_option, ...data } = payload;
 
             bookingItem.fill({
                 ...data,
                 posterUrl: url,
                 geolocation: JSON.stringify(data.geolocation)
-                // bookingCategoryId: payload.booking_category_id,
-                // locationId: payload.location_id,
-                // parentBookingItem: payload.parent_booking_item,
-                // startFrom: payload.start_from,
-                // endAt: payload.end_at,
             })
 
             // save booking item into category
             await bookingCategory.useTransaction(trx).related('bookingItems').save(bookingItem);
+
+            // (!) Maybe can be improved in the future
+            if (priority_option) {
+
+                const dpoCol = await DpoColService.findById(priority_option?.dpo_col_id);
+
+                const savePayload = {
+                    value: priority_option.value,
+                    conditions: priority_option.condition,
+                    pengerId: penger.id
+                }
+
+                // copy from payload
+                const searchCriteria = {
+                    ...savePayload
+                }
+
+                const priority = await dpoCol.related('priorityOption').firstOrCreate(searchCriteria, savePayload);
+                await priority.useTransaction(trx).related('bookingItem').save(bookingItem);
+
+                // set priority option id
+                await bookingItem.useTransaction(trx).merge({
+                    priorityOptionId: priority.id
+                }).save()
+            }
+
             await trx.commit();
             return bookingItem;
 
@@ -115,7 +132,7 @@ class BookingItemService implements BookingItemInterface {
             }
 
             // omit unused properties to prevent crashing during creating.
-            const { penger_id, poster, ...data } = payload;
+            const { penger_id, poster, priority_option, ...data } = payload;
 
             if (payload.poster) {
                 let { secure_url: updatedUrl, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.poster.tmpPath, folder: "penger/items" });
@@ -123,17 +140,39 @@ class BookingItemService implements BookingItemInterface {
                 url = updatedUrl;
             }
 
-            if (payload.is_preservable) {
-                // check priority
-                await PriorityService.findById(payload.priority_option_id);
-            }
-
             // dynamically update fields
-            await bookingItem.useTransaction(trx).merge({
+            bookingItem.merge({
                 ...data,
                 geolocation: data.geolocation ? JSON.stringify(data.geolocation) : bookingItem.geolocation,
                 posterUrl: url == null ? bookingItem.posterUrl : url
-            }).save();
+            });
+
+            // (!) Maybe can be improved in the future
+            if (priority_option) {
+
+                const dpoCol = await DpoColService.findById(priority_option?.dpo_col_id);
+
+                const savePayload = {
+                    value: priority_option.value,
+                    conditions: priority_option.condition,
+                    pengerId: penger.id
+                }
+
+                // copy from payload
+                const searchCriteria = {
+                    ...savePayload
+                }
+
+                const priority = await dpoCol.related('priorityOption').firstOrCreate(searchCriteria, savePayload);
+                await priority.useTransaction(trx).related('bookingItem').save(bookingItem);
+
+                // set priority option id
+                bookingItem.merge({
+                    priorityOptionId: priority.id
+                })
+            }
+
+            await bookingItem.useTransaction(trx).save();
 
             await trx.commit();
 

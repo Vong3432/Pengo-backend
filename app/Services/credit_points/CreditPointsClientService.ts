@@ -1,7 +1,5 @@
-import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CreditPointsInterface from "Contracts/interfaces/CreditPoints.interface"
 import CreditPoint from "App/Models/CreditPoint";
-import AddCreditPointValidator from "App/Validators/pengoo/AddCreditPointValidator";
 import BookingItem from "App/Models/BookingItem";
 import BookingRecord from "App/Models/BookingRecord";
 import InsufficientCreditPointException from "App/Exceptions/InsufficientCreditPointException";
@@ -9,19 +7,19 @@ import BookingRecordClientService from "../booking/BookingRecordClientService";
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 
 class CreditPointsService implements CreditPointsInterface {
-    async add(contract: HttpContextContract): Promise<{
+
+    /// add credit points to the goocard
+    async add(record_id: number, auth: AuthContract): Promise<{
         credit: CreditPoint,
         amount: number
     }> {
-        const { request, auth } = contract;
         try {
-            const payload = await request.validate(AddCreditPointValidator)
 
             // get record
-            const record: BookingRecord = await BookingRecordClientService.findById(payload.record_id, auth);
+            const record: BookingRecord = await BookingRecordClientService.findById(record_id, auth);
 
             // validate record is already scanned and verified.
-            if (record.isUsed === 0) throw 'Unable to add credit points'
+            if (record.isUsed === 0) throw "Already used";
 
             await record.load('item');
             const item: BookingItem = record.item;
@@ -61,7 +59,7 @@ class CreditPointsService implements CreditPointsInterface {
         }
     }
 
-    // This deduct() function can only be called internally via other service classes.
+    /// This deduct() function can only be called internally via other service classes.
     async deduct(amount: number, pengerId: number, auth: AuthContract): Promise<{
         credit: CreditPoint,
         amount: number

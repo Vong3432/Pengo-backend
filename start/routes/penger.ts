@@ -27,6 +27,14 @@ Route.group(() => {
         .namespace('App/Controllers/Http/admin')
         .as('getSystemFunctions')
 
+    // priority options
+    Route.get('/available-dpo-tables', 'DpoTablesController.index')
+        .namespace('App/Controllers/Http/admin')
+        .as('getDpoTablesFromAdmin')
+    Route.get('/dpo-tables/:id', 'DpoTablesController.show')
+        .namespace('App/Controllers/Http/admin')
+        .as('getDpoColsByTableId')
+
 })
     .namespace('App/Controllers/Http/penger')
     .prefix('/penger')
