@@ -4,7 +4,7 @@ import { ValidateMsg } from "Contracts/interfaces/IValidateItemMsgFormatter.inte
 import { string } from '@ioc:Adonis/Core/Helpers'
 import CheckPriorityConditionService from "../priority/CheckPriorityConditionService";
 import ValidateItemMsgService from "./ValidateItemMsgService";
-import BookingItemClientService from "../booking/BookingItemClientService";
+import BookingItem from "App/Models/BookingItem";
 
 class UserPriorityValidateService implements IValidateItemInterface {
     async validate(itemId: number, auth: AuthContract): Promise<ValidateMsg[]> {
@@ -16,7 +16,7 @@ class UserPriorityValidateService implements IValidateItemInterface {
         const user = await auth.authenticate()
 
         // Item
-        const item = await BookingItemClientService.findById(itemId)
+        const item = await BookingItem.findOrFail(itemId)
         await item.load('priorityOption', q => q.preload('dpoCol'))
 
         // HasOne relationship

@@ -36,7 +36,7 @@ export default class BookingCategory extends BaseModel {
   @column({ columnName: 'created_by', serializeAs: null })
   public pengerId: number
 
-  @belongsTo(() => Penger)
+  @belongsTo(() => Penger, { serializeAs: 'created_by' })
   public createdBy: BelongsTo<typeof Penger>
 
   @column.dateTime({ autoCreate: true })

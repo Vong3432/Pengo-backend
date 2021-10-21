@@ -1,10 +1,12 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
 export default class VerifyGooCardValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
 
+	public reporter = MyReporter
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
 	 *
@@ -29,7 +31,6 @@ export default class VerifyGooCardValidator {
 			rules.minLength(6),
 			rules.maxLength(6)
 		]),
-		user_id: schema.number(),
 	})
 
 	/**

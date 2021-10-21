@@ -1,4 +1,5 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import BookingItem from "App/Models/BookingItem";
 import RestfulAPIInterface from "./RestfulAPI.interface";
 
 export default interface BookingItemInterface extends RestfulAPIInterface {
@@ -8,5 +9,5 @@ export default interface BookingItemInterface extends RestfulAPIInterface {
 }
 
 export interface BookingItemClientInterface {
-
+    findById(contract: HttpContextContract): Promise<any>;
 }

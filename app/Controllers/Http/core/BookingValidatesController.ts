@@ -8,7 +8,8 @@ export default class BookingValidatesController {
             const itemStatusList = await UserBookingValidateService.validate(request.param('id'), auth)
             return SuccessResponse({ response, data: itemStatusList })
         } catch (error) {
-            return ErrorResponse({ response, msg: error.messages || error })
+            console.log(error)
+            return ErrorResponse({ response, msg: "Something went wrong." })
         }
     }
 }

@@ -1,31 +1,36 @@
+import BookingItem from "App/Models/BookingItem";
 import IValidateItemInterface from "Contracts/interfaces/IValidateItem.interface";
 import { ValidateMsg } from "Contracts/interfaces/IValidateItemMsgFormatter.interface";
 import { DateTime } from "luxon";
-import BookingItemClientService from "../booking/BookingItemClientService";
 import DateCheckHelperService from "../helpers/DateCheckHelperService";
 import ValidateItemMsgService from "./ValidateItemMsgService";
 
 class BookingItemValidateStatusService implements IValidateItemInterface {
     async validate(itemId: number): Promise<ValidateMsg[]> {
 
-        const item = await BookingItemClientService.findById(itemId);
+        const item = await BookingItem.findOrFail(itemId);
         const messages: ValidateMsg[] = [];
+        let isOverEndAt = false;
 
         // Get endAt from item and convert to ISO format
-        const itemEndIso = item.endAt.toISO()
+        if (item.endAt) {
+            const itemEndIso = item.endAt.toISO()
 
-        // Get current dt and convert to ISO
-        const currentIso = DateTime.now().toISO()
+            // Get current dt and convert to ISO
+            const currentIso = DateTime.now().toISO()
+
+            isOverEndAt = DateCheckHelperService.isCurrentOverTargetISO({ targetIso: itemEndIso, currentIso })
+        }
 
         // Check if booking item is too late to book
-        const isOverEndAt = DateCheckHelperService.isCurrentOverTargetISO({ targetIso: itemEndIso, currentIso })
-
         // Item is inactive
-        if (!item.isActive) messages.push(ValidateItemMsgService.toValidateMsg("active", "This item is opened for booking", false))
+        const isActive = item.isActive === 1
         // Item is out of stock
-        if (item.quantity === 0 && item.isCountable) messages.push(ValidateItemMsgService.toValidateMsg("quantity", "This item is out of stocked", false))
-        // Too late to book item
-        if (isOverEndAt) messages.push(ValidateItemMsgService.toValidateMsg("endAt", "This item can no longer be booked", false))
+        const isOutOfStock = item.quantity === 0 && item.isCountable === 1;
+
+        messages.push(ValidateItemMsgService.toValidateMsg("active", `This item is ${isActive ? "opened" : "not opened"} for booking`, isActive))
+        messages.push(ValidateItemMsgService.toValidateMsg("quantity", `This item is ${isOutOfStock ? "out of" : "in"} stocked`, !isOutOfStock))
+        messages.push(ValidateItemMsgService.toValidateMsg("endAt", `This item ${!isOverEndAt ? "is still opened to booked" : "can no longer be booked"}`, !isOverEndAt))
 
         return messages;
     };

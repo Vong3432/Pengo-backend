@@ -12,13 +12,26 @@ interface IErrorRes {
     response: ResponseContract,
     code?: number;
     msg: string;
+    data?: any;
 }
 
+/** 
+ * @description Returns formatted success json (Normally is used in controllers and custom exceptions)
+ * @example SuccessResponse({response, code: 200, msg: "Success!", data: {a: "ab"}})
+ * @returns \{ msg: "Some success message" }
+ * @returns \{ msg: "Some success message", data: someData }
+*/
 export const SuccessResponse = ({ response, code, msg, data }: ISuccessRes) => {
     return response.status(code || 200).json({ msg, data })
 }
 
-export const ErrorResponse = ({ response, code, msg }: IErrorRes) => {
-    console.log(msg)
-    return response.status(code || 500).json({ msg: msg && Object.keys(msg).length === 0 ? "Error occured." : msg })
+/** 
+ * @description Returns formatted error json (Normally is used in controllers and custom exceptions)
+ * @example ErrorResponse({response, code: 500, msg: "Fail!"})
+ * @returns \{ msg: "Some error message" }
+*/
+export const ErrorResponse = ({ response, code, msg, data }: IErrorRes) => {
+    // console.log("ERRRES", msg)
+    // return response.status(code || 500).json({ msg: msg && Object.keys(msg).length === 0 ? "Error occured." : msg })
+    return response.status(code || 500).json({ msg: msg.toString() ?? "Error occured", data })
 }

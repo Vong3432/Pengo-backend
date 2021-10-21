@@ -8,8 +8,9 @@ import GooCardService from "../goocard/GooCardService";
 import LogInterface, { LogMsg, LogType } from "Contracts/interfaces/Log.interface";
 import DateConvertHelperService from "../helpers/DateConvertHelperService";
 import GoocardLogService from "../goocard/GoocardLogService";
-import { GoocardLogType } from "App/Models/GooCardLog";
+import GooCardLog, { GoocardLogType } from "App/Models/GooCardLog";
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
+import GooCard from "App/Models/GooCard";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -80,22 +81,26 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             await BookingItemService.findById(payload.booking_item_id);
 
             const record = new BookingRecord();
+
             await record.useTransaction(trx).fill({
                 gooCardId: card.id,
                 pengerId: payload.penger_id,
-                bookDate: payload.book_date,
+                bookDate: JSON.stringify(payload.book_date),
                 bookTime: payload.book_time,
                 bookingItemId: payload.booking_item_id,
             }).save();
 
             // save booking record log
-            await GoocardLogService.saveLog(
+            const returnedLog: GooCardLog | Error = await GoocardLogService.saveLog(
                 await this.toLog(record, "GET"),
                 auth
             )
 
             await trx.commit();
-            return record;
+            return {
+                ...record.serialize(),
+                log: returnedLog
+            }
         } catch (error) {
             await trx.rollback();
             throw error;
@@ -130,6 +135,13 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
     async delete({ }: HttpContextContract) {
 
     };
+
+    async getRecordByPengooAndItem(bookingItemId: number, gooCardId: number) {
+        return await BookingRecord.query()
+            .where('goocard_id', gooCardId)
+            .where('booking_item_id', bookingItemId)
+    }
+
 }
 
 export default new BookingRecordClientService();

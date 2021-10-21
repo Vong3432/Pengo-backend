@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany, HasManyThrough, hasManyThrough, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingRecord from './BookingRecord'
 import BookingItemImg from './BookingItemImg'
 import BookingCategory from './BookingCategory'
 import Coupon from './Coupon'
 import PriorityOption from './PriorityOption'
 import { TimeGapUnit } from 'Config/const'
+import Penger from './Penger'
 
 export default class BookingItem extends BaseModel {
   @column({ isPrimary: true })

@@ -2,6 +2,11 @@ import { PRIORITY_CONDITIONS } from "App/Models/PriorityOption"
 import CheckPriorityConditionInterface from "Contracts/interfaces/CheckPriorityCondition.interface"
 
 class CheckPriorityConditionService implements CheckPriorityConditionInterface {
+
+    /**
+     * valFromDB - check value from user
+     * valToCheck - value that set by penger
+    */
     validateCondition(valFromDB: string, valToCheck: string, condition: PRIORITY_CONDITIONS): boolean {
         let result: boolean = false;
         switch (condition) {
@@ -31,20 +36,20 @@ class CheckPriorityConditionService implements CheckPriorityConditionInterface {
         return valFromDB.toString() === valToCheck;
     }
     private checkLarger(valFromDB: string, valToCheck: string): boolean {
-        console.log(`${valToCheck} larger than ${valFromDB}`)
-        return valToCheck > valFromDB;
+        console.log(`${valFromDB} larger than ${valToCheck}`)
+        return valFromDB > valToCheck;
     }
     private checkLargerEq(valFromDB: string, valToCheck: string): boolean {
-        console.log(`${valToCheck} larger equal ${valFromDB}`)
-        return valToCheck >= valFromDB;
+        console.log(`${valFromDB} larger equal ${valToCheck}`)
+        return valFromDB >= valToCheck;
     }
     private checkLesser(valFromDB: string, valToCheck: string): boolean {
-        console.log(`${valToCheck} lesser than ${valFromDB}`)
-        return valToCheck < valFromDB;
+        console.log(`${valFromDB} lesser than ${valToCheck}`)
+        return valFromDB < valToCheck;
     }
     private checkLesserEq(valFromDB: string, valToCheck: string): boolean {
-        console.log(`${valToCheck} lesser equal ${valFromDB}`)
-        return valToCheck <= valFromDB;
+        console.log(`${valFromDB} lesser equal ${valToCheck}`)
+        return valFromDB <= valToCheck;
     }
 }
 

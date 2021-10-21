@@ -27,8 +27,15 @@ export default class BookingRecord extends BaseModel {
   @column()
   public bookTime: string
 
-  @column.dateTime()
-  public bookDate: DateTime
+  @column({
+    serialize: (value: string | null) => {
+      return value ? {
+        start_date: JSON.parse(value).start_date,
+        end_date: JSON.parse(value).end_date,
+      } : value
+    },
+  })
+  public bookDate: any
 
   @column({
     serialize: (value: number) => {

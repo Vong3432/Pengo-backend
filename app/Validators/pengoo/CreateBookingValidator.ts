@@ -1,10 +1,12 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
 export default class CreateBookingValidator {
 	constructor(protected ctx: HttpContextContract) {
 	}
 
+	public reporter = MyReporter
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
 	 *
@@ -31,8 +33,11 @@ export default class CreateBookingValidator {
 		]),
 		booking_item_id: schema.number(),
 		penger_id: schema.number(),
-		book_time: schema.string(),
-		book_date: schema.date({ format: 'yyyy-MM-dd' }),
+		book_time: schema.string.optional(),
+		book_date: schema.object.optional().members({
+			start_date: schema.date.optional({ format: 'yyyy-MM-dd' }),
+			end_date: schema.date.optional({ format: 'yyyy-MM-dd' }),
+		}),
 	})
 
 	/**

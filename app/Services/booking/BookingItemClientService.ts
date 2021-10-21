@@ -1,6 +1,5 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { BookingItemClientInterface } from "Contracts/interfaces/BookingItem.interface";
-import Penger from "App/Models/Penger";
 import BookingItem from "App/Models/BookingItem";
 import PengerService from "../core/PengerService";
 import { ORMFilterService } from "../ORMService";
@@ -8,22 +7,33 @@ import BookingCategoryService from "./BookingCategoryService";
 
 class BookingItemClientService implements BookingItemClientInterface {
 
-    constructor() {
-
-    }
-
     findAllByPengerAndCategory(): Promise<BookingItem[]> {
         throw new Error("Method not implemented.");
     }
 
-    async findAllByPenger({ request }: HttpContextContract) {
+    async findAllByPenger({ request, auth }: HttpContextContract) {
+        const user = await auth.authenticate()
+        const isLoggedIn = auth.isLoggedIn
+
+        if (user !== null && isLoggedIn) await user.load('goocard')
+
         const penger = await PengerService.findById(request.qs().penger_id);
-        return await penger.related('bookingItems').query();
+        await penger.load('bookingItems', q => {
+            if (isLoggedIn) {
+                q.where('goocard_id', user.goocard.id)
+            }
+        });
+
+        return penger.bookingItems
     }
 
     async findAll(contract: HttpContextContract): Promise<BookingItem[]> {
-        const { request } = contract;
+        const { request, auth } = contract;
         const { penger_id: pengerId, category_id: categoryId } = request.qs()
+        const user = await auth.authenticate()
+        const isLoggedIn = auth.isLoggedIn
+
+        if (user !== null && isLoggedIn) await user.load('goocard')
 
         // if findAll by Penger
         if (pengerId) {
@@ -33,8 +43,13 @@ class BookingItemClientService implements BookingItemClientInterface {
         // if has categoryId
         if (categoryId) {
             const category = await BookingCategoryService.findById(categoryId)
-            await category.load('bookingItems');
-
+            await category.load('bookingItems', q => {
+                if (isLoggedIn) {
+                    q.preload('records', recordQuery => {
+                        recordQuery.where('goocard_id', user.goocard.id)
+                    })
+                }
+            });
             return category.bookingItems as BookingItem[];
         }
 
@@ -43,8 +58,27 @@ class BookingItemClientService implements BookingItemClientInterface {
         return bookingItems as BookingItem[];
     };
 
-    async findById(id: number) {
-        return await BookingItem.findOrFail(id)
+    async findById({ request, auth }: HttpContextContract) {
+        const id = request.param('id')
+        const user = await auth.authenticate()
+        const isLoggedIn = auth.isLoggedIn
+
+        if (user !== null && isLoggedIn) await user.load('goocard')
+
+        const bookingItem = await BookingItem.findOrFail(id)
+
+        await bookingItem.load('category', q => {
+            q.preload('createdBy', pengerQ => pengerQ.preload('location'))
+            q.preload('bookingOptions', optionQ => optionQ.where('is_active', 1))
+        });
+
+        await bookingItem.load('records', q => {
+            if (isLoggedIn) {
+                q.where('goocard_id', user.goocard.id)
+            }
+        })
+
+        return bookingItem
     };
 
 }

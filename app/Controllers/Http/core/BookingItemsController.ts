@@ -16,11 +16,25 @@ export default class BookingItemsController {
   }
 
   public async show(contract: HttpContextContract) {
-    const { response, request } = contract;
+    const { response } = contract;
     try {
-      const id = request.param('id');
-      const bookingItem = await BookingItemClientService.findById(id)
-      return SuccessResponse({ response, data: bookingItem })
+      const bookingItem = await BookingItemClientService.findById(contract)
+      return SuccessResponse({
+        response, data: bookingItem.serialize({
+          relations: {
+            category: {
+              relations: {
+                created_by: {
+                  fields: {
+                    pick: ["id", "name", "logo", "location"],
+                    omit: ["created_at", "updated_at"]
+                  }
+                }
+              }
+            },
+          }
+        })
+      })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }
