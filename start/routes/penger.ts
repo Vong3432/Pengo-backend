@@ -35,6 +35,12 @@ Route.group(() => {
         .namespace('App/Controllers/Http/admin')
         .as('getDpoColsByTableId')
 
+    // payments 
+    // Route.resource('/payments', 'PaymentsController').apiOnly()
+
+    // bank account 
+    Route.resource('/bank-accounts', 'BankAccountsController').apiOnly()
+
 })
     .namespace('App/Controllers/Http/penger')
     .prefix('/penger')

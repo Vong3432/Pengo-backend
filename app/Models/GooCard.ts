@@ -5,6 +5,7 @@ import BookingRecord from './BookingRecord'
 import User from './User'
 import Coupon from './Coupon'
 import CreditPoint from './CreditPoint'
+import BankAccount from './BankAccount'
 
 export default class GooCard extends BaseModel {
   @column({ isPrimary: true })
@@ -27,6 +28,9 @@ export default class GooCard extends BaseModel {
 
   @hasMany(() => BookingRecord)
   public records: HasMany<typeof BookingRecord>
+
+  @hasMany(() => BankAccount, { serializeAs: "bank_accounts", foreignKey: "holderId" })
+  public bankAccounts: HasMany<typeof BankAccount>
 
   @manyToMany(() => Coupon, {
     pivotTable: 'goocard_coupon',

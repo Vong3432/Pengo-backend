@@ -10,7 +10,6 @@ import DateConvertHelperService from "../helpers/DateConvertHelperService";
 import GoocardLogService from "../goocard/GoocardLogService";
 import GooCardLog, { GoocardLogType } from "App/Models/GooCardLog";
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
-import GooCard from "App/Models/GooCard";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -76,6 +75,8 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
         try {
             const user = await auth.authenticate();
             const payload = await request.validate(CreateBookingValidator);
+
+            console.log("create:", payload)
 
             const card = await GooCardService.verify(payload.pin, user.id);
             await BookingItemService.findById(payload.booking_item_id);

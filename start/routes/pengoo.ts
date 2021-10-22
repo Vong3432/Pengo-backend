@@ -11,6 +11,12 @@ Route.group(() => {
     // coupons routes
     Route.resource('coupons', 'CouponsController').apiOnly()
 
+    // payment
+    Route.resource('payments', 'PaymentsController').apiOnly()
+
+    // transaction
+    Route.resource('transactions', 'TransactionsController').apiOnly()
+
     // goocard validate routes
     Route.post('validate-card', 'GooCardsController.verifyGooCard')
         .as("vadidateGooCard")

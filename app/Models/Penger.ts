@@ -7,6 +7,7 @@ import BookingItem from './BookingItem'
 import BookingCloseDate from './BookingCloseDate'
 import Coupon from './Coupon'
 import PengerLocation from './PengerLocation'
+import BankAccount from './BankAccount'
 
 export default class Penger extends BaseModel {
   @column({ isPrimary: true })
@@ -27,6 +28,9 @@ export default class Penger extends BaseModel {
 
   @hasMany(() => BookingCategory)
   public bookingCategories: HasMany<typeof BookingCategory>
+
+  @hasMany(() => BankAccount, { serializeAs: "bank_accounts", foreignKey: "holderId" })
+  public bankAccounts: HasMany<typeof BankAccount>
 
   @hasManyThrough([
     () => BookingOption,
