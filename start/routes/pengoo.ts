@@ -18,6 +18,7 @@ Route.group(() => {
     Route.resource('transactions', 'TransactionsController').apiOnly()
 
     // goocard validate routes
+    Route.resource('goocard', 'GooCardsController').apiOnly()
     Route.post('validate-card', 'GooCardsController.verifyGooCard')
         .as("vadidateGooCard")
 

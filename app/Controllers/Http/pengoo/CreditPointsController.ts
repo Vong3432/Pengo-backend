@@ -3,6 +3,21 @@ import CreditPointsClientService from 'App/Services/credit_points/CreditPointsCl
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
 
 export default class CreditPointsController {
+
+    /**
+     * @description Check current pengoo's credit points of a Penger
+     * @param penger_id
+     * @returns 
+     */
+    async show(contract: HttpContextContract) {
+        const { response, request, auth } = contract;
+        try {
+            const creditPoint = await CreditPointsClientService.getPoints(request.param('penger_id'), auth);
+            return SuccessResponse({ response, data: creditPoint })
+        } catch (error) {
+            return ErrorResponse({ response, msg: error })
+        }
+    }
     async store(contract: HttpContextContract) {
         const { request, auth, response } = contract;
         try {

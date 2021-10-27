@@ -10,6 +10,7 @@ import DateConvertHelperService from "../helpers/DateConvertHelperService";
 import GoocardLogService from "../goocard/GoocardLogService";
 import GooCardLog, { GoocardLogType } from "App/Models/GooCardLog";
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
+import { DateTime } from "luxon";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -37,17 +38,33 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
         }
     }
 
-    async findAll({ auth }: HttpContextContract) {
+    async findAll({ auth, request }: HttpContextContract) {
+        const { limit, category, date } = request.qs()
         try {
             const user = await auth.authenticate();
             await user.load('goocard');
             const records = await BookingRecord
                 .query()
+                .if(limit, (q) => q.limit(limit))
                 .where('goocard_id', user.goocard.id)
-                .preload('item')
+                .preload('item', q => {
+                    if (category) {
+                        q.preload('category')
+                    }
+                })
                 .orderBy('book_date')
                 .orderBy('book_time');
 
+            if (date) {
+                const filteredDateRecords = records.filter((record) => {
+                    const itemDate: DateTime = DateTime.fromISO(JSON.parse(record.bookDate)["start_date"])
+                    const requestedDate = DateTime.fromISO(date).toLocal()
+                    const diff = itemDate.diff(requestedDate, ['days']).days
+                    return diff === 0
+                });
+
+                return filteredDateRecords;
+            }
             return records;
         } catch (error) {
             throw error;

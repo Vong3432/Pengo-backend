@@ -5,8 +5,22 @@ import BookingRecord from "App/Models/BookingRecord";
 import InsufficientCreditPointException from "App/Exceptions/InsufficientCreditPointException";
 import BookingRecordClientService from "../booking/BookingRecordClientService";
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
+import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext"
 
 class CreditPointsService implements CreditPointsInterface {
+
+    async getPoints(pengerId, auth: AuthContract) {
+        // validate user has sufficient credit points
+        const user = await auth.authenticate();
+        await user.load('goocard');
+
+        const credit = await CreditPoint.query()
+            .where('goocard_id', user.goocard.id)
+            .where('penger_id', pengerId)
+            .firstOrFail()
+
+        return credit
+    }
 
     /// add credit points to the goocard
     async add(record_id: number, auth: AuthContract): Promise<{

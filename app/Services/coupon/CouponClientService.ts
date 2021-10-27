@@ -10,6 +10,9 @@ import CouponValidateService from "./CouponValidateService";
 import CouponNotRedeemableErrException from "App/Exceptions/CouponNotRedeemableErrException";
 import CreditPointsClientService from "../credit_points/CreditPointsClientService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import CreditPoint from "App/Models/CreditPoint";
+import CouponService from "./CouponService";
+import { DateTime } from "luxon";
 
 class CouponClientService implements CouponClientInterface, LogInterface<Coupon>  {
 
@@ -37,26 +40,50 @@ class CouponClientService implements CouponClientInterface, LogInterface<Coupon>
     }
 
     async findById(id: number, auth: AuthContract) {
-        const pengoo = await auth.authenticate()
-        await pengoo.load('goocard')
-        const goocard = pengoo.goocard
 
-        const coupon = await goocard.related('coupons')
-            .query()
-            .wherePivot('coupon_id', id)
-            .wherePivot('goocard_id', goocard.id)
-            .firstOrFail()
+        const coupon = await Coupon.findOrFail(id);
+        await coupon.load('bookingItems')
+        await coupon.load('penger')
+        await coupon.penger.load('location')
 
-        return coupon;
+        return coupon
     };
 
     async findAll(contract: HttpContextContract): Promise<Coupon[]> {
-        const { auth } = contract;
+        const { auth, request } = contract;
+        const { active, redeemed, expired } = request.qs()
         const pengoo = await auth.authenticate()
         await pengoo.load('goocard')
-        const goocard = pengoo.goocard
 
-        return await goocard.related('coupons').query()
+        if (active == 1) {
+            // get all credit points current user
+            const histories = await CreditPoint
+                .query()
+                .where('goocard_id', pengoo.goocard.id)
+            // grab penger ids of all previously booked penger
+            const pengerIds = histories.map((v) => v.pengerId)
+
+            await pengoo.goocard.load('coupons');
+            const redeemedCouponIds = pengoo.goocard.coupons.map(c => c.id)
+
+            const coupons = await Coupon.query()
+                .whereIn(['created_by', 'is_redeemable'], [[pengerIds, 1]])
+                .whereNotIn('id', redeemedCouponIds)
+                .where('quantity', '>', 0)
+                .where('valid_to', '>=', DateTime.now().toISO())
+
+            return coupons;
+        }
+
+        if (redeemed == 1 || expired == 1) {
+            await pengoo.goocard.load('coupons', q => {
+                if (expired == 1)
+                    q.where('valid_to', '<', DateTime.now().toISO())
+            });
+            return pengoo.goocard.coupons
+        }
+
+        return []
     }
 
     async create(contract: HttpContextContract): Promise<Coupon> {
@@ -67,7 +94,7 @@ class CouponClientService implements CouponClientInterface, LogInterface<Coupon>
             const pengoo = await auth.authenticate()
             await pengoo.load('goocard')
             const goocard = pengoo.goocard
-            const coupon = await this.findById(request.param('id'), auth);
+            const coupon = await this.findById(request.qs().id, auth);
 
             if (!CouponValidateService.canRedeemed(coupon))
                 throw new CouponNotRedeemableErrException("This coupon cannot be redeemed.")

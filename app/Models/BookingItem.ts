@@ -24,8 +24,8 @@ export default class BookingItem extends BaseModel {
   @column()
   public priorityOptionId: number
 
-  @column()
-  public uniqueId: string
+  // @column()
+  // public uniqueId: string
 
   @column()
   public name: string

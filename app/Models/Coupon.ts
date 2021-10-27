@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import GooCard from './GooCard'
 import BookingItem from './BookingItem'
+import Penger from './Penger'
 
 export default class Coupon extends BaseModel {
   @column({ isPrimary: true })
@@ -52,6 +53,9 @@ export default class Coupon extends BaseModel {
     serializeAs: 'booking_items'
   })
   public bookingItems: ManyToMany<typeof BookingItem>
+
+  @belongsTo(() => Penger, { serializeAs: 'created_by' })
+  public penger: BelongsTo<typeof Penger>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

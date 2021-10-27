@@ -10,8 +10,54 @@ import { DBTransactionService } from "../db/DBTransactionService";
 import BankAccountService from "../payment/BankAccountService";
 import StripeCustomerService from "../payment/StripeCustomerService";
 import StripePaymentService from "../payment/StripePaymentService";
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 class GooCardService implements GoocardInterface {
+
+    async index({ request, auth }: HttpContextContract) {
+        const {
+            logs,
+            log_limit,
+            records,
+            record_limit,
+            credit_point
+        } = request.qs()
+        const user = await auth.authenticate()
+        await user.load('goocard')
+
+        if (logs) {
+            await user.goocard.load('logs', q => {
+                if (log_limit) q.limit(log_limit).orderBy('created_at', "desc")
+            })
+        }
+
+        if (records) {
+            await user.goocard.load('records', q => {
+                if (record_limit) q.limit(record_limit)
+            })
+        }
+
+        let credit_points = 0.0
+
+        if (credit_point) {
+            await user.related('goocard')
+                .query()
+                .preload('creditPoints')
+                .withAggregate('creditPoints', q => {
+                    q.sum('available_credit_points').as('credit_points')
+                }).firstOrFail().then(c => credit_points = c.$extras.credit_points)
+        }
+
+        return {
+            ...user.goocard.serialize({
+                fields: {
+                    omit: ['pin']
+                }
+            }),
+            credit_points
+        }
+    }
+
     async create(pin: string): Promise<GooCard> {
         const card = new GooCard();
         const trx = await DBTransactionService.init();

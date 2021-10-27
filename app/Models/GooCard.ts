@@ -20,7 +20,7 @@ export default class GooCard extends BaseModel {
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
 
-  @hasOne(() => CreditPoint)
+  @hasOne(() => CreditPoint, { serializeAs: 'credit_points' })
   public creditPoints: HasOne<typeof CreditPoint>
 
   @hasMany(() => GooCardLog)

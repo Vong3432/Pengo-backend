@@ -5,6 +5,18 @@ import VerifyGooCardValidator from 'App/Validators/pengoo/VerifyGooCardValidator
 
 export default class GooCardsController {
 
+  public async index(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      const card = await GooCardService.index(contract);
+      return SuccessResponse({
+        response, data: card
+      })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
+  }
+
   public async verifyGooCard({ request, response, auth }: HttpContextContract) {
     try {
       const payload = await request.validate(VerifyGooCardValidator);
