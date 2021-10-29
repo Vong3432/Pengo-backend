@@ -30,6 +30,8 @@ class AuthService implements AuthInterface {
                 expiresIn: "10 days"
             })
 
+            await user.load('locations')
+
             return {
                 user,
                 token

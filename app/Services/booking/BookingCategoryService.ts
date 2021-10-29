@@ -15,7 +15,7 @@ class BookingCategoryService implements BookingCategoryInterface {
         if (pengerId)
             return await BookingCategory.query().where('created_by', pengerId)
 
-        return await BookingCategory.all();
+        return await BookingCategory.query().where('is_enable', 1).preload('createdBy');
     };
 
     async findAllByPenger({ request, bouncer }: HttpContextContract) {

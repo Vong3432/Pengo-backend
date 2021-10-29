@@ -2,8 +2,7 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { BookingItemClientInterface } from "Contracts/interfaces/BookingItem.interface";
 import BookingItem from "App/Models/BookingItem";
 import PengerService from "../core/PengerService";
-import { ORMFilterService } from "../ORMService";
-import BookingCategoryService from "./BookingCategoryService";
+import { getDistance, orderByDistance, isPointWithinRadius } from "geolib";
 
 class BookingItemClientService implements BookingItemClientInterface {
 
@@ -27,36 +26,120 @@ class BookingItemClientService implements BookingItemClientInterface {
         return penger.bookingItems
     }
 
-    async findAll(contract: HttpContextContract): Promise<BookingItem[]> {
+    async findAll(contract: HttpContextContract) {
         const { request, auth } = contract;
-        const { penger_id: pengerId, category_id: categoryId } = request.qs()
+        const {
+            penger_id: pengerId,
+            category_id: categoryId,
+            price,
+            name,
+            lat,
+            lng,
+            km,
+            sort_date,
+            sort_distance,
+            limit,
+        } = request.qs()
         const user = await auth.authenticate()
         const isLoggedIn = auth.isLoggedIn
 
         if (user !== null && isLoggedIn) await user.load('goocard')
 
+        const q = BookingItem.query()
+
+        if (name) {
+            q.where("name", "like", `%${name}%`)
+        }
+
+        if (limit) {
+            q.limit(limit)
+        }
+
         // if findAll by Penger
         if (pengerId) {
-            return await this.findAllByPenger(contract);
+            q.preload('category', q => q.where('created_by', pengerId))
+        }
+
+        if (price) {
+            if (price !== "free" && price !== null)
+                q.whereBetween('price', [0, price])
         }
 
         // if has categoryId
         if (categoryId) {
-            const category = await BookingCategoryService.findById(categoryId)
-            await category.load('bookingItems', q => {
-                if (isLoggedIn) {
-                    q.preload('records', recordQuery => {
-                        recordQuery.where('goocard_id', user.goocard.id)
-                    })
-                }
-            });
-            return category.bookingItems as BookingItem[];
+            q.where('booking_category_id', categoryId)
         }
 
-        // find all items
-        const bookingItems = await new ORMFilterService(BookingItem, request.qs()).getFilteredResults()
-        return bookingItems as BookingItem[];
+        if (isLoggedIn) {
+            q.preload('records', recordQuery => {
+                recordQuery.where('goocard_id', user.goocard.id)
+            })
+        }
+
+        if (sort_date == 1) {
+            //sort by date
+            q.orderBy('created_at', 'desc')
+        }
+
+        if (sort_distance == 1 || (lng && lat)) {
+            //sort by distance
+            const arr = await q
+            const filtered = this.sortItemListByDistance(arr, (sort_distance == 1), lat, lng, km)
+            return filtered
+        }
+
+        return await q;
     };
+
+    /**
+    * 
+    * @param items 
+    * @param sortDistance
+    * @param lat 
+    * @param lng 
+    * @param radius (optional, 1km = 1000r)
+    * @description lowest will be at the top
+    */
+    async sortItemListByDistance(items: BookingItem[], sortDistance: boolean, lat: number, lng: number, km?: number) {
+        const origin = { longitude: lng, latitude: lat }
+        let filteredArr = items
+
+        if (km) {
+            // if filter radius is request,
+            // filter out the items that is out of range
+            filteredArr = filteredArr.filter((p) => {
+                const geoObj = JSON.parse(p.geolocation)
+                const isIn: boolean = isPointWithinRadius(
+                    origin,
+                    { ...geoObj },
+                    km * 1000 // km to radius
+                );
+                console.log(`Distance(km): ${getDistance(origin, geoObj) / 1000}, radius: ${km * 1000}, inPoint: ${isIn}`)
+                return isIn
+            })
+        }
+
+        if (filteredArr.length === 0) return []
+
+        if (sortDistance) {
+            const sortedArr = orderByDistance(origin, items.map((p) => {
+                const geoObj = JSON.parse(p.geolocation)
+                const { latitude, longitude } = geoObj
+                return {
+                    ...p.serialize(),
+                    latitude,
+                    longitude,
+                    distance: getDistance(origin, geoObj) / 1000 // m to km
+                }
+            }))
+
+            // return items filter w/ radius + sorted distance
+            return sortedArr;
+        }
+
+        // return items filter with radius only
+        return filteredArr
+    }
 
     async findById({ request, auth }: HttpContextContract) {
         const id = request.param('id')

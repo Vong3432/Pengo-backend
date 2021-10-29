@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeFetch, column, HasMany, hasMany, HasManyThrough, hasManyThrough, hasOne, HasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeFetch, column, computed, HasMany, hasMany, HasManyThrough, hasManyThrough, hasOne, HasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import BookingOption from './BookingOption'
 import BookingCategory from './BookingCategory'
 import User from './User'
@@ -24,7 +24,6 @@ export default class Penger extends BaseModel {
 
   @hasOne(() => PengerLocation)
   public location: HasOne<typeof PengerLocation>
-
 
   @hasMany(() => BookingCategory)
   public bookingCategories: HasMany<typeof BookingCategory>

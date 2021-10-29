@@ -1,6 +1,7 @@
 import NodeGeocoder from 'node-geocoder'
 import Env from '@ioc:Adonis/Core/Env'
-
+import { getDistance, isPointWithinRadius, orderByDistance } from 'geolib';
+import { BaseModel } from '@ioc:Adonis/Lucid/Orm';
 
 const options = {
     provider: 'google',
@@ -33,6 +34,7 @@ class GeoService {
         // console.log(`address:${JSON.stringify(address, null, 4)}`)
         return address[0]['city'] + ", " + address[0]['country']
     }
+
 }
 
 export default new GeoService();

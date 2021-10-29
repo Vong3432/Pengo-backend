@@ -1,10 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, belongsTo, BelongsTo, column, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeSave, belongsTo, BelongsTo, column, HasMany, hasMany, HasOne, hasOne, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import GooCard from './GooCard'
 import Role from './Role'
 import Notification from './Notification'
 import Penger from './Penger'
+import UserLocation from './UserLocation'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -31,6 +32,9 @@ export default class User extends BaseModel {
 
   @column({ columnName: 'role_id' })
   public roleId: number
+
+  @hasMany(() => UserLocation)
+  public locations: HasMany<typeof UserLocation>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
