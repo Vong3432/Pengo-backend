@@ -7,6 +7,8 @@ import RoleService from "../role/RoleService";
 import CloudinaryService from "../cloudinary/CloudinaryService";
 import GooCardService from "../goocard/GooCardService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import SaveUserLocationValidator from "App/Validators/pengoo/SaveUserLocationValidator";
+import GeoService from "../GeoService";
 class PengooService implements PengooInterface {
 
     async createPengoo({ request, auth }: HttpContextContract) {
@@ -53,6 +55,77 @@ class PengooService implements PengooInterface {
 
     async update() {
 
+    }
+
+    async getLocations({ auth }: HttpContextContract) {
+        const user = await auth.authenticate()
+        return await user.related('locations').query()
+    }
+
+    /**
+     * 
+     * @description 
+     * - This method is used when user save new location 
+     * - or set a previously added location as favourite 
+     * - or update previously added location's info.
+     */
+    async setLocation({ request, auth }: HttpContextContract) {
+        const trx = await DBTransactionService.init()
+        try {
+            const user = await auth.authenticate();
+            const { latitude, longitude, ...data } = await request.validate(SaveUserLocationValidator);
+
+            const geoObj = JSON.stringify({
+                latitude: latitude,
+                longitude: longitude,
+            })
+
+            const savedLocation = await user.useTransaction(trx).related('locations').updateOrCreate({
+                geolocation: geoObj,
+            }, {
+                ...data,
+                geolocation: geoObj,
+                street: await GeoService.coordinateToStreet(latitude, longitude),
+                address: await GeoService.coordinateToShortAddress(latitude, longitude),
+                isFav: 1,
+            })
+
+            await user.load('locations')
+
+            // set other locations isFav to false
+            for (const location of user.locations) {
+                if (location.id !== savedLocation.id) {
+                    location.merge({ isFav: 0 })
+                    await location.save()
+                }
+            }
+
+            await trx.commit();
+
+        } catch (error) {
+            await trx.rollback()
+            throw error;
+        }
+    }
+
+    async markAllAsNotFav({ auth }: HttpContextContract) {
+        const trx = await DBTransactionService.init()
+        try {
+            const user = await auth.authenticate()
+            await user.useTransaction(trx).load('locations')
+
+            // set other locations isFav to false
+            for (const location of user.locations) {
+                location.merge({ isFav: 0 })
+                await location.save()
+            }
+
+            await trx.commit()
+
+        } catch (error) {
+            await trx.rollback()
+            throw error
+        }
     }
 }
 

@@ -22,6 +22,9 @@ Route.group(() => {
     Route.post('validate-card', 'GooCardsController.verifyGooCard')
         .as("vadidateGooCard")
 
+    // location
+    Route.resource('locations', 'LocationsController').apiOnly()
+
 })
     .namespace('App/Controllers/Http/pengoo')
     .prefix('/pengoo')
