@@ -1,3 +1,4 @@
+import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 import { BankAccountType } from "App/Models/BankAccount";
 import Penger from "App/Models/Penger";
 import Stripe from "stripe";
@@ -8,10 +9,17 @@ class PengerService {
     async findById(id: number) {
         try {
             const penger = await Penger.findByOrFail('id', id)
+            await penger.load('location')
             return penger;
         } catch (error) {
             throw "Something went wrong"
         }
+    }
+
+    async findAll(auth: AuthContract) {
+        const user = await auth.authenticate()
+        await user.load('pengerUsers', q => q.preload('location'))
+        return user.pengerUsers
     }
 
     async setupBankAccount(self: Penger) {

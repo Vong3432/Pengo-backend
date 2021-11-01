@@ -6,6 +6,7 @@ import { Roles } from "App/Models/Role";
 import RoleService from "../role/RoleService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UnAuthorizedException from "App/Exceptions/UnAuthorizedException";
+import Penger from "App/Models/Penger";
 class AuthService implements AuthInterface {
 
 

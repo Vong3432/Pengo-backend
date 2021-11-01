@@ -6,12 +6,46 @@ import PengerService from "./PengerService";
 import CloudinaryService from "../cloudinary/CloudinaryService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import RoleService from "../role/RoleService";
-import { Roles } from "App/Models/Role";
+import Role, { Roles } from "App/Models/Role";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { AuthContract } from "@ioc:Adonis/Addons/Auth";
+import { ActionsAuthorizerContract } from "@ioc:Adonis/Addons/Bouncer";
 
 export class StaffService implements StaffInterface {
 
-    async createStaff({ request, bouncer }: HttpContextContract): Promise<User | any> {
+    async findAll({ request, bouncer }: HttpContextContract): Promise<User[]> {
+        try {
+            const { penger_id } = request.qs()
+            const penger = await PengerService.findById(penger_id);
+            await PengerVerifyAuthorizationService.isPenger(bouncer);
+            await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+            const staffRole = await Role.findByOrFail('name', Roles.Staff)
+
+            return await penger.related('pengerUsers').query().where('role_id', staffRole.id)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async findById(id: number, { bouncer, request }: HttpContextContract): Promise<User> {
+        try {
+            const { penger_id } = request.qs()
+            const penger = await PengerService.findById(penger_id);
+            await PengerVerifyAuthorizationService.isPenger(bouncer);
+            await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+            const staffRole = await Role.findByOrFail('name', Roles.Staff)
+
+
+            return await penger.related('pengerUsers').query()
+                .where('users.id', id)
+                .where('role_id', staffRole.id)
+                .firstOrFail()
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async create({ request, bouncer }: HttpContextContract) {
         let publicId: string = "";
         const payload = await request.validate(RegisterPengerStaffValidator);
         const penger = await PengerService.findById(payload.penger_id);
@@ -49,6 +83,12 @@ export class StaffService implements StaffInterface {
                 await CloudinaryService.destroyFromCloudinary(publicId)
             throw "Something went wrong"
         }
+    }
+    update(contract: HttpContextContract): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+    delete(contract: HttpContextContract): Promise<any> {
+        throw new Error("Method not implemented.");
     }
 
 }

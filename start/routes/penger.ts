@@ -14,13 +14,10 @@ Route.group(() => {
     Route.resource('booking-categories', 'BookingCategoriesController').apiOnly()
 
     // pengers
-    Route.post('/create', 'PengersController.createPenger').as('penger')
-    Route.put('/update/:id', 'PengersController.updatePenger').as('updatePenger')
+    Route.resource('/pengers', 'PengersController').apiOnly()
 
     // staff
-    Route.group(() => {
-        Route.post('/create', 'PengersController.addStaff').as('staff')
-    }).prefix('staff')
+    Route.resource('/staff', 'PengerStaffController').apiOnly()
 
     // system functions
     Route.get('/system-functions', 'SystemFunctionsController.index')

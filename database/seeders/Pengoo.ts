@@ -17,13 +17,14 @@ export default class PengooSeeder extends BaseSeeder {
             password: '12345678',
             roleId: roleId.id,
             phone: '+60149257542',
-            avatar: AvatarGenerateService.getAvatar('johndoe', {avatar: "micah", gender: "male"})!,
+            // avatar: AvatarGenerateService.getAvatar('johndoe', {avatar: "micah", gender: "male"})!,
+            avatar: "https://media.istockphoto.com/vectors/penguin-icon-vector-id926934398?k=20&m=926934398&s=612x612&w=0&h=4JQ35nnfjb8SMDUaSY3P1TfliQ5n4IbaMIKNhfHk5fo=",
             age: 99
         })
 
         await user.load('goocard')
 
-        if(user.goocard === null) {
+        if (user.goocard === null) {
             const card = await GooCardService.create('123456');
             await user.related('goocard').save(card);
         }
