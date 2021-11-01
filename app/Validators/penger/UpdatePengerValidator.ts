@@ -28,9 +28,7 @@ export default class UpdatePengerValidator {
 	public schema = schema.create({
 		name: schema.string.optional(),
 		location_name: schema.string.optional(),
-		geolocation: schema.object.optional([
-			rules.requiredWhen('location_id', '=', '1')]
-		).members({
+		geolocation: schema.object.optional().members({
 			latitude: schema.number(),
 			longitude: schema.number(),
 		}),
