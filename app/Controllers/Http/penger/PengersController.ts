@@ -41,4 +41,14 @@ export default class PengersController {
       return ErrorResponse({ response, msg: error.messages || error })
     }
   }
+
+  public async getTotalStaff(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      const total = await PengerService.findTotalStaff(contract);
+      return SuccessResponse({ response, data: total })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
+  }
 }

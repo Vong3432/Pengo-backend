@@ -30,7 +30,7 @@ export default class RegisterPengerStaffValidator {
         email: schema.string({}, [
             rules.email(),
         ]),
-        password: schema.string({}, [rules.minLength(8)]),
+        password: schema.string.optional({}, [rules.minLength(8)]),
         username: schema.string(),
         phone: schema.string({}, [
             rules.mobile({

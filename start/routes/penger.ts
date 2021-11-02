@@ -19,6 +19,9 @@ Route.group(() => {
     // staff
     Route.resource('/staff', 'PengerStaffController').apiOnly()
 
+    // stats
+    Route.get('/total-staff', 'PengersController.getTotalStaff').as('getTotalStaff')
+
     // system functions
     Route.get('/system-functions', 'SystemFunctionsController.index')
         .namespace('App/Controllers/Http/admin')

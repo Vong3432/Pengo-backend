@@ -21,7 +21,12 @@ export class StaffService implements StaffInterface {
             await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
             const staffRole = await Role.findByOrFail('name', Roles.Staff)
 
-            return await penger.related('pengerUsers').query().where('role_id', staffRole.id)
+            await penger.load('pengerUsers', q => {
+                q.preload('role')
+                q.where('role_id', staffRole.id)
+            })
+
+            return penger.pengerUsers
         } catch (error) {
             throw error;
         }
@@ -48,7 +53,7 @@ export class StaffService implements StaffInterface {
     async create({ request, bouncer }: HttpContextContract) {
         let publicId: string = "";
         const payload = await request.validate(RegisterPengerStaffValidator);
-        const penger = await PengerService.findById(payload.penger_id);
+        const penger = await PengerService.findById(request.qs().penger_id);
 
         await PengerVerifyAuthorizationService.isPenger(bouncer);
         await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
@@ -84,11 +89,53 @@ export class StaffService implements StaffInterface {
             throw "Something went wrong"
         }
     }
-    update(contract: HttpContextContract): Promise<any> {
-        throw new Error("Method not implemented.");
+    async update({ request, bouncer }: HttpContextContract) {
+        let publicId: string = "";
+        const payload = await request.validate(RegisterPengerStaffValidator);
+        const penger = await PengerService.findById(request.qs().penger_id);
+
+        await PengerVerifyAuthorizationService.isPenger(bouncer);
+        await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+
+        let { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: payload.avatar?.tmpPath, folder: "penger/staff" });
+        if (public_id) publicId = public_id;
+
+        const staff = await User.findOrFail(request.param('id'));
+        const trx = await DBTransactionService.init();
+        try {
+
+            const staffData = {
+                avatar: url,
+                email: payload.email,
+                phone: payload.phone,
+                username: payload.username,
+                password: payload.password,
+                age: payload.age
+            }
+
+            await staff.merge({ ...staffData }).save();
+            await trx.commit();
+            return staff;
+        } catch (error) {
+            await trx.rollback();
+            if (publicId)
+                await CloudinaryService.destroyFromCloudinary(publicId)
+            throw "Something went wrong"
+        }
     }
-    delete(contract: HttpContextContract): Promise<any> {
-        throw new Error("Method not implemented.");
+    async delete({ request, bouncer }: HttpContextContract) {
+        const penger = await PengerService.findById(request.qs().penger_id);
+        const staff = await User.findOrFail(request.param('id'))
+        const trx = await DBTransactionService.init();
+        try {
+            await PengerVerifyAuthorizationService.isPenger(bouncer);
+            await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+            await penger.related('pengerUsers').detach([staff.id], trx);
+            await trx.commit();
+        } catch (error) {
+            await trx.rollback();
+            throw error
+        }
     }
 
 }

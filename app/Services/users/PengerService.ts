@@ -4,8 +4,29 @@ import Penger from "App/Models/Penger";
 import Stripe from "stripe";
 import BankAccountService from "../payment/BankAccountService";
 import StripeCustomerService from "../payment/StripeCustomerService";
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Role, { Roles } from "App/Models/Role";
+import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 
 class PengerService {
+    async findTotalStaff({ request, bouncer }: HttpContextContract) {
+        try {
+            const { penger_id } = request.qs()
+            const staffRole = await Role.findByOrFail('name', Roles.Staff)
+
+            const penger = await Penger.query()
+                .withCount('pengerUsers', q => q.where('role_id', staffRole.id).as('totalStaff'))
+                .where('id', penger_id)
+                .firstOrFail()
+            await PengerVerifyAuthorizationService.isPenger(bouncer);
+            await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+
+            return penger.$extras.totalStaff
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async findById(id: number) {
         try {
             const penger = await Penger.findByOrFail('id', id)

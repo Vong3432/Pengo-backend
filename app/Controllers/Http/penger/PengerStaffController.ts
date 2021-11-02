@@ -33,9 +33,23 @@ export default class PengerStaffController {
     }
   }
 
-  public async update({ }: HttpContextContract) {
+  public async update(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      await new StaffService().update(contract)
+      return SuccessResponse({ response, msg: "Updated successfully" })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 
-  public async destroy({ }: HttpContextContract) {
+  public async destroy(contract: HttpContextContract) {
+    const { response } = contract;
+    try {
+      await new StaffService().delete(contract)
+      return SuccessResponse({ response, msg: 'Removed successfully' })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 }
