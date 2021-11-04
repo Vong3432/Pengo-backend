@@ -14,7 +14,7 @@ export default class GooCard extends BaseModel {
   @column()
   public userId: number
 
-  @column()
+  @column({ serializeAs: null })
   public pin: string
 
   @belongsTo(() => User)

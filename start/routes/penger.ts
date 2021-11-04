@@ -21,6 +21,11 @@ Route.group(() => {
 
     // stats
     Route.get('/total-staff', 'PengersController.getTotalStaff').as('getTotalStaff')
+    Route.get('/total-booking-today', 'BookingRecordsController.getTotalBookingToday').as('getTotalBookingToday')
+
+    // records
+    Route.resource('/records', 'BookingRecordsController').apiOnly()
+    // Route.get('/item-records/:id', 'BookingRecordsController.getItemRecords').as('getItemRecords')
 
     // system functions
     Route.get('/system-functions', 'SystemFunctionsController.index')

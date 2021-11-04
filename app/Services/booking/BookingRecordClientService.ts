@@ -132,9 +132,9 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             const record = await this.findById(id, auth);
 
             // update booking_record
-            await record.merge({
-                isUsed: 1
-            }).useTransaction(trx).save()
+            // await record.merge({
+            //     isUsed: 1
+            // }).useTransaction(trx).save()
 
             await trx.commit()
 

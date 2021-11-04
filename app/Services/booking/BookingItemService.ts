@@ -12,6 +12,8 @@ import { ORMFilterService } from "../ORMService";
 import PengerService from "../core/PengerService";
 import BookingCategoryService from "./BookingCategoryService";
 import DpoColService from "../admin/DpoColService";
+import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
+import BookingRecord from "App/Models/BookingRecord";
 
 class BookingItemService implements BookingItemInterface {
 
@@ -188,7 +190,50 @@ class BookingItemService implements BookingItemInterface {
 
     async delete({ }: HttpContextContract) {
 
-    };
+    }
+
+    // async viewItemRecords({ request, bouncer }: HttpContextContract) {
+    //     const { penger_id } = request.qs()
+
+    //     const penger = await Penger.query()
+    //         .where('id', penger_id)
+    //         .firstOrFail()
+    //     await PengerVerifyAuthorizationService.isPenger(bouncer);
+    //     await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
+
+    //     const item = await BookingItem
+    //         .query()
+    //         .where('id', request.param('id'))
+    //         .withCount('records', q => q.as('total_users'))
+    //         .preload('category', q => q.preload('bookingOptions'))
+    //         .preload('records', recordQuery => {
+    //             recordQuery.where('penger_id', penger.id)
+    //             recordQuery.preload('goocard', goocardQuery => {
+    //                 goocardQuery.preload('user')
+    //             })
+    //         })
+    //         .firstOrFail()
+
+    //     return {
+    //         ...item.serialize({
+    //             fields: {
+    //                 pick: ['id', 'name', 'description', 'poster_url']
+    //             },
+    //             relations: {
+    //                 records: {
+    //                     relations: {
+    //                         goocard: {
+    //                             fields: {
+    //                                 omit: ['created_at', 'updated_at', 'user_id']
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }),
+    //         total_users: item.$extras.total_users,
+    //     }
+    // }
 }
 
 export default new BookingItemService();

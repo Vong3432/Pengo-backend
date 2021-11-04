@@ -7,6 +7,7 @@ import Coupon from './Coupon'
 import PriorityOption from './PriorityOption'
 import { TimeGapUnit } from 'Config/const'
 import Penger from './Penger'
+import GooCard from './GooCard'
 
 export default class BookingItem extends BaseModel {
   @column({ isPrimary: true })

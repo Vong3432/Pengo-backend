@@ -64,6 +64,11 @@ class CreditPointsService implements CreditPointsInterface {
                 }).save();
             }
 
+            // update record 
+            await record.merge({
+                isUsed: 1
+            }).save();
+
             return {
                 credit,
                 amount: item.creditPoints

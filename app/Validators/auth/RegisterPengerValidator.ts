@@ -1,10 +1,11 @@
 import { schema, rules, validator } from "@ioc:Adonis/Core/Validator";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { MyReporter } from "../MyReporter";
 
 export default class RegisterPenderValidator {
 	constructor(protected ctx: HttpContextContract) { }
 
-	public reporter = validator.reporters.api
+	public reporter = MyReporter
 
 	/*
 	 * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
