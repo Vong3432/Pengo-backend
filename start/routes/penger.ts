@@ -46,6 +46,13 @@ Route.group(() => {
     // bank account 
     Route.resource('/bank-accounts', 'BankAccountsController').apiOnly()
 
+    // close dates
+    Route.resource('/close-dates', 'BookingCloseDatesController')
+        .middleware({
+            '*': 'penger_authorization'
+        })
+        .apiOnly()
+
 })
     .namespace('App/Controllers/Http/penger')
     .prefix('/penger')

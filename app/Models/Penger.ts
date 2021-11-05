@@ -31,6 +31,9 @@ export default class Penger extends BaseModel {
   @hasMany(() => BankAccount, { serializeAs: "bank_accounts", foreignKey: "holderId" })
   public bankAccounts: HasMany<typeof BankAccount>
 
+  @hasMany(() => BookingCloseDate, { serializeAs: 'close_dates' })
+  public closeDates: HasMany<typeof BookingCloseDate>
+
   @hasManyThrough([
     () => BookingOption,
     () => BookingCategory
@@ -47,9 +50,6 @@ export default class Penger extends BaseModel {
 
   @manyToMany(() => User)
   public pengerUsers: ManyToMany<typeof User>
-
-  @hasMany(() => BookingCloseDate)
-  public closeDates: HasMany<typeof BookingCloseDate>
 
   @hasMany(() => Coupon)
   public coupons: HasMany<typeof Coupon>

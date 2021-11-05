@@ -15,6 +15,7 @@ export default class UserPolicy extends BasePolicy {
 
     public async canPerformActionOnPenger(user: User, penger: Penger) {
         return await penger.related('pengerUsers').query().wherePivot('user_id', user.id)
+            .first() != null
             ? true
             : false;
     }
