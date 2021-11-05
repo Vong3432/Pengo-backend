@@ -11,6 +11,8 @@ import GoocardLogService from "../goocard/GoocardLogService";
 import GooCardLog, { GoocardLogType } from "App/Models/GooCardLog";
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 import { DateTime } from "luxon";
+import Penger from "App/Models/Penger";
+import PengerService from "../core/PengerService";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -93,12 +95,22 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             const user = await auth.authenticate();
             const payload = await request.validate(CreateBookingValidator);
 
-            console.log("create:", payload)
+            const penger = await Penger.findOrFail(payload.penger_id)
+
+            const startDate = payload.book_date?.start_date?.toSQLDate()
+            const endDate = payload.book_date?.end_date?.toSQLDate()
+
+
+            if (await PengerService.isOpen(penger, startDate, endDate) === false) {
+                const moment = startDate !== null && endDate !== null ? `between ${startDate} until ${endDate}` : "at the moment"
+                throw Error(`${penger.name} is closed ${moment}`)
+            }
 
             const card = await GooCardService.verify(payload.pin, user.id);
             await BookingItemService.findById(payload.booking_item_id);
 
             const record = new BookingRecord();
+
 
             await record.useTransaction(trx).fill({
                 gooCardId: card.id,

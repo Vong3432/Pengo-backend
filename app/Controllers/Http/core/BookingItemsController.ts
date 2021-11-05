@@ -19,21 +19,27 @@ export default class BookingItemsController {
     const { response } = contract;
     try {
       const bookingItem = await BookingItemClientService.findById(contract)
-      return SuccessResponse({
-        response, data: bookingItem.serialize({
-          relations: {
-            category: {
-              relations: {
-                created_by: {
-                  fields: {
-                    pick: ["id", "name", "logo", "location"],
-                    omit: ["created_at", "updated_at"]
-                  }
-                }
+      const serialized = bookingItem.serialize({
+        relations: {
+          category: {
+            relations: {
+              created_by: {
+                fields: {
+                  pick: ["id", "name", "logo", "location", "close_dates"],
+                  omit: ["created_at", "updated_at"]
+                },
               }
-            },
-          }
-        })
+            }
+          },
+        }
+      })
+      const isOpen = await BookingItemClientService.isOpened(bookingItem)
+
+      return SuccessResponse({
+        response, data: {
+          ...serialized,
+          is_open: isOpen,
+        }
       })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })

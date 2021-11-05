@@ -111,8 +111,8 @@ export default class CreateBookingItemValidator {
 			rules.unsigned()
 		]),
 		time_gap_units: schema.enum.optional(TimeGapService.getTimeUnits()),
-		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
-		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
+		start_from: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
+		end_at: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 	})
 
 	/**

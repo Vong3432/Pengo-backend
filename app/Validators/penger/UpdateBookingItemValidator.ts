@@ -106,10 +106,10 @@ export default class UpdateBookingItemValidator {
 		available_to_time: schema.date.optional({ format: 'HH:mm' },
 			// [rules.after('today')]
 		),
-		start_from: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' },
+		start_from: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' },
 			// [rules.after('today')]
 		),
-		end_at: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' },
+		end_at: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' },
 			// [rules.after('today')]
 		),
 		time_gap_value: schema.number.optional([

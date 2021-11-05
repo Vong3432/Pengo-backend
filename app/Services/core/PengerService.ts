@@ -5,6 +5,8 @@ import BookingRecord from "App/Models/BookingRecord";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { getDistance, isPointWithinRadius, orderByDistance } from 'geolib'
 import GeoService from "../GeoService";
+import { DateTime } from "luxon";
+import { ModelObject } from "@ioc:Adonis/Lucid/Orm";
 
 class PengerService implements PengerClientInterface {
     async findById(id: number) {
@@ -38,15 +40,48 @@ class PengerService implements PengerClientInterface {
         }
 
         if (sort_distance == 1 || (lat && lng)) {
-            const arr = q.preload('location')
+            await q.preload('location')
+            const arr = this.getOpenPengers(await q)
             let filtered = this.sortPengerListByDistance(await arr, (sort_distance == 1), lat, lng, km)
             return filtered
         }
 
         // if (page)
         //     return q.paginate(page)
+        return this.getOpenPengers(await q)
+    }
 
-        return await q
+    /**
+     * 
+     * @param pengers 
+     * @description Check if penger is open
+     */
+    async isOpen(penger: Penger, from?: string, to?: string) {
+        const today = DateTime.now().toSQLDate()
+        await penger.load('closeDates', q => {
+            q
+                .where('from', '<=', from ?? today)
+                .where('to', '>=', to ?? today)
+        })
+
+        const isOpening = penger.closeDates.length === 0
+        return isOpening
+    }
+    /**
+     * 
+     * @param pengers 
+     * @description Return pengers that is open only
+     */
+    async getOpenPengers(pengers: Penger[]) {
+        let opened: Penger[] = []
+
+        for await (const penger of pengers) {
+            if (await this.isOpen(penger)) {
+                opened.push(penger)
+            }
+        }
+
+        return opened
     }
 
     /**
@@ -97,10 +132,14 @@ class PengerService implements PengerClientInterface {
     }
 
     async findNearestPengers({ }: HttpContextContract) {
-        return (await Penger.query()
-            .preload('location')
-            .preload('bookingItems')
-            .limit(3)).map(p => p.serialize({
+        const q = Penger.query()
+
+        q.preload('location')
+        q.preload('bookingItems')
+        q.limit(3)
+
+        return (await this.getOpenPengers(await q))
+            .map(p => p.serialize({
                 relations: {
                     location: {
                         fields: {
@@ -132,35 +171,43 @@ class PengerService implements PengerClientInterface {
             const query = Penger.query().preload('location').preload('bookingItems', q => q.limit(6))
 
             if (limit)
-                return (await query.limit(limit)).map((p => p.serialize({
+                return (await this.getOpenPengers((await query.limit(limit))))
+                    .map((p => p.serialize({
+                        relations: {
+                            location: {
+                                fields: {
+                                    pick: ['geolocation', 'address', 'street']
+                                }
+                            }
+                        }
+                    })));
+
+            return (await this.getOpenPengers(await query.paginate(pageNum)))
+                .map((p) => p.serializeRelations({
+                    location: {
+                        fields: {
+                            pick: ['geolocation', 'address', 'street']
+                        }
+                    }
+                }))
+        }
+
+        let pengers: ModelObject[] = []
+
+        for await (const record of records) {
+            if (await this.isOpen(record.penger) == true) {
+                pengers.push(record.penger.serialize({
                     relations: {
                         location: {
                             fields: {
-                                pick: ['geolocation', 'address', 'street']
+                                pick: ['address', 'geolocation', 'street']
                             }
                         }
                     }
-                })));
-
-            return await (await query.paginate(pageNum)).map((p) => p.serializeRelations({
-                location: {
-                    fields: {
-                        pick: ['geolocation', 'address', 'street']
-                    }
-                }
-            }))
-        }
-
-        const pengers = records.map((record) => record.penger.serialize({
-            relations: {
-                location: {
-                    fields: {
-                        pick: ['address', 'geolocation', 'street']
-                    }
-                }
+                }))
             }
-        }));
-        return pengers;
+        }
+        return pengers
     }
 }
 

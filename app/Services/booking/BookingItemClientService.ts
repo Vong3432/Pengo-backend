@@ -83,13 +83,42 @@ class BookingItemClientService implements BookingItemClientInterface {
 
         if (sort_distance == 1 || (lng && lat)) {
             //sort by distance
-            const arr = await q
+            const arr = await this.getOpenItems(await q)
             const filtered = this.sortItemListByDistance(arr, (sort_distance == 1), lat, lng, km)
             return filtered
         }
 
-        return await q;
+        return await this.getOpenItems(await q);
     };
+
+    /**
+     * 
+     * @param item 
+     * @description Return item that is open only
+     */
+    async isOpened(item: BookingItem) {
+
+        await item.load('category', q => q.preload('createdBy'))
+        const penger = item.category.createdBy
+        return await PengerService.isOpen(penger) === true
+    }
+
+    /**
+     * 
+     * @param items 
+     * @description Return items that is open only
+     */
+    async getOpenItems(items: BookingItem[]) {
+        let opened: BookingItem[] = []
+
+        for await (const item of items) {
+            if (await this.isOpened(item)) {
+                opened.push(item)
+            }
+        }
+
+        return opened
+    }
 
     /**
     * 
@@ -151,7 +180,10 @@ class BookingItemClientService implements BookingItemClientInterface {
         const bookingItem = await BookingItem.findOrFail(id)
 
         await bookingItem.load('category', q => {
-            q.preload('createdBy', pengerQ => pengerQ.preload('location'))
+            q.preload('createdBy', pengerQ => {
+                pengerQ.preload('location')
+                pengerQ.preload('closeDates')
+            })
             q.preload('bookingOptions', optionQ => optionQ.where('is_active', 1))
         });
 
