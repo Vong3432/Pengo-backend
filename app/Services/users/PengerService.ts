@@ -57,6 +57,7 @@ class PengerService {
                 await BankAccountService.create(accId, BankAccountType.PENGER, self.id);
             } else {
                 // does has record, return it from db
+                await this.updateBankAccount(self.bankAccounts[0].uniqueId, self)
             }
 
             // refresh
@@ -191,7 +192,7 @@ class PengerService {
             await StripeService.getStripe().transfers.create({
                 amount: totalAsCents,
                 currency: "myr",
-                destination: "acct_1JsnnOLhMJvRumGK",
+                destination: bankAccount.uniqueId,
             });
 
             // get all unpaid transaction records
