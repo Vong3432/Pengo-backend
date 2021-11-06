@@ -1,12 +1,13 @@
 import { AuthContract } from "@ioc:Adonis/Addons/Auth";
-import { BankAccountType } from "App/Models/BankAccount";
+import BankAccount, { BankAccountType } from "App/Models/BankAccount";
 import Penger from "App/Models/Penger";
-import Stripe from "stripe";
 import BankAccountService from "../payment/BankAccountService";
-import StripeCustomerService from "../payment/StripeCustomerService";
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Role, { Roles } from "App/Models/Role";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
+import Transaction from "App/Models/Transaction";
+import { DBTransactionService } from "../db/DBTransactionService";
+import StripeService from "../payment/StripeService";
 
 class PengerService {
     async findTotalStaff({ request, bouncer }: HttpContextContract) {
@@ -43,22 +44,19 @@ class PengerService {
         return user.pengerUsers
     }
 
-    async setupBankAccount(self: Penger) {
+    async setupBankAccount(accId: string, self: Penger) {
         // const trx = await DBTransactionService.init();
         try {
 
-            // store "customer" object from Stripe.
-            let fromCus: Stripe.Customer | Stripe.DeletedCustomer
             await self.load('bankAccounts');
 
             // check if current penger has any bank accounts in DB
             if (self.bankAccounts.length === 0) {
                 // does not has any record, create a new one
-                fromCus = await StripeCustomerService.create({ description: self.name });
-                await BankAccountService.create(fromCus.id, BankAccountType.PENGER, self.id);
+                // fromCus = await StripeCustomerService.create({ description: self.name });
+                await BankAccountService.create(accId, BankAccountType.PENGER, self.id);
             } else {
                 // does has record, return it from db
-                fromCus = await StripeCustomerService.retrieve(self.bankAccounts[0].uniqueId);
             }
 
             // refresh
@@ -71,54 +69,165 @@ class PengerService {
         }
     }
 
-    // async payout(amount: number, to: number, self: Penger) {
-    //     const trx = await DBTransactionService.init();
-    //     try {
+    async updateBankAccount(accId: string, self: Penger) {
+        const trx = await DBTransactionService.init();
+        try {
 
-    //         // store "customer" object from Stripe.
-    //         let fromCus: Stripe.Customer | Stripe.DeletedCustomer
-    //         await self.load('bankAccounts');
+            const bankAccount = await BankAccount.query()
+                .where('type', BankAccountType.PENGER)
+                .where('holder_id', self.id)
+                .firstOrFail()
 
-    //         // check if current penger has any bank accounts in DB
-    //         if (self.bankAccounts.length === 0) {
-    //             // does not has any record, create a new one
-    //             fromCus = await StripeCustomerService.create({ description: self.name });
-    //             await BankAccountService.create(fromCus.id, BankAccountType.PENGER, self.id);
-    //         } else {
-    //             // does has record, return it from db
-    //             fromCus = await StripeCustomerService.retrieve(self.bankAccounts[0].uniqueId);
-    //         }
+            await bankAccount.useTransaction(trx).merge({ uniqueId: accId }).save()
+            await trx.commit();
+            // refresh
+            await self.load('bankAccounts');
+            return self.bankAccounts[0];
 
-    //         // refresh
-    //         await self.load('bankAccounts');
+        } catch (error) {
+            await trx.rollback()
+            throw error
+        }
+    }
 
-    //         // find bank account of a pengoo (from: "to")
-    //         const toPengooAccounts = await BankAccountService.findAccounts(to, BankAccountType.PENGER);
-    //         // throw err if that pengoo does not have bank acc
-    //         if (!toPengooAccounts || toPengooAccounts.length === 0) throw "No account";
+    async getBalanceInfo({ request }: HttpContextContract) {
+        const { penger_id } = request.qs()
+        return await this.getChargeInfo(penger_id)
+    }
 
-    //         // Deposit money
-    //         const paymentIntent = await StripePaymentService.deposit(fromCus.id, amount)
+    async getBankAccount({ request }: HttpContextContract) {
+        const bankAccount = await BankAccount.query()
+            .where('type', BankAccountType.PENGER)
+            .where('holder_id', request.qs().penger_id)
+            .firstOrFail()
 
-    //         // Create custom record and save into transaction table. 
-    //         const transaction = new Transaction()
-    //         transaction.fill({
-    //             toBankAccountId: toPengooAccounts[0].id,
-    //             bankAccountId: self.bankAccounts[0].id,
-    //             amount: amount,
-    //             metadata: JSON.stringify(paymentIntent),
-    //         })
+        return bankAccount.uniqueId
+    }
 
-    //         await self.bankAccounts[0].useTransaction(trx).related('transactions').save(transaction);
-    //         await trx.commit()
+    private async getChargeInfo(pengerId: number) {
+        // penger's bank account
+        const bankAccount = await BankAccount.query()
+            .where('type', BankAccountType.PENGER)
+            .where('holder_id', pengerId)
+            .firstOrFail()
 
-    //         return paymentIntent;
+        const chargeRate = 0.03 // should replace with Setting
 
-    //     } catch (error) {
-    //         await trx.rollback()
-    //         throw error
-    //     }
-    // }
+        const transactions = Transaction.query()
+            .where('to_bank_account_id', bankAccount.id)
+            .where('bank_account_id', '!=', bankAccount.id)
+
+        // Handle current balance that is not paid yet
+        const currents = await transactions.where('is_paid', 0)
+        const totalCurrentAmount = currents.reduce((prev, curr: Transaction) => {
+            return (curr.amount / 100) + prev
+        }, 0)
+        const totalCurrentAmountCharge = totalCurrentAmount * chargeRate
+        const totalCurrentAmountEarn = totalCurrentAmount - totalCurrentAmountCharge
+
+        // Handle payout that is already paid
+        const payoutTransactions = Transaction.query()
+            .where('to_bank_account_id', bankAccount.id)
+            .where('bank_account_id', '!=', bankAccount.id)
+        const payouts = await payoutTransactions.where('is_paid', 1)
+        const totalGross = payouts.reduce((prev, curr: Transaction) => {
+            return (curr.amount / 100) + prev
+        }, 0)
+
+        // calculations
+        const totalCharge = totalGross * chargeRate
+        const totalEarn = totalGross - totalCharge
+
+        // rounding
+        const roundingAmount = Math.round(totalEarn) - totalEarn
+        const roundedTotalEarn = Math.round(Number(totalEarn)) - roundingAmount
+
+        // serializing
+        const serializedTransactions = payouts.map(p => p.serialize({
+            fields: {
+                omit: ['id', 'to_bank_account_id', 'bank_account_id']
+            }
+        }));
+
+        return {
+            currency: 'RM',
+            current_amount: totalCurrentAmount.toFixed(2),
+            current_amount_charge: totalCurrentAmountCharge.toFixed(2),
+            total_current_amount: totalCurrentAmountEarn.toFixed(2),
+            total_gross: totalGross.toFixed(2),
+            total_charge: totalCharge.toFixed(2),
+            total_earn: totalEarn.toFixed(2),
+            rounded_total_earn: roundedTotalEarn.toFixed(2),
+            rounded_amount: roundingAmount.toFixed(2),
+            charge_rate: chargeRate,
+            transactions: serializedTransactions,
+        }
+    }
+
+    async payout({ request }: HttpContextContract) {
+        const trx = await DBTransactionService.init();
+        try {
+            const { penger_id } = request.qs()
+
+            // penger's bank account
+            const bankAccount = await BankAccount.query()
+                .where('type', BankAccountType.PENGER)
+                .where('holder_id', penger_id)
+                .firstOrFail()
+
+            // get amount that is not paid out yet
+            const { total_current_amount } = await this.getChargeInfo(penger_id)
+            const totalAsCents = Math.round(Number(total_current_amount) * 100)
+
+            if (totalAsCents === 0) {
+                throw "Nothing to withdraw"
+            }
+
+            if ((totalAsCents > 200) === false) {
+                throw "Unable to withdraw less than RM2.00"
+            }
+
+            // send penger total
+            await StripeService.getStripe().transfers.create({
+                amount: totalAsCents,
+                currency: "myr",
+                destination: "acct_1JsnnOLhMJvRumGK",
+            });
+
+            // get all unpaid transaction records
+            const transactions = await Transaction.query()
+                .where('to_bank_account_id', bankAccount.id)
+                .where('bank_account_id', '!=', bankAccount.id)
+                .where('is_paid', 0)
+
+            // update all as paid
+            for await (const transaction of transactions) {
+                await transaction.useTransaction(trx).merge({ isPaid: true }).save()
+                await trx.commit()
+            }
+
+            // // Deposit money
+            // const paymentIntent = await StripePaymentService.deposit(fromCus.id, amount)
+
+            // // Create custom record and save into transaction table. 
+            // const transaction = new Transaction()
+            // transaction.fill({
+            //     toBankAccountId: toPengooAccounts[0].id,
+            //     bankAccountId: self.bankAccounts[0].id,
+            //     amount: amount,
+            //     metadata: JSON.stringify(paymentIntent),
+            // })
+
+            // await self.bankAccounts[0].useTransaction(trx).related('transactions').save(transaction);
+
+            // return paymentIntent;
+
+        } catch (error) {
+            console.log(error)
+            await trx.rollback()
+            throw error
+        }
+    }
 }
 
 export default new PengerService();

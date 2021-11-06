@@ -15,6 +15,7 @@ export default class PaymentsController {
             const intent = await GooCardService.pay(bookingItem.price * 100, target_holder_id, auth);
             return SuccessResponse({ response, data: intent })
         } catch (error) {
+            console.log(error)
             return ErrorResponse({ response, msg: error.messages || error })
         }
     }

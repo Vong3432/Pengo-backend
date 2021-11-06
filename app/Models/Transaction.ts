@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, computed } from '@ioc:Adonis/Lucid/Orm'
 import BankAccount from './BankAccount'
 
 export default class Transaction extends BaseModel {
@@ -33,4 +33,9 @@ export default class Transaction extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @computed({ serializeAs: 'gross_amount' })
+  public get computed_amount() {
+    return this.amount / 100
+  }
 }
