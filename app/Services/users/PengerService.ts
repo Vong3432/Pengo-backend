@@ -57,7 +57,7 @@ class PengerService {
                 await BankAccountService.create(accId, BankAccountType.PENGER, self.id);
             } else {
                 // does has record, return it from db
-                await this.updateBankAccount(self.bankAccounts[0].uniqueId, self)
+                return await this.updateBankAccount(accId, self)
             }
 
             // refresh
@@ -71,7 +71,6 @@ class PengerService {
     }
 
     async updateBankAccount(accId: string, self: Penger) {
-        const trx = await DBTransactionService.init();
         try {
 
             const bankAccount = await BankAccount.query()
@@ -79,14 +78,12 @@ class PengerService {
                 .where('holder_id', self.id)
                 .firstOrFail()
 
-            await bankAccount.useTransaction(trx).merge({ uniqueId: accId }).save()
-            await trx.commit();
+            await bankAccount.merge({ uniqueId: accId }).save()
             // refresh
             await self.load('bankAccounts');
             return self.bankAccounts[0];
 
         } catch (error) {
-            await trx.rollback()
             throw error
         }
     }
