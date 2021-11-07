@@ -94,6 +94,8 @@ class CouponService implements CouponInterface {
             coupon.fill({
                 ...data,
                 isRedeemable: BoolConvertHelperService.boolToInt(payload.is_redeemable) ?? 0,
+                isScannable: BoolConvertHelperService.boolToInt(payload.is_scannable) ?? 0,
+                isSelectable: BoolConvertHelperService.boolToInt(payload.is_selectable) ?? 0,
             });
             await penger.useTransaction(trx).related('coupons').save(coupon);
 
@@ -131,6 +133,8 @@ class CouponService implements CouponInterface {
             await coupon.useTransaction(trx).merge({
                 ...data,
                 isRedeemable: BoolConvertHelperService.boolToInt(payload.is_redeemable) ?? coupon.isRedeemable,
+                isScannable: BoolConvertHelperService.boolToInt(payload.is_scannable) ?? coupon.isScannable,
+                isSelectable: BoolConvertHelperService.boolToInt(payload.is_selectable) ?? coupon.isSelectable,
             }).save();
 
             await trx.commit();

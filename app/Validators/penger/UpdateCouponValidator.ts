@@ -42,6 +42,8 @@ export default class UpdateCouponValidator {
 		valid_to: schema.date.optional({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
 		quantity: schema.number.optional([rules.unsigned()]),
 		is_redeemable: schema.boolean.optional(),
+		is_scannable: schema.boolean.optional(),
+		is_selectable: schema.boolean.optional(),
 		discount_percentage: schema.number.optional(),
 		// discount_amount: schema.number.optional(),
 		only_to_items: schema.array.optional().members(

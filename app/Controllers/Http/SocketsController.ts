@@ -33,4 +33,31 @@ export default class SocketsController {
             return ErrorResponse({ response, msg: error });
         }
     }
+    public async verifyCoupon({ request, auth, response }: HttpContextContract) {
+        try {
+            const user = await auth.authenticate();
+            const {
+                coupon_id,
+                pin
+            } = request.body();
+
+            if (coupon_id == null || user == null) throw ('Failed to connect to socket')
+
+            await user.load('role')
+
+            const data = {
+                auth: auth,
+                coupon_id: coupon_id,
+                pin,
+                user,
+                role: user.role.name,
+            }
+            Ws.io.emit('rest-join', data);
+            console.log('verify coupon')
+            return SuccessResponse({ response, msg: 'Connected' });
+        } catch (error) {
+            console.log('err:', error)
+            return ErrorResponse({ response, msg: error });
+        }
+    }
 }

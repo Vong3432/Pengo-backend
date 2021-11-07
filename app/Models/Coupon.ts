@@ -45,6 +45,20 @@ export default class Coupon extends BaseModel {
   })
   public isRedeemable: number
 
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isSelectable: number
+
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isScannable: number
+
   @manyToMany(() => GooCard)
   public goocards: ManyToMany<typeof GooCard>
 
