@@ -107,7 +107,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             }
 
             const card = await GooCardService.verify(payload.pin, user.id);
-            await BookingItemService.findById(payload.booking_item_id);
+            const item = await BookingItemService.findById(payload.booking_item_id);
 
             const record = new BookingRecord();
 
@@ -118,6 +118,8 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 bookDate: JSON.stringify(payload.book_date),
                 bookTime: payload.book_time,
                 bookingItemId: payload.booking_item_id,
+                rewardPoint: item.creditPoints,
+                isUsed: 0,
             }).save();
 
             // save booking record log
@@ -148,13 +150,14 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             //     isUsed: 1
             // }).useTransaction(trx).save()
 
-            await trx.commit()
-
             // save the verified log
             await GoocardLogService.saveLog(
                 await this.toLog(record, "USE"),
                 auth
             )
+
+            await trx.commit()
+
         } catch (error) {
             await trx.rollback();
             throw error;
@@ -162,8 +165,26 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
     };
 
-    async delete({ }: HttpContextContract) {
+    async delete({ request, auth }: HttpContextContract) {
+        const trx = await DBTransactionService.init();
+        try {
+            const id = request.param('id');
+            const user = await auth.authenticate();
+            await user.load('goocard');
+            const record = await BookingRecord
+                .query()
+                .preload('item')
+                .where('id', id)
+                .where('goocard_id', user.goocard.id)
+                .where('is_used', 0)
+                .firstOrFail();
 
+            await record.delete()
+            await trx.commit()
+        } catch (error) {
+            await trx.rollback()
+            throw error;
+        }
     };
 
     async getRecordByPengooAndItem(bookingItemId: number, gooCardId: number) {

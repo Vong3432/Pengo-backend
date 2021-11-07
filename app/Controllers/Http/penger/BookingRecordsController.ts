@@ -48,7 +48,14 @@ export default class BookingRecordsController {
   //   }
   // }
 
-  public async update({ }: HttpContextContract) {
+  public async update(contract: HttpContextContract) {
+    const { response } = contract
+    try {
+      await BookingRecordService.update(contract);
+      return SuccessResponse({ response, msg: 'Verified successfully' })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
   }
 
   public async destroy({ }: HttpContextContract) {

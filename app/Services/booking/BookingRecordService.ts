@@ -5,6 +5,11 @@ import Penger from "App/Models/Penger";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import BookingRecord from "App/Models/BookingRecord";
 import { DateTime } from "luxon";
+import GooCard from "App/Models/GooCard";
+import BookingRecordClientService from "./BookingRecordClientService";
+import GooCardLog from "App/Models/GooCardLog";
+import CreditPoint from "App/Models/CreditPoint";
+import BookingItem from "App/Models/BookingItem";
 
 class BookingRecordService implements BookingRecordInterface {
 
@@ -17,15 +22,16 @@ class BookingRecordService implements BookingRecordInterface {
         await PengerVerifyAuthorizationService.isPenger(bouncer);
         await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
 
+        const shouldShowExpired = show_expired == 1
+        const showToday = show_today == 1
+
         const records = await BookingRecord
             .query()
             .where('penger_id', penger.id)
-            .where('is_used', 0)
+            .if(shouldShowExpired === false, q => q.where('is_used', 0))
             .preload('item')
             .preload('goocard', q => q.preload('user'))
 
-        const shouldShowExpired = show_expired == 1
-        const showToday = show_today == 1
         const sortedRecords = this.sortBookDate(records, shouldShowExpired, showToday)
 
         return sortedRecords
@@ -114,9 +120,69 @@ class BookingRecordService implements BookingRecordInterface {
         }
     };
 
-    async update({ }: HttpContextContract) {
+    /**
+     * 
+     * @description Approve/verify pengoo pass manually
+     */
+    async update({ request }: HttpContextContract) {
         const trx = await DBTransactionService.init();
         try {
+            const pengerId = request.qs().penger_id
+            const record = await BookingRecord
+                .query()
+                .where('penger_id', pengerId)
+                .where('id', request.param('id'))
+                .firstOrFail()
+            const item = await BookingItem.findOrFail(record.bookingItemId)
+
+            if (record.isUsed === 1) {
+                return "Already verified"
+            }
+
+            // update record
+            await record.useTransaction(trx).merge({ isUsed: 1 }).save()
+
+            // save logs for pengoo
+            const card = await GooCard.findByOrFail('id', record.gooCardId)
+            await card.load('user')
+
+            const { title, body, type } = await BookingRecordClientService.toLog(record, "USE");
+
+            const log = new GooCardLog()
+            log.fill({
+                title,
+                body,
+                type
+            })
+
+            await card.related('logs').save(log);
+
+            // update credit points
+            const credit = await CreditPoint.firstOrCreate({
+                gooCardId: card.id,
+                pengerId: record.pengerId,
+            }, {
+                totalCreditPoints: 0,
+                availableCreditPoints: 0
+            });
+
+            if (credit.$isLocal) {
+                // is new
+                credit.merge({
+                    totalCreditPoints: item.creditPoints,
+                    availableCreditPoints: item.creditPoints,
+                });
+                await card.related('creditPoints').save(credit);
+            } else {
+                // exist
+                await credit.merge({
+                    totalCreditPoints: credit.totalCreditPoints + item.creditPoints,
+                    availableCreditPoints: credit.availableCreditPoints + item.creditPoints,
+                }).save();
+            }
+
+            // commit
+            await trx.commit()
 
         } catch (error) {
             await trx.rollback();
@@ -125,8 +191,11 @@ class BookingRecordService implements BookingRecordInterface {
 
     };
 
-    async delete({ }: HttpContextContract) {
-
+    /**
+     * 
+     * @description Only pengoo can cancel
+     */
+    async delete({ request }: HttpContextContract) {
     };
 
 }

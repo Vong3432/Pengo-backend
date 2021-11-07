@@ -35,9 +35,6 @@ class CreditPointsService implements CreditPointsInterface {
             // validate record is already scanned and verified.
             if (record.isUsed === 0) throw "Already used";
 
-            await record.load('item');
-            const item: BookingItem = record.item;
-
             const user = await auth.authenticate();
             await user.load('goocard');
 
@@ -52,15 +49,15 @@ class CreditPointsService implements CreditPointsInterface {
             if (credit.$isLocal) {
                 // is new
                 credit.merge({
-                    totalCreditPoints: item.creditPoints,
-                    availableCreditPoints: item.creditPoints,
+                    totalCreditPoints: record.rewardPoint,
+                    availableCreditPoints: record.rewardPoint,
                 });
                 await user.goocard.related('creditPoints').save(credit);
             } else {
                 // exist
                 await credit.merge({
-                    totalCreditPoints: credit.totalCreditPoints + item.creditPoints,
-                    availableCreditPoints: credit.availableCreditPoints + item.creditPoints,
+                    totalCreditPoints: credit.totalCreditPoints + record.rewardPoint,
+                    availableCreditPoints: credit.availableCreditPoints + record.rewardPoint,
                 }).save();
             }
 
@@ -71,7 +68,7 @@ class CreditPointsService implements CreditPointsInterface {
 
             return {
                 credit,
-                amount: item.creditPoints
+                amount: record.rewardPoint
             };
         } catch (error) {
             throw new Error("Failed to add credit points");

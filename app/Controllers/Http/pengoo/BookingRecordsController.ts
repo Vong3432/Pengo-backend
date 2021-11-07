@@ -47,7 +47,8 @@ export default class BookingRecordsController {
   public async destroy(contract: HttpContextContract) {
     const { response } = contract;
     try {
-      return SuccessResponse({ response, msg: '', data: null })
+      await BookingRecordClientService.delete(contract)
+      return SuccessResponse({ response, msg: 'Cancel booking successfully', })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error.message })
     }

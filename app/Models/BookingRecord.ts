@@ -51,6 +51,9 @@ export default class BookingRecord extends BaseModel {
   @belongsTo(() => Penger)
   public penger: BelongsTo<typeof Penger>
 
+  @column()
+  public rewardPoint: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
