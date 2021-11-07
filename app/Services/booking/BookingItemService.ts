@@ -14,6 +14,7 @@ import BookingCategoryService from "./BookingCategoryService";
 import DpoColService from "../admin/DpoColService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
 import BookingRecord from "App/Models/BookingRecord";
+import { DateTime } from "luxon";
 
 class BookingItemService implements BookingItemInterface {
 
@@ -24,7 +25,26 @@ class BookingItemService implements BookingItemInterface {
 
     async findAllByPenger({ request }: HttpContextContract) {
         const penger = await PengerService.findById(request.qs().penger_id);
-        return await penger.related('bookingItems').query();
+        const { category_id, name } = request.qs()
+
+        const q = penger
+            .related('bookingItems')
+            .query()
+
+        if (name) {
+            const trimName: string = name.toString().trim()
+            q.where("booking_items.name", "like", `%${trimName}%`)
+        }
+
+        if (category_id) {
+            console.log("catid", category_id)
+
+            q.where('booking_category_id', category_id)
+        }
+
+        const today = DateTime.local().toSQLDate();
+        // return items that ends late than today
+        return await q.where('end_at', '>', today)
     };
 
     async findAllByPengerAndCategory(contract: HttpContextContract) {

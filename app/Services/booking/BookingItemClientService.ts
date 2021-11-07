@@ -48,7 +48,8 @@ class BookingItemClientService implements BookingItemClientInterface {
         const q = BookingItem.query()
 
         if (name) {
-            q.where("name", "like", `%${name}%`)
+            const trimName: string = name.toString().trim()
+            q.where("name", "like", `%${trimName}%`)
         }
 
         if (limit) {
