@@ -3,6 +3,7 @@ import { BookingItemClientInterface } from "Contracts/interfaces/BookingItem.int
 import BookingItem from "App/Models/BookingItem";
 import PengerService from "../core/PengerService";
 import { getDistance, orderByDistance, isPointWithinRadius } from "geolib";
+import { DateTime } from "luxon";
 
 class BookingItemClientService implements BookingItemClientInterface {
 
@@ -175,10 +176,23 @@ class BookingItemClientService implements BookingItemClientInterface {
         const id = request.param('id')
         const user = await auth.authenticate()
         const isLoggedIn = auth.isLoggedIn
-
-        if (user !== null && isLoggedIn) await user.load('goocard')
-
         const bookingItem = await BookingItem.findOrFail(id)
+
+        if (user !== null && isLoggedIn) {
+            await user.load('goocard')
+
+            await user.goocard
+                .load('coupons', q => {
+                    q.where('valid_to', '>', DateTime.now().toISO())
+                    q.where('is_used', 0)
+                });
+
+            const availableCouponIds = user.goocard.coupons.map(c => c.id)
+
+            bookingItem.load('coupons', q => {
+                q.whereIn('coupons.id', availableCouponIds)
+            })
+        }
 
         await bookingItem.load('category', q => {
             q.preload('createdBy', pengerQ => {

@@ -29,6 +29,9 @@ export default class CreatePaymentValidator {
 	public schema = schema.create({
 		booking_item_id: schema.number(),
 		target_holder_id: schema.number(),
+		coupon_id: schema.number.optional([
+			rules.exists({ table: 'goocard_coupon', column: 'coupon_id' })
+		])
 	})
 
 	/**

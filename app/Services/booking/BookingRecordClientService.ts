@@ -13,6 +13,8 @@ import { AuthContract } from "@ioc:Adonis/Addons/Auth";
 import { DateTime } from "luxon";
 import Penger from "App/Models/Penger";
 import PengerService from "../core/PengerService";
+import CouponClientService from "../coupon/CouponClientService";
+import Coupon from "App/Models/Coupon";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -41,13 +43,14 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
     }
 
     async findAll({ auth, request }: HttpContextContract) {
-        const { limit, category, date } = request.qs()
+        const { limit, category, date, is_used } = request.qs()
         try {
             const user = await auth.authenticate();
             await user.load('goocard');
             const records = await BookingRecord
                 .query()
                 .if(limit, (q) => q.limit(limit))
+                .if(is_used, q => q.where('is_used', is_used))
                 .where('goocard_id', user.goocard.id)
                 .preload('item', q => {
                     if (category) {
@@ -93,6 +96,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
         const trx = await DBTransactionService.init();
         try {
             const user = await auth.authenticate();
+            await user.load('goocard')
             const payload = await request.validate(CreateBookingValidator);
 
             const penger = await Penger.findOrFail(payload.penger_id)
@@ -111,7 +115,6 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
             const record = new BookingRecord();
 
-
             await record.useTransaction(trx).fill({
                 gooCardId: card.id,
                 pengerId: payload.penger_id,
@@ -121,6 +124,23 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 rewardPoint: item.creditPoints,
                 isUsed: 0,
             }).save();
+
+            // if has coupon
+            if (payload.coupon_id != null) {
+                const coupon: Coupon = await CouponClientService.findById(payload.coupon_id, auth)
+                // save used coupon log
+                await GoocardLogService.saveLog(
+                    await CouponClientService.toLog(coupon, "USE"),
+                    auth
+                )
+
+                // Update is_used in `goocard_coupon` pivot table
+                await user.goocard.useTransaction(trx).related('coupons').sync({
+                    [coupon.id]: {
+                        is_used: true
+                    }
+                }, false)
+            }
 
             // save booking record log
             const returnedLog: GooCardLog | Error = await GoocardLogService.saveLog(

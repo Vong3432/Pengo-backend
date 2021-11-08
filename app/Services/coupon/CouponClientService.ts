@@ -13,6 +13,9 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CreditPoint from "App/Models/CreditPoint";
 import CouponService from "./CouponService";
 import { DateTime } from "luxon";
+import User from "App/Models/User";
+import Role, { Roles } from "App/Models/Role";
+import BookingItem from "App/Models/BookingItem";
 
 class CouponClientService implements CouponClientInterface, LogInterface<Coupon>  {
 
@@ -76,10 +79,13 @@ class CouponClientService implements CouponClientInterface, LogInterface<Coupon>
         }
 
         if (redeemed == 1 || expired == 1) {
-            await pengoo.goocard.load('coupons', q => {
-                if (expired == 1)
-                    q.where('valid_to', '<', DateTime.now().toISO())
-            });
+            await pengoo.goocard
+                .load('coupons', q => {
+                    if (expired == 1)
+                        q.where('valid_to', '<', DateTime.now().toISO())
+                    if (redeemed == 1)
+                        q.where('is_used', 0)
+                });
             return pengoo.goocard.coupons
         }
 

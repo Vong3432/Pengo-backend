@@ -38,6 +38,9 @@ export default class CreateBookingValidator {
 			start_date: schema.date.optional({ format: 'yyyy-MM-dd' }),
 			end_date: schema.date.optional({ format: 'yyyy-MM-dd' }),
 		}),
+		coupon_id: schema.number.optional([
+			rules.exists({ table: 'goocard_coupon', column: 'coupon_id' })
+		])
 	})
 
 	/**
