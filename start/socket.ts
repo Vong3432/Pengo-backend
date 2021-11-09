@@ -127,47 +127,11 @@ function verifyPass(socket, payload: PassScanPayload) {
 
         console.log("Role:", role)
 
-        // Check if record is already verified before
-        // do something...
+        // // Check if record is already verified before
+        // // do something...
         if (data.isUsed === 1) {
             console.log('is used')
             return emitMsg(socket, to, "verified success", { msg: 'Already verified', shouldUpdateCredit: false })
-        }
-
-        // check is pengoo/penger
-        if (role === Roles.Pengoo) {
-
-            // is pengoo, check record and goocard relationship
-            const pengoo = await User.find(user.id);
-            await pengoo?.load('goocard');
-
-            if (pengoo!.goocard == null || pengoo!.goocard.pin !== pin) {
-                return emitMsg(socket, to, "unauthorized")
-            }
-
-            const item = await query
-                .preload('item')
-                .where('id', data.id)
-                .where('goocard_id', pengoo!.goocard.id)
-                .first();
-
-            if (item == null) {
-                return emitMsg(socket, to, "unauthorized")
-            }
-
-            const logMsg = await BookingRecordClientService.toLog(item, "USE");
-            await GoocardLogService.saveLog(logMsg, auth)
-
-        } else if (role === Roles.Founder || role === Roles.Staff) {
-            // is penger, check record and penger relationship
-            const penger = await Penger.query()
-                .preload('pengerUsers', (q) => {
-                    q.wherePivot('user_id', user.id);
-                }).where('id', data.penger.id)
-                .first();
-            if (penger == null) {
-                return emitMsg(socket, to, "unauthorized")
-            }
         }
 
         // Update `booking_records`
