@@ -23,7 +23,6 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
 ## Features Checklist
 
 ### Pengo
----
 
 #### Booking record
 
@@ -89,7 +88,6 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
     - [x]  Grab user's favourite location if have, otherwise grab device location (ask permission). If users deny location, make sure app does not crash.
 
 ### Penger
----
 
 #### Profile
 
@@ -153,7 +151,6 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
     - Update metadata(include current charge rate) transactions table when payout [https://stripe.com/docs/api/payment_intents/update](https://stripe.com/docs/api/payment_intents/update)
 
 ### Admin
----
 
 #### Define Priority Col
 - [x]  CRUD
