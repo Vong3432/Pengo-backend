@@ -60,8 +60,22 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 .orderBy('book_date')
                 .orderBy('book_time');
 
+            const notOverRecords = records.filter((record) => {
+                const todayDT: DateTime = DateTime.now().toLocal()
+
+                const formattedBookTime = DateTime.fromFormat(record.bookTime, "h:mm a").toFormat("HH:mm")
+                const formattedStartDate = DateTime.fromISO(record.serialize()['book_date']['start_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
+                const concatDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
+
+                const { seconds } = concatDT.diff(todayDT, ['seconds']).toObject()
+                const isSecondsOver = seconds! < 0
+                const isOver = isSecondsOver
+                // filter this record out if is over already
+                return !isOver
+            })
+
             if (date) {
-                const filteredDateRecords = records.filter((record) => {
+                const filteredDateRecords = notOverRecords.filter((record) => {
                     const itemDate: DateTime = DateTime.fromISO(JSON.parse(record.bookDate)["start_date"])
                     const requestedDate = DateTime.fromISO(date).toLocal()
                     const diff = itemDate.diff(requestedDate, ['days']).days
@@ -70,7 +84,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
                 return filteredDateRecords;
             }
-            return records;
+            return notOverRecords;
         } catch (error) {
             throw error;
         }
