@@ -9,6 +9,7 @@ import CheckPriorityConditionService from 'App/Services/priority/CheckPriorityCo
 import { BookingItemFactory } from 'Database/factories/booking-item';
 import { DpoColFactory } from 'Database/factories/dpo-col';
 import test from 'japa'
+import { UserFactory } from 'Database/factories/user';
 
 /*
     This test requires `dpo_cols` and `dpo_tables` in db which can be only set
@@ -19,10 +20,12 @@ test.group('Testing priority_option module', (group) => {
     // track new priority option that added in testing.
     let id;
     let bid;
+    let user: User;
 
     group.before(async () => {
         // save the current state of db before testing
         await Database.beginGlobalTransaction()
+        user = await UserFactory.create()
     })
 
     group.after(async () => {
@@ -104,7 +107,7 @@ test.group('Testing priority_option module', (group) => {
         // same payload as 'Ensure priority option is saved in DB' test case
         const savePayload = {
             // value: DateTime.now().toString(),
-            value: "4",
+            value: user.id.toString(),
             conditions: PRIORITY_CONDITIONS.EQUAL,
             pengerId: penger.id
         }
@@ -135,7 +138,6 @@ test.group('Testing priority_option module', (group) => {
             We check with user with id `4`, 
             because the previous test `Ensure priorityOption can be saved in BookingItem` we save value `4` in PriorityOption
          */
-        const user = await User.firstOrFail();
 
         // check equality
         // pseudo: user[KEY_TO_CHECK] === [VALUE]

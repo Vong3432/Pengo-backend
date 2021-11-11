@@ -17,9 +17,11 @@ test.group('Testing booking records module', (group) => {
         await Database.rollbackGlobalTransaction()
     })
 
+    let penger: Penger;
+
     test('Ensure new record is inserted.', async (assert) => {
         const user = await UserFactory.with('goocard').create();
-        const penger = await PengerFactory.with('bookingCategories', 1, (cat) => cat.with('bookingItems')).create();
+        penger = await PengerFactory.with('bookingCategories', 1, (cat) => cat.with('bookingItems')).create();
 
         const record = await BookingRecordFactory.merge({
             gooCardId: user.goocard.id,
@@ -34,7 +36,6 @@ test.group('Testing booking records module', (group) => {
     })
 
     test('Ensure view records of item', async (assert) => {
-        const penger = await Penger.firstOrFail();
         const cateid = (await penger.related('bookingCategories').query().firstOrFail()).id;
         const itemid = (await BookingItem.query().where('booking_category_id', cateid.toString()).firstOrFail()).id;
         const records = await BookingRecord.query().where('booking_item_id', itemid.toString());

@@ -21,7 +21,6 @@ export const BookingItemFactory = Factory
 			is_discountable: 0,
 			quantity: faker.datatype.number({ min: 0, max: 20 }),
 			price: faker.datatype.number({ min: 0, max: 100 }),
-			discount_amount: faker.datatype.number({ min: 0, max: 50 }),
 			available_from_time: "10:00",
 			available_to_time: "23:59",
 			start_from: "2021-01-01 00:00:00",

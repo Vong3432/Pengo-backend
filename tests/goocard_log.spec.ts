@@ -15,11 +15,11 @@ test.group('Testing goocard_log module', (group) => {
     let goocard: GooCard;
 
     group.before(async () => {
+        // save the current state of db before testing
+        await Database.beginGlobalTransaction()
         let user = await UserFactory.with('goocard', 1).create();
         await user.load('goocard');
         goocard = user.goocard;
-        // save the current state of db before testing
-        await Database.beginGlobalTransaction()
     })
 
     group.after(async () => {

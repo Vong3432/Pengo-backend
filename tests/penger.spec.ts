@@ -17,13 +17,15 @@ test.group('Testing Penger module', (group) => {
         await Database.rollbackGlobalTransaction()
     })
 
+    let user: User;
+    let penger: Penger;
+
     test('Ensure founder can be created', async (assert) => {
-        const user = await UserFactory.apply('founder').create();
+        user = await UserFactory.apply('founder').create();
         assert.isTrue(user.$isPersisted)
     })
     test('Ensure founder can create Penger', async (assert) => {
-        const user = await User.firstOrFail();
-        const penger = await PengerFactory.create();
+        penger = await PengerFactory.create();
 
         await penger.related('pengerUsers').attach([user.id]);
         const ans = await penger.related('pengerUsers').query().preload('role').firstOrFail();
@@ -31,7 +33,6 @@ test.group('Testing Penger module', (group) => {
         assert.isTrue(ans.role.name === Roles.Founder && ans.id == user.id)
     })
     test('Ensure founder can add penger staff to Penger', async (assert) => {
-        const penger = await Penger.firstOrFail();
         const staff = await UserFactory.apply('penger').create();
 
         await penger.related('pengerUsers').attach([staff.id]);
