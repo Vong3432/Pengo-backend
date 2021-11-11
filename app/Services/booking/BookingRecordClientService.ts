@@ -65,10 +65,13 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
                 const formattedBookTime = DateTime.fromFormat(record.bookTime, "h:mm a").toFormat("HH:mm")
                 const formattedStartDate = DateTime.fromISO(record.serialize()['book_date']['start_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
-                const concatDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
+                const formattedEndDate = DateTime.fromISO(record.serialize()['book_date']['end_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
+                const concatStartDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
+                const concatEndDT = DateTime.fromFormat(formattedEndDate, "yyyy-MM-dd HH:mm")
 
-                const { seconds } = concatDT.diff(todayDT, ['seconds']).toObject()
-                const isSecondsOver = seconds! < 0
+                const { seconds: startSec } = concatStartDT.diff(todayDT, ['seconds']).toObject()
+                const { seconds: endSec } = concatEndDT.diff(todayDT, ['seconds']).toObject()
+                const isSecondsOver = startSec! < 0 && endSec! < 0
                 const isOver = isSecondsOver
                 // filter this record out if is over already
                 return !isOver
@@ -76,10 +79,16 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
             if (date) {
                 const filteredDateRecords = notOverRecords.filter((record) => {
-                    const itemDate: DateTime = DateTime.fromISO(JSON.parse(record.bookDate)["start_date"])
+                    const itemStartDate: DateTime = DateTime.fromISO(JSON.parse(record.bookDate)["start_date"])
+                    const itemEndDate: DateTime = DateTime.fromISO(JSON.parse(record.bookDate)["end_date"])
+
                     const requestedDate = DateTime.fromISO(date).toLocal()
-                    const diff = itemDate.diff(requestedDate, ['days']).days
-                    return diff === 0
+                    const diffFromStart = requestedDate.diff(itemStartDate, ['days']).days
+                    const diffFromEnd = requestedDate.diff(itemEndDate, ['days']).days
+
+                    const isInBetween = diffFromStart >= 0 && diffFromEnd <= 0
+
+                    return isInBetween
                 });
 
                 return filteredDateRecords;
