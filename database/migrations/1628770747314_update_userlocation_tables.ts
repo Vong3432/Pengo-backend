@@ -5,7 +5,7 @@ export default class UserLocation extends BaseSchema {
 
   public async up() {
     this.schema.table(this.tableName, (table) => {
-      table.json('geolocation').notNullable().alter();
+      table.json('geolocation').notNullable();
     })
   }
 
