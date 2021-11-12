@@ -5,7 +5,7 @@ export default class PengerLocation extends BaseSchema {
 
   public async up() {
     this.schema.table(this.tableName, (table) => {
-      table.json('geolocation').notNullable();
+      table.json('geolocation').notNullable().alter();
     })
   }
 
