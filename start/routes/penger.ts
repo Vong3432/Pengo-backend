@@ -56,4 +56,4 @@ Route.group(() => {
     .namespace('App/Controllers/Http/penger')
     .prefix('/penger')
     .as('penger')
-    .middleware(['auth', 'penger_role', 'penger_authorization'])
+    .middleware(['auth', 'penger_role', 'penger_authorization', 'throttle'])

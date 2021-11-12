@@ -43,7 +43,9 @@ Server.middleware.register([
 */
 Server.middleware.registerNamed({
   auth: () => import('App/Middleware/Auth'),
+  pengoo_role: () => import('App/Middleware/PengooRole'),
   penger_role: () => import('App/Middleware/PengerRole'),
   penger_authorization: () => import('App/Middleware/PengerAuthorization'),
-  admin_only: () => import('App/Middleware/AdminOnly')
+  admin_only: () => import('App/Middleware/AdminOnly'),
+  throttle: 'Adonis/Addons/RequestThrottler/Middleware',
 })
