@@ -78,7 +78,7 @@ test.group('Testing user_booking_validate module', (group) => {
         }
     })
 
-    test.failing('[GET]: Validate item status (Invalid ID)', async (assert) => {
+    test.skipInCI('[GET]: Validate item status (Invalid ID)', async (assert) => {
         try {
             const { statusCode } = await supertest(BASE_URL).get('/core/validate-item-status/12312313').set('Authorization', 'Bearer ' + token).expect(200)
             assert.isTrue(statusCode === 200)
