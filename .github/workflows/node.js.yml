@@ -17,20 +17,10 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+        redis-version: [6]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         
     services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
-        image: redis
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
       mysql:
           image: mysql:5.7
           env:
@@ -53,6 +43,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.2.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
     
     - name: Verify MySQL connection
       run: |
@@ -65,6 +60,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - run: npm ci
     - name: Install Dependencies
       run: npm install
@@ -80,7 +76,7 @@ jobs:
         echo 'MYSQL_USER="root"' >> .env
         node ace migration:run
         node ace db:seed
-    - run: npm run build --if-present
+    - run: npm run build --if-present        
     - run: npm test
       env:
         # The hostname used to communicate with the Redis service container
