@@ -10,6 +10,7 @@ import { BookingItemFactory } from 'Database/factories/booking-item';
 import { DpoColFactory } from 'Database/factories/dpo-col';
 import test from 'japa'
 import { UserFactory } from 'Database/factories/user';
+import { PengerFactory } from 'Database/factories/penger';
 
 /*
     This test requires `dpo_cols` and `dpo_tables` in db which can be only set
@@ -21,11 +22,13 @@ test.group('Testing priority_option module', (group) => {
     let id;
     let bid;
     let user: User;
+    let penger: Penger;
 
     group.before(async () => {
         // save the current state of db before testing
         await Database.beginGlobalTransaction()
         user = await UserFactory.create()
+        penger = await PengerFactory.create()
     })
 
     group.after(async () => {
@@ -35,7 +38,6 @@ test.group('Testing priority_option module', (group) => {
 
     test('Ensure priority option is saved in DB', async (assert) => {
         const dpoCol = await DpoCol.firstOrFail();
-        const penger = await Penger.firstOrFail(); // grab first penger's id for testing
 
         const priority = new PriorityOption();
         priority.fill({
@@ -57,7 +59,6 @@ test.group('Testing priority_option module', (group) => {
 
     test('Ensure firstOrCreate will not create duplication (same record)', async (assert) => {
         const dpoCol = await DpoCol.firstOrFail();
-        const penger = await Penger.firstOrFail();
 
         // same payload as 'Ensure priority option is saved in DB' test case
         const savePayload = {
