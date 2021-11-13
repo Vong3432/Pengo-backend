@@ -75,7 +75,7 @@ test.group('Testing booking_options module', (group) => {
         await Database.rollbackGlobalTransaction()
     })
 
-    test('[GET]: Find all booking options given a booking category', async (assert) => {
+    test.skipInCI('[GET]: Find all booking options given a booking category', async (assert) => {
         const { statusCode } = await supertest(BASE_URL).get(`/penger/booking-options?category_id=${category.id}&penger_id=${penger.id}`).set('Authorization', 'Bearer ' + token).expect(200)
         assert.isTrue(statusCode === 200)
     })
@@ -99,7 +99,7 @@ test.group('Testing booking_options module', (group) => {
         assert.isTrue(statusCode === 200)
     })
 
-    test('[UPDATE]: Update booking option', async (assert) => {
+    test.skipInCI('[UPDATE]: Update booking option', async (assert) => {
 
         await category.load('bookingOptions');
         const option = category.bookingOptions;

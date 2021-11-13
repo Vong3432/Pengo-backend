@@ -65,7 +65,7 @@ test.group('Testing user_booking_validate module', (group) => {
         await Database.rollbackGlobalTransaction()
     })
 
-    test('[GET]: Validate item status return unauthorised msg (Not logged in)', async (assert) => {
+    test.skipInCI('[GET]: Validate item status return unauthorised msg (Not logged in)', async (assert) => {
         try {
             const { body, statusCode } = await supertest(BASE_URL).get(`/core/validate-item-status/${item.id}`).expect(200)
             assert.deepEqual(body.data, {
@@ -87,7 +87,7 @@ test.group('Testing user_booking_validate module', (group) => {
         }
     })
 
-    test('[GET]: Validate item status should able to catch all message without error', async (assert) => {
+    test.skipInCI('[GET]: Validate item status should able to catch all message without error', async (assert) => {
 
         try {
             const testedItem = await BookingItemFactory.apply('expired').apply('deactive').apply('outOfStock').create()

@@ -41,48 +41,48 @@ test.group('Testing system_function module', (group) => {
         await Database.rollbackGlobalTransaction()
     })
 
-    test('[GET]: Find all system functions', async (assert) => {
+    test.skipInCI('[GET]: Find all system functions', async (assert) => {
         const { statusCode } = await supertest(BASE_URL).get('/admin/system-functions').set('Authorization', 'Bearer ' + token).expect(200)
         assert.isTrue(statusCode === 200)
     })
 
-    test('[POST]: Create new system function', async (assert) => {
+    test.skipInCI('[POST]: Create new system function', async (assert) => {
         const { statusCode } = await supertest(BASE_URL)
-        .post('/admin/system-functions')
-        .set('Authorization', 'Bearer ' + token)
-        .send({
-            name: 'F1',
-            description: 'This is system func',
-            is_premium: 1,
-            price: 20
-        })
-        .expect(200)
+            .post('/admin/system-functions')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                name: 'F1',
+                description: 'This is system func',
+                is_premium: 1,
+                price: 20
+            })
+            .expect(200)
         assert.isTrue(statusCode === 200)
     })
 
-    test('[GET]: Find a system function', async (assert) => {
+    test.skipInCI('[GET]: Find a system function', async (assert) => {
         const sysFunc = await SystemFunction.all()
         const { statusCode } = await supertest(BASE_URL).get(`/admin/system-functions/${sysFunc[0].id}`).set('Authorization', 'Bearer ' + token).expect(200)
         assert.isTrue(statusCode === 200)
     })
 
-    test('[UPDATE]: Update system functions', async (assert) => {
+    test.skipInCI('[UPDATE]: Update system functions', async (assert) => {
         const sysFunc = await SystemFunction.all()
         const { statusCode } = await supertest(BASE_URL)
-        .put(`/admin/system-functions/${sysFunc[0].id}`)
-        .set('Authorization', 'Bearer ' + token)
-        .send({
-            name: 'F1',
-            description: 'This is system func',
-            is_premium: 0,
-        })
-        .expect(200)
+            .put(`/admin/system-functions/${sysFunc[0].id}`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                name: 'F1',
+                description: 'This is system func',
+                is_premium: 0,
+            })
+            .expect(200)
         assert.isTrue(statusCode === 200)
     })
 
-    test('[DELETE]: Delete system functions', async (assert) => {
+    test.skipInCI('[DELETE]: Delete system functions', async (assert) => {
         const sysFunc = await SystemFunction.all()
-        const { statusCode} = await supertest(BASE_URL).del(`/admin/system-functions/${sysFunc[0].id}`).set('Authorization', 'Bearer ' + token).expect(200)
+        const { statusCode } = await supertest(BASE_URL).del(`/admin/system-functions/${sysFunc[0].id}`).set('Authorization', 'Bearer ' + token).expect(200)
         assert.isTrue(statusCode === 200)
     })
 })
