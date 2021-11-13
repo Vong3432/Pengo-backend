@@ -1,0 +1,61 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    
+    env:
+      CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+      CLOUDINARY_API_KEY: ${{secrets.CLOUDINARY_API_KEY}}
+      CLOUDINARY_API_SECRET: ${{secrets.CLOUDINARY_API_SECRET}}
+      MAP_API_KEY: ${{secrets.MAP_API_KEY}}
+      STRIPE_PK: ${{secrets.STRIPE_PK}}
+      STRIPE_SK: ${{secrets.STRIPE_SK}}
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mirromutth/mysql-action@v1.1
+      with:
+        host port: 3800 # Optional, default value is 3306. The port of host
+        container port: 3306 # Optional, default value is 3306. The port of container
+        character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
+        collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
+        mysql version: '8.0' # Optional, default value is "latest". The version of the MySQL
+        mysql database: 'lucid' # Optional, default value is "test". The specified database which will be create
+        mysql user: 'lucid' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - name: Install Dependencies
+      run: npm install
+    - name: Run Migration
+      run: |
+        mv .env.example .env
+        echo 'CLOUDINARY_CLOUD_NAME="$CLOUDINARY_CLOUD_NAME"' >> .env
+        echo 'CLOUDINARY_API_KEY="$CLOUDINARY_API_KEY"' >> .env
+        echo 'CLOUDINARY_API_SECRET="$CLOUDINARY_API_SECRET"' >> .env
+        echo 'MAP_API_KEY="$MAP_API_KEY"' >> .env
+        echo 'STRIPE_PK="$STRIPE_PK"' >> .env
+        echo 'STRIPE_SK="$STRIPE_SK"' >> .env
+        node ace migration:run
+        node ace db:seed
+    - run: npm run build --if-present
+    - run: npm test
