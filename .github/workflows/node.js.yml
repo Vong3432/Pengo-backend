@@ -26,6 +26,8 @@ jobs:
               MYSQL_HOST: 127.0.0.1
               MYSQL_ALLOW_EMPTY_PASSWORD: yes
               MYSQL_DATABASE: lucid
+              MYSQL_PASSWORD: ''
+              MYSQL_ROOT_PASSWORD: ''
               MYSQL_USER: lucid
           ports:
               - 3306:3306
