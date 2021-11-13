@@ -47,7 +47,7 @@ jobs:
       run: |
         sudo apt-get install -y mysql-client
         mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p -e "SHOW DATABASES"
-        SET sql_mode = ''
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p -e "SET global sql_mode = ''"
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
