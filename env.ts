@@ -21,7 +21,7 @@ export default Env.rules({
     MYSQL_USER: Env.schema.string(),
     MYSQL_PASSWORD: Env.schema.string.optional(),
     MYSQL_DB_NAME: Env.schema.string(),
-    REDIS_CONNECTION: Env.schema.enum(['local'] as const),
+    REDIS_CONNECTION: Env.schema.enum(['local', 'prod'] as const),
     REDIS_HOST: Env.schema.string({ format: 'host' }),
     REDIS_PORT: Env.schema.number(),
     REDIS_PASSWORD: Env.schema.string.optional(),
