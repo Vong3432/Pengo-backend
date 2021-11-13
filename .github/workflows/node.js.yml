@@ -43,6 +43,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Verify MySQL connection
+      run: |
+        sudo apt-get install -y mysql-client
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -ulucid -p -e "SHOW DATABASES"
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -61,7 +66,6 @@ jobs:
         echo 'MAP_API_KEY="$MAP_API_KEY"' >> .env
         echo 'STRIPE_PK="$STRIPE_PK"' >> .env
         echo 'STRIPE_SK="$STRIPE_SK"' >> .env
-        echo 'MYSQL_PASSWORD=pass' >> .env
         node ace migration:run
         node ace db:seed
     - run: npm run build --if-present
