@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     
     env:
@@ -29,7 +29,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: mirromutth/mysql-action@v1.1
+    
+    - name: Shutdown Ubuntu MySQL (SUDO)
+      run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+
+    - name: Set up MySQL
+      uses: mirromutth/mysql-action@v1.1
       with:
         host port: 3306 # Optional, default value is 3306. The port of host
         container port: 3306 # Optional, default value is 3306. The port of container
