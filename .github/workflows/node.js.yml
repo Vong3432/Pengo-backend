@@ -38,6 +38,7 @@ jobs:
         mysql version: '8.0' # Optional, default value is "latest". The version of the MySQL
         mysql database: 'lucid' # Optional, default value is "test". The specified database which will be create
         mysql user: 'lucid' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+        mysql password: ''
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
