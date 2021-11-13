@@ -1,0 +1,73 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        
+    services:
+      mysql:
+          image: mysql:5.7
+          env:
+              MYSQL_HOST: 127.0.0.1
+              MYSQL_ALLOW_EMPTY_PASSWORD: yes
+              MYSQL_DATABASE: lucid
+              MYSQL_PASSWORD: ''
+              MYSQL_ROOT_PASSWORD: ''
+          ports:
+              - 3306:3306
+          options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    env:
+      CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+      CLOUDINARY_API_KEY: ${{secrets.CLOUDINARY_API_KEY}}
+      CLOUDINARY_API_SECRET: ${{secrets.CLOUDINARY_API_SECRET}}
+      MAP_API_KEY: ${{secrets.MAP_API_KEY}}
+      STRIPE_PK: ${{secrets.STRIPE_PK}}
+      STRIPE_SK: ${{secrets.STRIPE_SK}}
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Verify MySQL connection
+      run: |
+        sudo apt-get install -y mysql-client
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p -e "SHOW DATABASES"
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p -e "SET global sql_mode = ''"
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - name: Install Dependencies
+      run: npm install
+    - name: Run Migration
+      run: |
+        mv .env.example .env
+        echo 'CLOUDINARY_CLOUD_NAME="$CLOUDINARY_CLOUD_NAME"' >> .env
+        echo 'CLOUDINARY_API_KEY="$CLOUDINARY_API_KEY"' >> .env
+        echo 'CLOUDINARY_API_SECRET="$CLOUDINARY_API_SECRET"' >> .env
+        echo 'MAP_API_KEY="$MAP_API_KEY"' >> .env
+        echo 'STRIPE_PK="$STRIPE_PK"' >> .env
+        echo 'STRIPE_SK="$STRIPE_SK"' >> .env
+        echo 'MYSQL_USER="root"' >> .env
+        node ace migration:run
+        node ace db:seed
+    - run: npm run build --if-present
+    - run: npm test
