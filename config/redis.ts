@@ -50,7 +50,7 @@ const redisConfig: RedisConfig = {
       db: 0,
       keyPrefix: '',
       tls: {
-        host: Env.get("REDIS_HOST"),
+        rejectUnauthorized: false,
       },
       healthCheck: true
     }
