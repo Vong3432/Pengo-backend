@@ -23,12 +23,14 @@ test.group('Testing priority_option module', (group) => {
     let bid;
     let user: User;
     let penger: Penger;
+    let dpoCol: DpoCol
 
     group.before(async () => {
         // save the current state of db before testing
         await Database.beginGlobalTransaction()
         user = await UserFactory.create()
         penger = await PengerFactory.create()
+        dpoCol = await DpoColFactory.create();
     })
 
     group.after(async () => {
@@ -37,7 +39,6 @@ test.group('Testing priority_option module', (group) => {
     })
 
     test('Ensure priority option is saved in DB', async (assert) => {
-        const dpoCol = await DpoCol.firstOrFail();
 
         const priority = new PriorityOption();
         priority.fill({
@@ -58,7 +59,6 @@ test.group('Testing priority_option module', (group) => {
     })
 
     test('Ensure firstOrCreate will not create duplication (same record)', async (assert) => {
-        const dpoCol = await DpoCol.firstOrFail();
 
         // same payload as 'Ensure priority option is saved in DB' test case
         const savePayload = {
@@ -79,8 +79,6 @@ test.group('Testing priority_option module', (group) => {
     })
 
     test('Ensure firstOrCreate will save new priority (no same record)', async (assert) => {
-        const dpoCol = await DpoCol.firstOrFail();
-        const penger = await Penger.firstOrFail();
 
         // same payload as 'Ensure priority option is saved in DB' test case
         const savePayload = {
@@ -102,8 +100,6 @@ test.group('Testing priority_option module', (group) => {
 
     test('Ensure priorityOption can be saved in BookingItem', async (assert) => {
         const bookingItem = await BookingItemFactory.create();
-        const dpoCol = await DpoColFactory.create();
-        const penger = await Penger.firstOrFail();
 
         // same payload as 'Ensure priority option is saved in DB' test case
         const savePayload = {
