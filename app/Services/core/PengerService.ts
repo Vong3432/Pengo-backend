@@ -4,16 +4,27 @@ import Penger from "App/Models/Penger";
 import BookingRecord from "App/Models/BookingRecord";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { getDistance, isPointWithinRadius, orderByDistance } from 'geolib'
-import GeoService from "../GeoService";
 import { DateTime } from "luxon";
 import { ModelObject } from "@ioc:Adonis/Lucid/Orm";
 
 class PengerService implements PengerClientInterface {
     async findById(id: number) {
-        return Penger.findOrFail(id);
+        const penger = await Penger.findOrFail(id)
+
+        await penger.load('bookingItems')
+        await penger.load('location')
+        await penger.load('reviews', q => {
+            q.preload('record', rq => {
+                rq.preload('goocard', gq => {
+                    gq.preload('user')
+                })
+            })
+        })
+
+        return penger;
     }
     async findAll({ request }: HttpContextContract) {
-        const { page,
+        const {
             name,
             sort_date,
             sort_distance,

@@ -47,7 +47,7 @@ test.group('Testing feedback module', (group) => {
             const feedback = new Feedback()
 
             await feedback.merge({
-                recordId: record.id,
+                bookingRecordId: record.id,
                 title: FEEDBACK_TITLE,
                 description: FEEDBACK_DESCRIPTION,
                 category: 'record'

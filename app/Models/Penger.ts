@@ -8,6 +8,8 @@ import BookingCloseDate from './BookingCloseDate'
 import Coupon from './Coupon'
 import PengerLocation from './PengerLocation'
 import BankAccount from './BankAccount'
+import Feedback from './Feedback'
+import BookingRecord from './BookingRecord'
 
 export default class Penger extends BaseModel {
   @column({ isPrimary: true })
@@ -39,6 +41,12 @@ export default class Penger extends BaseModel {
     () => BookingCategory
   ])
   public bookingOptions: HasManyThrough<typeof BookingOption>
+
+  @hasManyThrough([
+    () => Feedback,
+    () => BookingRecord
+  ])
+  public reviews: HasManyThrough<typeof Feedback>
 
   @hasManyThrough([
     () => BookingItem,

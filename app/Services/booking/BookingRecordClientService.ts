@@ -15,6 +15,7 @@ import Penger from "App/Models/Penger";
 import PengerService from "../core/PengerService";
 import CouponClientService from "../coupon/CouponClientService";
 import Coupon from "App/Models/Coupon";
+import Feedback from "App/Models/Feedback";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -57,25 +58,31 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                         q.preload('category')
                     }
                 })
+                .withAggregate('feedbacks', q => {
+                    q.count('*').as('is_reviewed')
+                })
                 .orderBy('book_date')
                 .orderBy('book_time');
 
-            const notOverRecords = records.filter((record) => {
-                const todayDT: DateTime = DateTime.now().toLocal()
+            // if is_used is 1, dont do filter 
+            const notOverRecords = is_used == 1
+                ? records
+                : records.filter((record) => {
+                    const todayDT: DateTime = DateTime.now().toLocal()
 
-                const formattedBookTime = DateTime.fromFormat(record.bookTime, "h:mm a").toFormat("HH:mm")
-                const formattedStartDate = DateTime.fromISO(record.serialize()['book_date']['start_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
-                const formattedEndDate = DateTime.fromISO(record.serialize()['book_date']['end_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
-                const concatStartDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
-                const concatEndDT = DateTime.fromFormat(formattedEndDate, "yyyy-MM-dd HH:mm")
+                    const formattedBookTime = DateTime.fromFormat(record.bookTime, "h:mm a").toFormat("HH:mm")
+                    const formattedStartDate = DateTime.fromISO(record.serialize()['book_date']['start_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
+                    const formattedEndDate = DateTime.fromISO(record.serialize()['book_date']['end_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
+                    const concatStartDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
+                    const concatEndDT = DateTime.fromFormat(formattedEndDate, "yyyy-MM-dd HH:mm")
 
-                const { seconds: startSec } = concatStartDT.diff(todayDT, ['seconds']).toObject()
-                const { seconds: endSec } = concatEndDT.diff(todayDT, ['seconds']).toObject()
-                const isSecondsOver = startSec! < 0 && endSec! < 0
-                const isOver = isSecondsOver
-                // filter this record out if is over already
-                return !isOver
-            })
+                    const { seconds: startSec } = concatStartDT.diff(todayDT, ['seconds']).toObject()
+                    const { seconds: endSec } = concatEndDT.diff(todayDT, ['seconds']).toObject()
+                    const isSecondsOver = startSec! < 0 && endSec! < 0
+                    const isOver = isSecondsOver
+                    // filter this record out if is over already
+                    return !isOver
+                })
 
             if (date) {
                 const filteredDateRecords = notOverRecords.filter((record) => {
@@ -91,9 +98,20 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                     return isInBetween
                 });
 
-                return filteredDateRecords;
+                return filteredDateRecords.map(r => {
+                    return {
+                        ...r.serialize(),
+                        is_reviewed: r.$extras.is_reviewed !== 0
+                    }
+                });
             }
-            return notOverRecords;
+
+            return notOverRecords.map(r => {
+                return {
+                    ...r.serialize(),
+                    is_reviewed: r.$extras.is_reviewed !== 0
+                }
+            })
         } catch (error) {
             throw error;
         }
