@@ -67,6 +67,7 @@ export default class AuthMiddleware extends Exception {
      * Uses the user defined guards or the default guard mentioned in
      * the config file
      */
+
     const guards = customGuards.length ? customGuards : [auth.name]
     await this.authenticate(auth, guards)
     await next()

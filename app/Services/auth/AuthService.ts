@@ -6,7 +6,8 @@ import { Roles } from "App/Models/Role";
 import RoleService from "../role/RoleService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UnAuthorizedException from "App/Exceptions/UnAuthorizedException";
-import Penger from "App/Models/Penger";
+import Env from '@ioc:Adonis/Core/Env'
+
 class AuthService implements AuthInterface {
 
 
@@ -86,10 +87,15 @@ class AuthService implements AuthInterface {
 
     async loginAdmin({ request, auth }: HttpContextContract) {
         try {
-            const { email, password } = request.body();
+            const { email, password, secret } = request.body();
 
-            if (email == null || password == null)
+            if (email == null || password == null || secret == null)
                 throw "Bad request";
+
+            // verify secret
+            const envSecret = Env.get('PENGO_ADMIN_SECRET')
+
+            if (envSecret !== secret) throw "Invalid secret"
 
             const role = await RoleService.findRole(Roles.Admin);
 

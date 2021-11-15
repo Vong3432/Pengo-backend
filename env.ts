@@ -28,4 +28,5 @@ export default Env.rules({
     MAP_API_KEY: Env.schema.string(),
     STRIPE_PK: Env.schema.string(),
     STRIPE_SK: Env.schema.string(),
+    PENGO_ADMIN_SECRET: Env.schema.string(),
 })

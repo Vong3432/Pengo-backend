@@ -5,6 +5,7 @@ import supertest from 'supertest'
 import SystemFunction from 'App/Models/SystemFunction'
 import Role, { Roles } from 'App/Models/Role';
 import User from 'App/Models/User';
+import Env from '@ioc:Adonis/Core/Env'
 
 test.group('Testing system_function module', (group) => {
 
@@ -30,7 +31,8 @@ test.group('Testing system_function module', (group) => {
 
         await supertest(BASE_URL).post('/auth/admin/login').send({
             email: fakedAdmin.email,
-            password: 'testadmin'
+            password: 'testadmin',
+            secret: Env.get('PENGO_ADMIN_SECRET')
         }).expect(200).then(response => {
             token = response.body.data.token.token
         })
