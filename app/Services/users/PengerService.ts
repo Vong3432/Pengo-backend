@@ -8,6 +8,7 @@ import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationSe
 import Transaction from "App/Models/Transaction";
 import { DBTransactionService } from "../db/DBTransactionService";
 import StripeService from "../payment/StripeService";
+import SettingService from "../admin/SettingService";
 
 class PengerService {
     async findTotalStaff({ request, bouncer }: HttpContextContract) {
@@ -109,7 +110,10 @@ class PengerService {
             .where('holder_id', pengerId)
             .firstOrFail()
 
-        const chargeRate = 0.03 // should replace with Setting
+        const setting = await SettingService.findByKey('stripe_charge_rate')
+        const chargeRateFromSetting = parseFloat(setting.value) / 100
+
+        const chargeRate = chargeRateFromSetting
 
         const transactions = Transaction.query()
             .where('to_bank_account_id', bankAccount.id)

@@ -16,6 +16,7 @@ export default class IndexSeeder extends BaseSeeder {
 
   public async run() {
     await this.runSeeder(await import('../Role'))
+    await this.runSeeder(await import('../Setting'))
     await this.runSeeder(await import('../SystemFunction'))
     await this.runSeeder(await import('../Pengoo'))
     await this.runSeeder(await import('../Admin'))
