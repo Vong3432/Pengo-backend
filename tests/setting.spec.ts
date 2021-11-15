@@ -25,7 +25,7 @@ test.group('Testing setting module', (group) => {
         key = settings[ran].key
         id = settings[ran].id
 
-        assert.isTrue(settings.length === 10)
+        assert.isTrue(settings.length === 2)
     })
 
     test('Ensure setting can be get by key', async (assert) => {
