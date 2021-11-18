@@ -46,6 +46,7 @@ export default class DpoColsController {
   public async destroy(contract: HttpContextContract) {
     const { response } = contract;
     try {
+      await DpoColService.delete(contract)
       return SuccessResponse({ response, msg: 'Success' })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })

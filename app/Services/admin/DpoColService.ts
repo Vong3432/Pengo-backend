@@ -99,8 +99,16 @@ class DpoColService implements DPOColInterface {
 
     };
 
-    async delete({ }: HttpContextContract) {
-
+    async delete({ request }: HttpContextContract) {
+        const trx = await DBTransactionService.init();
+        try {
+            const dpoCol = await this.findById(request.param('id'));
+            await dpoCol.useTransaction(trx).delete()
+            await trx.commit();
+        } catch (error) {
+            await trx.rollback();
+            throw error;
+        }
     };
 
 }

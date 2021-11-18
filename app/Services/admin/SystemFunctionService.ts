@@ -45,10 +45,12 @@ class SystemFunctionService implements SystemFunctionInterface {
 
     };
 
-    async delete({ }: HttpContextContract) {
+    async delete({ request }: HttpContextContract) {
         const trx = await DBTransactionService.init();
         try {
-
+            const sys = SystemFunction.findOrFail(request.param('id'))
+            await (await sys).useTransaction(trx).delete()
+            await trx.commit()
         } catch (error) {
             await trx.rollback();
             throw error;
