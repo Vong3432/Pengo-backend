@@ -39,6 +39,9 @@ export const BookingItemFactory = Factory
 	.state('countable', (item) => {
 		item.isCountable = 1;
 	})
+	.state('quantity', (item) => {
+		item.quantity = 10
+	})
 	.state('deactive', (item) => {
 		item.isActive = 0;
 	})

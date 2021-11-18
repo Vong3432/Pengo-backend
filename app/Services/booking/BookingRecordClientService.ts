@@ -154,6 +154,15 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             const card = await GooCardService.verify(payload.pin, user.id);
             const item = await BookingItemService.findById(payload.booking_item_id);
 
+            if (item.isCountable === 1) {
+                if (item.quantity === 0)
+                    throw Error('Out of stocked')
+
+                await item.useTransaction(trx).merge({
+                    quantity: item.quantity - 1
+                }).save()
+            }
+
             const record = new BookingRecord();
 
             await record.useTransaction(trx).fill({
@@ -195,6 +204,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 log: returnedLog
             }
         } catch (error) {
+            console.log(error)
             await trx.rollback();
             throw error;
         }
@@ -239,6 +249,14 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 .where('goocard_id', user.goocard.id)
                 .where('is_used', 0)
                 .firstOrFail();
+
+            const item = await BookingItemService.findById(record.bookingItemId)
+
+            if (item.isCountable === 1) {
+                await item.useTransaction(trx).merge({
+                    quantity: item.quantity + 1
+                }).save()
+            }
 
             await record.delete()
             await trx.commit()

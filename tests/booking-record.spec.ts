@@ -21,13 +21,29 @@ test.group('Testing booking records module', (group) => {
 
     test('Ensure new record is inserted.', async (assert) => {
         const user = await UserFactory.with('goocard').create();
-        penger = await PengerFactory.with('bookingCategories', 1, (cat) => cat.with('bookingItems')).create();
+        penger = await PengerFactory.with('bookingCategories', 1, (cat) => {
+            cat.with('bookingItems', 1, f => {
+                f.apply('countable')
+                f.apply('quantity')
+            })
+        }).create();
+
+        const beforeBookedQuantity = penger.bookingCategories[0].bookingItems[0].quantity
+        console.log(`quantity before booked: ${beforeBookedQuantity}`)
 
         const record = await BookingRecordFactory.merge({
             gooCardId: user.goocard.id,
             bookingItemId: penger.bookingCategories[0].bookingItems[0].id
         }).create();
-        assert.isTrue(record.$isPersisted)
+
+        await penger.bookingCategories[0].bookingItems[0].merge({
+            quantity: penger.bookingCategories[0].bookingItems[0].quantity - 1
+        }).save()
+
+        const afterBookedQuantity = penger.bookingCategories[0].bookingItems[0].quantity
+        console.log(`quantity after booked: ${afterBookedQuantity}`)
+
+        assert.isTrue(record.$isPersisted && beforeBookedQuantity !== afterBookedQuantity)
     })
 
     test('Ensure view record contain item', async (assert) => {
