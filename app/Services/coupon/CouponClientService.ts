@@ -11,11 +11,7 @@ import CouponNotRedeemableErrException from "App/Exceptions/CouponNotRedeemableE
 import CreditPointsClientService from "../credit_points/CreditPointsClientService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CreditPoint from "App/Models/CreditPoint";
-import CouponService from "./CouponService";
 import { DateTime } from "luxon";
-import User from "App/Models/User";
-import Role, { Roles } from "App/Models/Role";
-import BookingItem from "App/Models/BookingItem";
 
 class CouponClientService implements CouponClientInterface, LogInterface<Coupon>  {
 
@@ -66,7 +62,7 @@ class CouponClientService implements CouponClientInterface, LogInterface<Coupon>
             // grab penger ids of all previously booked penger
             const pengerIds = histories.map((v) => v.pengerId)
 
-            await pengoo.goocard.load('coupons');
+            await pengoo.goocard.load('coupons', q => q.where('is_used', 0));
             const redeemedCouponIds = pengoo.goocard.coupons.map(c => c.id)
 
             const coupons = await Coupon.query()

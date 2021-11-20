@@ -21,7 +21,7 @@ export default class CouponsController {
         const card = auth.user.goocard;
 
         // check if current coupon is already redeemed
-        await card.load('coupons', q => q.where('goocard_id', card.id))
+        await card.load('coupons', q => q.where('goocard_id', card.id).where('is_used', 0))
         const isOwned = card.coupons.length !== 0
 
         const credit = await CreditPointsClientService.getPoints(coupon.pengerId, auth)
@@ -30,7 +30,7 @@ export default class CouponsController {
           ...responseData,
           current_cp: credit.availableCreditPoints,
           after_redeem_cp: credit.availableCreditPoints - coupon.requiredCreditPoints,
-          is_owned: isOwned,
+          is_owned: isOwned
         }
       }
 
