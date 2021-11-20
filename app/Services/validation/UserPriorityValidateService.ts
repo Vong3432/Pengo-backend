@@ -19,6 +19,10 @@ class UserPriorityValidateService implements IValidateItemInterface {
         const item = await BookingItem.findOrFail(itemId)
         await item.load('priorityOption', q => q.preload('dpoCol'))
 
+        if (item.priorityOption == null) {
+            return messages
+        }
+
         // HasOne relationship
         // The defined priority option columns from current item
         const dpoCol = item.priorityOption.dpoCol;
