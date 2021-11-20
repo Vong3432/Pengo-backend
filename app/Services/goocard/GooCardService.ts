@@ -100,7 +100,7 @@ class GooCardService implements GoocardInterface {
             // store "customer" object from Stripe.
             let fromCus: Stripe.Customer | Stripe.DeletedCustomer
 
-            await user.load('goocard', q => q.preload('bankAccounts'));
+            await user.load('goocard', q => q.preload('bankAccounts', q => q.where('type', BankAccountType.GOOCARD)));
 
             console.log(user.goocard.bankAccounts)
 
