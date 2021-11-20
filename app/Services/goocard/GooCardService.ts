@@ -11,6 +11,7 @@ import BankAccountService from "../payment/BankAccountService";
 import StripeCustomerService from "../payment/StripeCustomerService";
 import StripePaymentService from "../payment/StripePaymentService";
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import StripeService from "../payment/StripeService";
 
 class GooCardService implements GoocardInterface {
 
@@ -101,14 +102,15 @@ class GooCardService implements GoocardInterface {
 
             await user.load('goocard', q => q.preload('bankAccounts'));
 
+
             // check if current goocard has any bank accounts in DB
             if (user.goocard.bankAccounts.length === 0) {
                 // does not has any record, create a new one
-                fromCus = await StripeCustomerService.create({ description: user.username });
+                fromCus = await StripeService.getStripe().customers.create({ description: user.username });
                 await BankAccountService.create(fromCus.id, BankAccountType.GOOCARD, user.goocard.id);
             } else {
                 // does has record, return it from db
-                fromCus = await StripeCustomerService.retrieve(user.goocard.bankAccounts[0].uniqueId);
+                fromCus = await StripeService.getStripe().customers.retrieve(user.goocard.bankAccounts[0].uniqueId);
             }
 
             // refresh
