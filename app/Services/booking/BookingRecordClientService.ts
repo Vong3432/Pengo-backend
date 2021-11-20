@@ -154,7 +154,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             const card = await GooCardService.verify(payload.pin, user.id);
             const item = await BookingItemService.findById(payload.booking_item_id);
 
-            if (item.isCountable === 1) {
+            if (item.isCountable === 1 && item.quantity !== null) {
                 if (item.quantity === 0)
                     throw Error('Out of stocked')
 
@@ -255,7 +255,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
             const item = await BookingItemService.findById(record.bookingItemId)
 
-            if (item.isCountable === 1) {
+            if (item.isCountable === 1 && item.quantity !== null) {
                 await item.useTransaction(trx).merge({
                     quantity: item.quantity + 1
                 }).save()
