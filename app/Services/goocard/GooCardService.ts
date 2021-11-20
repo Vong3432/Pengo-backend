@@ -102,22 +102,18 @@ class GooCardService implements GoocardInterface {
 
             await user.load('goocard', q => q.preload('bankAccounts', q => q.where('type', BankAccountType.GOOCARD)));
 
-            console.log(user.goocard.bankAccounts)
-
             // check if current goocard has any bank accounts in DB
             if (user.goocard.bankAccounts.length === 0) {
                 // does not has any record, create a new one
                 fromCus = await StripeService.getStripe().customers.create({ description: user.username });
-                console.log('create', fromCus)
                 await BankAccountService.create(fromCus.id, BankAccountType.GOOCARD, user.goocard.id);
             } else {
                 // does has record, return it from db
                 fromCus = await StripeService.getStripe().customers.retrieve(user.goocard.bankAccounts[0].uniqueId);
-                console.log('retrive', fromCus)
             }
 
             // refresh
-            await user.goocard.load('bankAccounts');
+            await user.goocard.load('bankAccounts', q => q.where('type', BankAccountType.GOOCARD));
 
             // find bank account of a penger (from: "to")
             const toPengerBankAcc = await BankAccountService.findAccounts(to, BankAccountType.PENGER);
