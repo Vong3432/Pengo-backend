@@ -89,7 +89,6 @@ export default class UpdateBookingItemValidator {
 			rules.range(0, 1)
 		]),
 		quantity: schema.number.optional([
-			rules.requiredWhen('is_countable', '=', '1'),
 			rules.unsigned()
 		]),
 		price: schema.number.optional([
