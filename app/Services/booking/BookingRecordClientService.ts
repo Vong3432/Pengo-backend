@@ -168,7 +168,10 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             await record.useTransaction(trx).fill({
                 gooCardId: card.id,
                 pengerId: payload.penger_id,
-                bookDate: JSON.stringify(payload.book_date),
+                bookDate: JSON.stringify({
+                    start_date: payload.book_date?.start_date,
+                    end_date: payload.book_date?.end_date ?? payload.book_date?.start_date,
+                }),
                 bookTime: payload.book_time,
                 bookingItemId: payload.booking_item_id,
                 rewardPoint: item.creditPoints,
