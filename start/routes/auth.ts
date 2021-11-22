@@ -12,4 +12,7 @@ Route.group(() => {
     Route.post('/login', 'AuthController.loginPenger').prefix('penger')
 
     Route.post('/login', 'AuthController.loginAdmin').prefix('admin')
+
+    Route.put('/update-profile/:id', 'AuthController.updateProfile').middleware('auth')
+
 }).namespace('App/Controllers/Http/auth').prefix('auth')

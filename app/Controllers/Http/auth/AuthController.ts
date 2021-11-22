@@ -83,4 +83,15 @@ export default class AuthController {
       return ErrorResponse({ response, msg: error.messages || error })
     }
   }
+
+  public async updateProfile(contract: HttpContextContract) {
+    const { response } = contract;
+
+    try {
+      const newInfo = await AuthService.updateProfile(contract);
+      return SuccessResponse({ response, msg: "Updated successfully", data: newInfo })
+    } catch (error) {
+      return ErrorResponse({ response, msg: error.messages || error })
+    }
+  }
 }

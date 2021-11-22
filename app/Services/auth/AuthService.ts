@@ -7,6 +7,10 @@ import RoleService from "../role/RoleService";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UnAuthorizedException from "App/Exceptions/UnAuthorizedException";
 import Env from '@ioc:Adonis/Core/Env'
+import { DBTransactionService } from "../db/DBTransactionService";
+import UpdateProfileValidator from "App/Validators/auth/UpdateProfileValidator";
+import CloudinaryService from "../cloudinary/CloudinaryService";
+import Sentry from "@ioc:Adonis/Addons/Sentry";
 
 class AuthService implements AuthInterface {
 
@@ -121,6 +125,66 @@ class AuthService implements AuthInterface {
             }
         } catch (error) {
             throw error;
+        }
+    }
+
+    async updateProfile({ request, auth }: HttpContextContract) {
+        const trx = await DBTransactionService.init()
+        let publicId;
+
+        try {
+            const { avatar, ...data } = await request.validate(UpdateProfileValidator);
+            const user = await auth.authenticate();
+            await user.load('role')
+
+            let avatarUrl = user.avatar;
+
+            if (avatar) {
+                const { secure_url: url, public_id } = await CloudinaryService.uploadToCloudinary({ file: avatar.tmpPath!, folder: "pengoo" });
+                avatarUrl = url
+                if (public_id) publicId = public_id
+            }
+
+            await user.useTransaction(trx).merge({
+                ...data,
+                avatar: avatarUrl,
+            }).save()
+
+            await trx.commit();
+
+            const token = await auth.use("api").generate(user, {
+                expiresIn: "10 days"
+            })
+
+            if (user.role.name === Roles.Pengoo) {
+                await user.load('locations')
+                return {
+                    user,
+                    token,
+                }
+            } else if (user.role.name === Roles.Staff || user.role.name === Roles.Founder) {
+                const pengers = (await user.related('pengerUsers').query().preload('location')).map(p => p.serialize({
+                    relations: {
+                        location: {
+                            fields: {
+                                pick: ['geolocation', 'address', 'street']
+                            }
+                        }
+                    }
+                }));
+                return {
+                    user,
+                    pengers,
+                    token,
+                }
+            }
+
+        } catch (error) {
+            Sentry.captureException(error)
+            if (publicId)
+                await CloudinaryService.destroyFromCloudinary(publicId);
+            await trx.rollback();
+            throw error
         }
     }
 }

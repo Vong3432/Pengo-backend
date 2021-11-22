@@ -1,9 +1,10 @@
-import { schema, rules, validator } from "@ioc:Adonis/Core/Validator";
-import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import { MyReporter } from "../MyReporter";
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../MyReporter'
 
-export default class RegisterPenderValidator {
-	constructor(protected ctx: HttpContextContract) { }
+export default class UpdateProfileValidator {
+	constructor(protected ctx: HttpContextContract) {
+	}
 
 	public reporter = MyReporter
 
@@ -27,16 +28,17 @@ export default class RegisterPenderValidator {
 	 *    ```
 	 */
 	public schema = schema.create({
-		email: schema.string({}, [
-			rules.email(),
+		email: schema.string.optional({}, [
 			rules.unique({
-				table: "users",
-				column: "email",
-			}),
+				table: 'users', column: 'email',
+			})
 		]),
-		password: schema.string({}, [rules.minLength(8)]),
-		username: schema.string(),
-		phone: schema.string({}, [
+		username: schema.string.optional(),
+		password: schema.string.optional({}, [
+			rules.confirmed(),
+			rules.minLength(8),
+		]),
+		phone: schema.string.optional({}, [
 			rules.mobile({
 				strict: true,
 				locales: ["ms-MY"],
@@ -46,12 +48,11 @@ export default class RegisterPenderValidator {
 				column: "phone",
 			}),
 		]),
-		avatar: schema.file({
+		avatar: schema.file.optional({
 			size: "1mb",
 			extnames: ["jpg", "png"],
 		}),
-		age: schema.number(),
-	});
+	})
 
 	/**
 	 * Custom messages for validation failures. You can make use of dot notation `(.)`
@@ -65,14 +66,11 @@ export default class RegisterPenderValidator {
 	 *
 	 */
 	public messages = {
-		required: 'The {{field}} is required to create account',
-		'phone.mobile': 'This phone number is using incorrect format.',
-		'phone.unique': 'This phone is registered.',
-		'email.unique': 'This email is already used.',
+		required: 'The {{field}} is required to update profile',
+		'email.unique': "Email already exist, please try another",
+		'phone.unique': "Phone already exist, please try another",
 		'*': (field, rule) => {
-			return `${rule} validation error on ${field} for registration.`
+			return `${rule} validation error on ${field} for updating profile.`
 		},
-	};
-
-
+	}
 }

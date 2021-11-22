@@ -15,7 +15,7 @@ import Penger from "App/Models/Penger";
 import PengerService from "../core/PengerService";
 import CouponClientService from "../coupon/CouponClientService";
 import Coupon from "App/Models/Coupon";
-import Feedback from "App/Models/Feedback";
+import Sentry from "@ioc:Adonis/Addons/Sentry";
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -113,6 +113,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 }
             })
         } catch (error) {
+            Sentry.captureException(error)
             throw error;
         }
     };
