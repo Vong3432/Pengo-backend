@@ -32,7 +32,8 @@
       "@adonisjs/auth",
       "@adonisjs/redis",
       "@adonisjs/bouncer",
-      "adonis-request-throttler"
+      "adonis-request-throttler",
+      "adonis5-sentry"
     ]
   }
 }

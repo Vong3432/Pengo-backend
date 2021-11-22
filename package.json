@@ -36,6 +36,7 @@
     "@adonisjs/repl": "^3.1.4",
     "@types/socket.io": "^3.0.2",
     "adonis-request-throttler": "^2.0.3",
+    "adonis5-sentry": "^3.0.0",
     "cloudinary": "^1.26.2",
     "geolib": "^3.3.3",
     "luxon": "^1.27.0",
