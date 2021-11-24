@@ -13,7 +13,7 @@ export default class PengooSeeder extends BaseSeeder {
         const user = await User.updateOrCreate({
             username: 'JohnDoe'
         }, {
-            email: 'user1@demo.com',
+            email: 'vongnyuksoon2000@gmail.com',
             password: '12345678',
             roleId: roleId.id,
             phone: '+60149257542',

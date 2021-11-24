@@ -41,6 +41,9 @@ jobs:
       STRIPE_PK: ${{secrets.STRIPE_PK}}
       STRIPE_SK: ${{secrets.STRIPE_SK}}
       SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+      SMTP_USER: ${{secrets.SMTP_USER}}
+      SMTP_PASS: ${{secrets.SMTP_PASS}}
+      SIMPLEMAIL_ENDPOINT: ${{secrets.SIMPLEMAIL_ENDPOINT}}
 
     steps:
     - uses: actions/checkout@v2
@@ -76,6 +79,9 @@ jobs:
         echo 'STRIPE_SK="$STRIPE_SK"' >> .env
         echo 'MYSQL_USER="root"' >> .env
         echo 'SENTRY_DSN="$SENTRY_DSN"' >> .env
+        echo 'SMTP_USER="$SMTP_USER"' >> .env
+        echo 'SMTP_PASS="$SMTP_PASS"' >> .env
+        echo 'SIMPLEMAIL_ENDPOINT="$SIMPLEMAIL_ENDPOINT"' >> .env
         node ace migration:run
         node ace db:seed
     - run: npm run build --if-present        

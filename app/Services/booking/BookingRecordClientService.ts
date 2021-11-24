@@ -16,6 +16,8 @@ import PengerService from "../core/PengerService";
 import CouponClientService from "../coupon/CouponClientService";
 import Coupon from "App/Models/Coupon";
 import Sentry from "@ioc:Adonis/Addons/Sentry";
+import SimpleMailService from "../mail/SimpleMailService";
+import Env from '@ioc:Adonis/Core/Env'
 
 class BookingRecordClientService implements BookingRecordClientInterface, LogInterface<BookingRecord> {
 
@@ -203,6 +205,62 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             )
 
             await trx.commit();
+
+            // send email to penger and pengoo
+            SimpleMailService.send({
+                email: user.email,
+                from: Env.get("SMTP_USER"),
+                subject: (returnedLog as GooCardLog).title,
+                text: 'Booked successfully',
+                html: `
+                    <h1>Booked successfully</h1>
+                    <p style="font-size: 20px">You have successfully booked ${item.name} at ${record.groupDate}, ${record.bookTime}.</p>
+                    <div style="display: flex; flex-flow: row; align-items:center;">
+                    <img width="52" height="52" style="border-radius: 14px; object-fit: cover; margin-right: 12px;" src="${item.posterUrl}" />
+                    <div>
+                    <strong style="font-size:18px; font-weight: bold">${item.name}</strong>
+                    <br />
+                    <small style="margin-top: 10px">Created from ${penger.name}</small>
+                    </div>
+                    </div>
+                `,
+                method: "GET"
+            })
+
+            await penger.load('pengerUsers')
+
+            for (const pengerUser of penger.pengerUsers) {
+                SimpleMailService.send({
+                    email: pengerUser.email,
+                    from: Env.get("SMTP_USER"),
+                    subject: "Booking notification",
+                    text: 'Booked notification',
+                    html: `
+                        <h1>Booking notification</h1>
+                        <p style="font-size: 20px">${user.username} booked ${item.name}</p>
+    
+                        <div style="display: flex; flex-flow: row; align-items:center;">
+                        <img width="52" height="52" style="border-radius: 14px; object-fit: cover; margin-right: 12px;" src="${item.posterUrl}" />
+                        <div>
+                        <strong style="font-size:18px; font-weight: bold">${item.name}</strong>
+                            <br />
+                        <small style="margin-top: 10px">${record.groupDate}, ${record.bookTime}</small>
+                        </div>
+                        </div>
+                        <div style="opacity: 0.1; height: 2px; margin: 18px 0; background-color: #000;"  />
+                        <div style="display: flex; flex-flow: row; align-items:center;">
+                        <img width="32" height="32" style="border-radius: 32px; object-fit: cover; margin-right: 12px;" src="${user.avatar}" />
+                        <div>
+                        <strong style="font-size:14px; font-weight: bold">${user.username}</strong>
+                            <br />
+                        <small style="margin-top: 10px">${user.phone}</small>
+                        </div>
+                        </div>
+                    `,
+                    method: "GET"
+                })
+            }
+
             return {
                 ...record.serialize(),
                 log: returnedLog
@@ -256,6 +314,9 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
             const item = await BookingItemService.findById(record.bookingItemId)
 
+            await record.load('penger')
+            const penger = record.penger
+
             if (item.isCountable === 1 && item.quantity !== null) {
                 await item.useTransaction(trx).merge({
                     quantity: item.quantity + 1
@@ -263,6 +324,62 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
             }
 
             await record.delete()
+
+            // send email to penger and pengoo
+            SimpleMailService.send({
+                email: user.email,
+                from: Env.get("SMTP_USER"),
+                subject: "Cancel booking successfully",
+                text: 'Cancel successfully',
+                html: `
+                    <h1>Cancel booking successfully</h1>
+                    <p style="font-size: 20px">You have cancel your booking for ${item.name} at ${record.groupDate}, ${record.bookTime}.</p>
+                    <div style="display: flex; flex-flow: row; align-items:center;">
+                    <img width="52" height="52" style="border-radius: 14px; object-fit: cover; margin-right: 12px;" src="${item.posterUrl}" />
+                    <div>
+                    <strong style="font-size:18px; font-weight: bold">${item.name}</strong>
+                    <br />
+                    <small style="margin-top: 10px">Created from ${penger.name}</small>
+                    </div>
+                    </div>
+                `,
+                method: "GET"
+            })
+
+            await penger.load('pengerUsers')
+
+            for (const pengerUser of penger.pengerUsers) {
+                SimpleMailService.send({
+                    email: pengerUser.email,
+                    from: Env.get("SMTP_USER"),
+                    subject: "Booking notification",
+                    text: 'Cancel booking notification',
+                    html: `
+                        <h1>Cancel booking notification</h1>
+                        <p style="font-size: 20px">${user.username} cancel his booking for ${item.name}</p>
+    
+                        <div style="display: flex; flex-flow: row; align-items:center;">
+                        <img width="52" height="52" style="border-radius: 14px; object-fit: cover; margin-right: 12px;" src="${item.posterUrl}" />
+                        <div>
+                        <strong style="font-size:18px; font-weight: bold">${item.name}</strong>
+                            <br />
+                        <small style="margin-top: 10px">${record.groupDate}, ${record.bookTime}</small>
+                        </div>
+                        </div>
+                        <div style="opacity: 0.1; height: 2px; margin: 18px 0; background-color: #000;"  />
+                        <div style="display: flex; flex-flow: row; align-items:center;">
+                        <img width="32" height="32" style="border-radius: 32px; object-fit: cover; margin-right: 12px;" src="${user.avatar}" />
+                        <div>
+                        <strong style="font-size:14px; font-weight: bold">${user.username}</strong>
+                            <br />
+                        <small style="margin-top: 10px">${user.phone}</small>
+                        </div>
+                        </div>
+                    `,
+                    method: "GET"
+                })
+            }
+
             await trx.commit()
         } catch (error) {
             await trx.rollback()

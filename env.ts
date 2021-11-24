@@ -29,4 +29,7 @@ export default Env.rules({
     STRIPE_PK: Env.schema.string(),
     STRIPE_SK: Env.schema.string(),
     PENGO_ADMIN_SECRET: Env.schema.string(),
+    SMTP_USER: Env.schema.string(),
+    SMTP_PASS: Env.schema.string(),
+    SIMPLEMAIL_ENDPOINT: Env.schema.string(),
 })

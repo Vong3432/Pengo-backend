@@ -15,7 +15,7 @@ export default class FounderSeeder extends BaseSeeder {
         const founder = await User.updateOrCreate({
             username: 'demofounder'
         }, {
-            email: 'founder@demo.com',
+            email: 'vongnyuksoon1209@gmail.com',
             password: '12345678',
             roleId: roleId.id,
             phone: '+60149250542',
