@@ -19,7 +19,7 @@ class UserPriorityValidateService implements IValidateItemInterface {
         const item = await BookingItem.findOrFail(itemId)
         await item.load('priorityOption', q => q.preload('dpoCol'))
 
-        if (item.priorityOption == null) {
+        if (item.priorityOption === null || item.isPreservable === 0) {
             return messages
         }
 
