@@ -32,8 +32,8 @@ class BookingCategoryService implements BookingCategoryInterface {
         await PengerVerifyAuthorizationService.isRelated(bouncer, penger);
 
         // get
-        const bookingCategories = await penger.related('bookingCategories').query();
-        return bookingCategories;
+        await penger.load('bookingCategories', q => q.preload('bookingOptions'))
+        return penger.bookingCategories;
     }
 
     async findById(id: number) {

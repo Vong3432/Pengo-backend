@@ -46,7 +46,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
     }
 
     async findAll({ auth, request }: HttpContextContract) {
-        const { limit, category, date, is_used } = request.qs()
+        const { limit, category, date, is_used, show_outdated } = request.qs()
         try {
             const user = await auth.authenticate();
             await user.load('goocard');
@@ -67,7 +67,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                 .orderBy('book_time');
 
             // if is_used is 1, dont do filter 
-            const notOverRecords = is_used == 1
+            const notOverRecords = is_used == 1 || show_outdated == 1
                 ? records
                 : records.filter((record) => {
                     const todayDT: DateTime = DateTime.now().toLocal()
@@ -78,8 +78,8 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                     const concatStartDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
                     const concatEndDT = DateTime.fromFormat(formattedEndDate, "yyyy-MM-dd HH:mm")
 
-                    const { seconds: startSec } = concatStartDT.diff(todayDT, ['seconds']).toObject()
-                    const { seconds: endSec } = concatEndDT.diff(todayDT, ['seconds']).toObject()
+                    const { seconds: startSec } = concatStartDT.diff(todayDT, ['days']).toObject()
+                    const { seconds: endSec } = concatEndDT.diff(todayDT, ['days']).toObject()
                     const isSecondsOver = startSec! < 0 && endSec! < 0
                     const isOver = isSecondsOver
                     // filter this record out if is over already
@@ -95,7 +95,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                     const diffFromStart = requestedDate.diff(itemStartDate, ['days']).days
                     const diffFromEnd = requestedDate.diff(itemEndDate, ['days']).days
 
-                    const isInBetween = diffFromStart >= 0 && diffFromEnd <= 0
+                    const isInBetween = diffFromStart >= 0 && diffFromEnd <= 0 || (requestedDate.hasSame(itemStartDate, 'day') && requestedDate.hasSame(itemEndDate, 'day'))
 
                     return isInBetween
                 });

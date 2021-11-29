@@ -39,7 +39,7 @@ export default class UpdateBookingItemValidator {
 			condition: schema.enum(Object.values(PRIORITY_CONDITIONS)),
 		}),
 		geolocation: schema.object.optional([
-			rules.requiredWhen('location_id', '=', '1')]
+			rules.requiredWhen('is_virtual', '=', '0')]
 		).members({
 			name: schema.string(),
 			latitude: schema.number(),
@@ -88,6 +88,10 @@ export default class UpdateBookingItemValidator {
 			rules.unsigned(),
 			rules.range(0, 1)
 		]),
+		is_virtual: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1),
+		]),
 		quantity: schema.number.optional([
 			rules.unsigned()
 		]),
@@ -106,10 +110,10 @@ export default class UpdateBookingItemValidator {
 			// [rules.after('today')]
 		),
 		start_from: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' },
-			// [rules.after('today')]
+			[rules.after(1, 'minute')]
 		),
 		end_at: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' },
-			// [rules.after('today')]
+			[rules.after(1, 'minute')]
 		),
 		time_gap_value: schema.number.optional([
 			rules.unsigned()

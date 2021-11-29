@@ -41,17 +41,17 @@ export default class BookingRecordsController {
           .where('id', '!=', record.id)
           .where('booking_item_id', record.bookingItemId);
 
-        // // format and compare book time
+        // format and compare book time
         let aheadUsersCount = 0;
 
-        // // format and concate `current` user record
+        // format and concate `current` user record
         const formattedBookTime = DateTime.fromFormat(record.bookTime, "h:mm a").toFormat("HH:mm")
         const formattedStartDate = DateTime.fromISO(record.serialize()['book_date']['start_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
         const concatDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
 
-        // // format and concate `other` users' record
-        // // if `other` users book earlier than `current` user, 
-        // // then increment aheadUsersCount variable.
+        // format and concate `other` users' record
+        // if `other` users book earlier than `current` user, 
+        // then increment aheadUsersCount variable.
         for (const other of records) {
           const serialized = other.serialize()
           const time = other.bookTime
@@ -71,8 +71,8 @@ export default class BookingRecordsController {
           }
         }
 
-        const itemGeo = JSON.parse(record.item.geolocation)
-        const streetAddress = await GeoService.coordinateToStreet(itemGeo['latitude'], itemGeo['longitude'])
+        const itemGeo = record.item.geolocation ? JSON.parse(record.item.geolocation) : undefined
+        const streetAddress = itemGeo === undefined ? null : await GeoService.coordinateToStreet(itemGeo['latitude'], itemGeo['longitude'])
 
         return SuccessResponse({
           response, data: {

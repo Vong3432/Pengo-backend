@@ -84,6 +84,13 @@ export default class BookingItem extends BaseModel {
       return value === 1 ? true : false
     }
   })
+  public isVirtual: number
+
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
   public isTransferable: number
 
   @column({

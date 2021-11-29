@@ -44,7 +44,9 @@ export default class CreateBookingItemValidator {
 			value: schema.string(),
 			condition: schema.enum(Object.values(PRIORITY_CONDITIONS)),
 		}),
-		geolocation: schema.object().members({
+		geolocation: schema.object.optional([
+			rules.requiredWhen('is_virtual', '=', '0')]
+		).members({
 			name: schema.string(),
 			latitude: schema.number(),
 			longitude: schema.number(),
@@ -87,6 +89,10 @@ export default class CreateBookingItemValidator {
 			rules.unsigned(),
 			rules.range(0, 1)
 		]),
+		is_virtual: schema.number.optional([
+			rules.unsigned(),
+			rules.range(0, 1),
+		]),
 		quantity: schema.number.optional([
 			rules.unsigned()
 		]),
@@ -110,8 +116,8 @@ export default class CreateBookingItemValidator {
 			rules.unsigned()
 		]),
 		time_gap_units: schema.enum.optional(TimeGapService.getTimeUnits()),
-		start_from: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
-		end_at: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after('today')]),
+		start_from: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after(1, "minute")]),
+		end_at: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }, [rules.after(1, "minute")]),
 	})
 
 	/**

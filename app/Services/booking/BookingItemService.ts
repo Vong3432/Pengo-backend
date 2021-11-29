@@ -92,7 +92,7 @@ class BookingItemService implements BookingItemInterface {
             bookingItem.fill({
                 ...data,
                 posterUrl: url,
-                geolocation: JSON.stringify(data.geolocation)
+                geolocation: data.geolocation ? JSON.stringify(data.geolocation) : undefined
             })
 
             // save booking item into category
@@ -165,7 +165,7 @@ class BookingItemService implements BookingItemInterface {
             // dynamically update fields
             bookingItem.merge({
                 ...data,
-                geolocation: data.geolocation ? JSON.stringify(data.geolocation) : bookingItem.geolocation,
+                geolocation: data.geolocation ? JSON.stringify(data.geolocation) : undefined,
                 posterUrl: url == null ? bookingItem.posterUrl : url
             });
 

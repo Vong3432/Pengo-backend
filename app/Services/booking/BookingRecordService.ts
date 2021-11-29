@@ -59,8 +59,14 @@ class BookingRecordService implements BookingRecordInterface {
     formatRecordProperties(record: BookingRecord) {
         const serialized = record.serialize()
 
+        // format and concate `current` user record
+        const formattedBookTime = DateTime.fromFormat(record.bookTime, "h:mm a").toFormat("HH:mm")
+        const formattedStartDate = DateTime.fromISO(record.serialize()['book_date']['start_date']).toFormat('yyyy-MM-dd') + " " + formattedBookTime
+        const concatDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
+
         return {
             ...serialized, // destructure existing properties
+            formatted_book_datetime: concatDT,
         }
     }
 
@@ -69,9 +75,17 @@ class BookingRecordService implements BookingRecordInterface {
             .map(record => this.formatRecordProperties(record))
             .filter((record) => {
                 if (showToday) {
-                    const today = DateTime.now().setLocale('zh').toISO();
+                    const todayDT: DateTime = DateTime.now().toLocal()
+                    const startDT = DateTime.fromISO(record['book_date']['start_date'])
+                    const endDT = DateTime.fromISO(record['book_date']['end_date'])
+
+                    const diffFromStart = todayDT.diff(startDT, ['days']).days
+                    const diffFromEnd = todayDT.diff(endDT, ['days']).days
+
                     // return record if today is between startdate and enddate
-                    return (today >= record['book_date']['start_date']) && (today <= record['book_date']['end_date'])
+                    const isBetween = diffFromStart >= 0 && diffFromEnd <= 0 || (todayDT.hasSame(startDT, 'day') && todayDT.hasSame(endDT, 'day'))
+
+                    return isBetween
                 } else {
                     if (!showExpired) {
                         const today = DateTime.now().setLocale('zh').toISO();
