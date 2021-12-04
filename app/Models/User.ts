@@ -57,6 +57,13 @@ export default class User extends BaseModel {
   @manyToMany(() => Penger)
   public pengerUsers: ManyToMany<typeof Penger>
 
+  @column({
+    serialize: (value: number) => {
+      return value === 1 ? true : false
+    }
+  })
+  public isBanned: number
+
   @beforeSave()
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {

@@ -6,6 +6,7 @@ Route.group(() => {
     Route.resource('system-functions', 'SystemFunctionsController').apiOnly()
     Route.resource('dpo-tables', 'DpoTablesController').apiOnly()
     Route.resource('dpo-cols', 'DpoColsController').apiOnly()
+    Route.resource('users', 'UsersController').apiOnly()
 
     Route.get('tables', 'AdminsController.getDBTables').prefix('db').as('getTables')
     Route.get('columns/:table', 'AdminsController.getDBColumns').prefix('db').as('getCols')

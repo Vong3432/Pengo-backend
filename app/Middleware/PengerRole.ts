@@ -9,7 +9,10 @@ export default class PengerRole {
     const user = auth.user;
 
     if (!user)
-      return response.unauthorized({ error: 'Must be logged in.' })
+      return response.unauthorized({ msg: 'Must be logged in.' })
+
+    if (user.isBanned === 1)
+      return response.unauthorized({ msg: 'You account has been suspended. For any issue kindly email to admin.' })
 
     await user.load('role');
 
