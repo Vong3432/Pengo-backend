@@ -68,16 +68,17 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
 #### Profile
 
 - [ ]  Profile overview
-- [ ]  Email verification
+- [x]  Edit profile
+- [ ]  ~~Email verification~~
 - [ ]  ~~Reward~~
     - [ ]  ~~View the coupons from Penger that current Pengoo has booked before.~~
-- [ ]  User preferences setting
+- [ ]  ~~User preferences setting~~
 
 #### Feedback
 
-- [ ]  Write review to record by item
+- [x]  Write review to record by item
 - [ ]  Report to system
-- [ ]  View reviews of a item
+- [x]  View reviews of a item
 
 #### Utility
 
@@ -92,6 +93,7 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
 #### Profile
 
 - [ ]  Profile overview
+- [x]  Edit profile
 
 #### Booking records
 
@@ -140,7 +142,7 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
 #### Staff management
 
 - [x]  Founder can CRUD staff.
-- [ ]  Staff can request leave
+- [ ]  ~~Staff can request leave~~
 
 #### Payment
 
@@ -159,4 +161,4 @@ https://documenter.getpostman.com/view/7274101/UVC3k7ve
 - [x]  CRUD
 
 #### Setting
-- [ ]  Charge rate
+- [x]  Charge rate
