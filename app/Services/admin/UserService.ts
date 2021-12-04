@@ -58,8 +58,6 @@ class UserService implements UserInterface {
             const ban: boolean = request.body().terminate
             const user = await this.findById(request.param('id'))
 
-            console.log(ban)
-
             await user.useTransaction(trx).merge({
                 isBanned: ban === true ? 1 : 0
             }).save()

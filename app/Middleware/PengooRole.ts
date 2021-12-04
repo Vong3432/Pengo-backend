@@ -11,7 +11,7 @@ export default class PengooRole {
       return response.unauthorized({ msg: 'Must be logged in.' })
 
     if (user.isBanned === 1)
-      return response.unauthorized({ msg: 'You account has been suspended. For any issue kindly email to admin.' })
+      return response.unauthorized({ msg: 'Your account has been suspended. For any issue kindly email to admin.' })
 
     await user.load('role');
 
