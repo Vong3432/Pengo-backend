@@ -8,7 +8,7 @@ class DbService implements DBServiceInterface<String[]> {
     async getAllColumns(tableName: string): Promise<any> {
         return await this.connection.columnsInfo(tableName);
     }
-    async getAllTables(): Promise<String[]> {
+    async getAllTables(): Promise<string[]> {
         return await this.connection.getAllTables();
     }
 

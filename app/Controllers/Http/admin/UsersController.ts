@@ -37,8 +37,8 @@ export default class UsersController {
   public async update(contract: HttpContextContract) {
     const { response } = contract
     try {
-      await UserService.update(contract)
-      return SuccessResponse({ response, msg: `Updated user status successfully` })
+      const updatedUser = await UserService.update(contract)
+      return SuccessResponse({ response, msg: `Updated user status successfully`, data: updatedUser })
     } catch (error) {
       return ErrorResponse({ response, msg: error.messages || error })
     }

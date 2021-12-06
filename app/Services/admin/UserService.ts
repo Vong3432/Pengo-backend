@@ -11,7 +11,7 @@ class UserService implements UserInterface {
 
         const page: number = request.qs().page ?? 1
         const name = request.qs().name
-        const status = request.qs().is_banned ?? 0
+        const status = request.qs().is_banned
         const roleId: number = request.qs().role
 
         // exclude admin
@@ -19,7 +19,8 @@ class UserService implements UserInterface {
         await query.whereNot('role_id', adminRoleId)
 
         // filter ban status
-        query.where('is_banned', status)
+        if (status)
+            query.where('is_banned', status)
 
         if (name) {
             const trimName: string = name.toString().trim()
