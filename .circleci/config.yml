@@ -5,7 +5,7 @@ workflows:
   heroku_deploy:
     jobs:
       - heroku/deploy-via-git:
-        pre-steps:
-          - run: git pull --rebase
+          pre-steps:
+            - run: git pull --rebase
 
       
