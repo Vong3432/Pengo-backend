@@ -55,7 +55,8 @@ jobs:
     
     - name: Verify MySQL connection
       run: |
-        sudo apt-get install -y mysql-client
+        sudo apt-get install aptitude
+        sudo aptitude install -y mysql-client
         mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p -e "SHOW DATABASES"
         mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p -e "SET global sql_mode = ''"
 

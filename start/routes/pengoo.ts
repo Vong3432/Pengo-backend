@@ -29,4 +29,8 @@ Route.group(() => {
     .namespace('App/Controllers/Http/pengoo')
     .prefix('/pengoo')
     .as('pengoo')
-    .middleware(['auth:api', 'throttle', 'pengoo_role'])
+    .middleware([
+        'auth:api',
+        // 'throttle', 
+        'pengoo_role'
+    ])

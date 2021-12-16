@@ -30,4 +30,4 @@ Route.group(() => {
     .namespace('App/Controllers/Http/core')
     .prefix('/core')
     .as('core')
-    .middleware('throttle')
+    // .middleware('throttle')
