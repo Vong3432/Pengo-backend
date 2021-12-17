@@ -1,3 +1,4 @@
+import Sentry from '@ioc:Adonis/Addons/Sentry';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Transaction from 'App/Models/Transaction';
 import { DBTransactionService } from 'App/Services/db/DBTransactionService';
@@ -31,6 +32,7 @@ export default class TransactionsController {
 
             return SuccessResponse({ response, msg: "Success", data: transaction })
         } catch (error) {
+            Sentry.captureException(error);
             await trx.rollback()
             return ErrorResponse({ response, msg: error.messages || error })
         }

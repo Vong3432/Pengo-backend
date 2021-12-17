@@ -12,6 +12,7 @@ import CreditPointsClientService from "../credit_points/CreditPointsClientServic
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CreditPoint from "App/Models/CreditPoint";
 import { DateTime } from "luxon";
+import GooCard from "App/Models/GooCard";
 
 class CouponClientService implements CouponClientInterface, LogInterface<Coupon>  {
 
@@ -95,7 +96,9 @@ class CouponClientService implements CouponClientInterface, LogInterface<Coupon>
 
             const pengoo = await auth.authenticate()
             await pengoo.load('goocard')
+
             const goocard = pengoo.goocard
+
             const coupon = await this.findById(request.qs().id, auth);
 
             if (!CouponValidateService.canRedeemed(coupon))
@@ -104,23 +107,24 @@ class CouponClientService implements CouponClientInterface, LogInterface<Coupon>
             await CreditPointsClientService.deduct(coupon.minCreditPoints, coupon.pengerId, auth)
 
             // update coupon quantity
-            await coupon.merge({
-                quantity: coupon.quantity > 0 ? coupon.quantity - 1 : 0
-            })
-                .useTransaction(trx)
+            await coupon.useTransaction(trx)
+                .merge({
+                    quantity: coupon.quantity > 0 ? coupon.quantity - 1 : 0
+                })
                 .save();
 
-            await trx.commit();
-
             // save to `goocard_coupon`
-            await goocard.related('coupons').save(coupon);
+            await goocard.related('coupons').attach([coupon.id], trx);
 
             // save coupon record log
             await GoocardLogService.saveLog(await this.toLog(coupon, "GET"), auth)
 
+            await trx.commit();
+
             return coupon;
 
         } catch (error) {
+            console.log(error)
             await trx.rollback()
             throw error
         }
