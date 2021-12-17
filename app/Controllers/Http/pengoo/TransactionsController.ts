@@ -1,5 +1,6 @@
 import Sentry from '@ioc:Adonis/Addons/Sentry';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { BankAccountType } from 'App/Models/BankAccount';
 import Transaction from 'App/Models/Transaction';
 import { DBTransactionService } from 'App/Services/db/DBTransactionService';
 import { ErrorResponse, SuccessResponse } from 'App/Services/ResponseService';
@@ -13,7 +14,7 @@ export default class TransactionsController {
             const payload = await request.validate(CreateTransactionValidator)
 
             const user = await auth.authenticate()
-            await user.load('goocard', q => q.preload('bankAccounts'))
+            await user.load('goocard', q => q.preload('bankAccounts', q => q.where('type', BankAccountType.GOOCARD)))
 
             if (user.goocard.bankAccounts[0].id !== payload.bank_account_id) {
                 throw Error("Invalid request")
