@@ -83,7 +83,7 @@ class BookingRecordService implements BookingRecordInterface {
                     const diffFromEnd = todayDT.diff(endDT, ['days']).days
 
                     // return record if today is between startdate and enddate
-                    const isBetween = diffFromStart >= 0 && diffFromEnd <= 0 || (todayDT.hasSame(startDT, 'day') && todayDT.hasSame(endDT, 'day'))
+                    const isBetween = diffFromStart >= 0 && diffFromEnd <= 0 || todayDT.hasSame(endDT, 'day')
 
                     return isBetween
                 } else {

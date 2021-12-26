@@ -78,12 +78,14 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                     const concatStartDT = DateTime.fromFormat(formattedStartDate, "yyyy-MM-dd HH:mm")
                     const concatEndDT = DateTime.fromFormat(formattedEndDate, "yyyy-MM-dd HH:mm")
 
-                    const { seconds: startSec } = concatStartDT.diff(todayDT, ['days']).toObject()
-                    const { seconds: endSec } = concatEndDT.diff(todayDT, ['days']).toObject()
+                    const { seconds: startSec } = concatStartDT.diff(todayDT, ['days', 'seconds']).toObject()
+                    const { seconds: endSec } = concatEndDT.diff(todayDT, ['days', 'seconds']).toObject()
                     const isSecondsOver = startSec! < 0 && endSec! < 0
+
                     const isOver = isSecondsOver
-                    // filter this record out if is over already
-                    return !isOver
+
+                    // return records that are not over or within the same date with today
+                    return !isOver || todayDT.hasSame(concatEndDT, 'day')
                 })
 
             if (date) {
