@@ -4,6 +4,7 @@ import Penger from "App/Models/Penger";
 import CreateBookingCategoryValidator from "App/Validators/penger/CreateBookingCategoryValidator";
 import BookingCategoryInterface from "Contracts/interfaces/BookingCategory.interface";
 import SystemFunctionService from "../admin/SystemFunctionService";
+import PengerService from "../core/PengerService";
 import { DBTransactionService } from "../db/DBTransactionService";
 import BoolConvertHelperService from "../helpers/BoolConvertHelperService";
 import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationService";
@@ -11,11 +12,25 @@ import { PengerVerifyAuthorizationService } from "../PengerVerifyAuthorizationSe
 class BookingCategoryService implements BookingCategoryInterface {
     async findAll({ request }: HttpContextContract) {
         const pengerId = request.qs().penger_id;
+        let bookingCategories: BookingCategory[] = []
 
-        if (pengerId)
-            return await BookingCategory.query().where('created_by', pengerId)
+        if (pengerId) {
+            bookingCategories = await BookingCategory.query().where('created_by', pengerId).preload('createdBy')
+        } else {
+            bookingCategories = await BookingCategory.query().where('is_enable', 1).preload('createdBy');
+        }
 
-        return await BookingCategory.query().where('is_enable', 1).preload('createdBy');
+        let availableBookingCategories: BookingCategory[] = []
+
+        for await (const category of bookingCategories) {
+            const penger = category.createdBy
+
+            if (await PengerService.isOpen(penger)) {
+                availableBookingCategories.push(category)
+            }
+        }
+
+        return availableBookingCategories
     };
 
     async findAllByPenger({ request, bouncer }: HttpContextContract) {
