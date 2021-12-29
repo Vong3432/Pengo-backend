@@ -139,6 +139,9 @@ class BookingItemClientService implements BookingItemClientInterface {
             // if filter radius is request,
             // filter out the items that is out of range
             filteredArr = filteredArr.filter((p) => {
+
+                if (p.isVirtual) return false
+
                 const geoObj = JSON.parse(p.geolocation)
                 const isIn: boolean = isPointWithinRadius(
                     origin,
@@ -153,16 +156,18 @@ class BookingItemClientService implements BookingItemClientInterface {
         if (filteredArr.length === 0) return []
 
         if (sortDistance) {
-            const sortedArr = orderByDistance(origin, items.map((p) => {
-                const geoObj = JSON.parse(p.geolocation)
-                const { latitude, longitude } = geoObj
-                return {
-                    ...p.serialize(),
-                    latitude,
-                    longitude,
-                    distance: getDistance(origin, geoObj) / 1000 // m to km
-                }
-            }))
+            const sortedArr = orderByDistance(origin, items
+                .filter((p) => p.isVirtual !== 1)
+                .map((p) => {
+                    const geoObj = JSON.parse(p.geolocation)
+                    const { latitude, longitude } = geoObj
+                    return {
+                        ...p.serialize(),
+                        latitude,
+                        longitude,
+                        distance: getDistance(origin, geoObj) / 1000 // m to km
+                    }
+                }))
 
             // return items filter w/ radius + sorted distance
             return sortedArr;

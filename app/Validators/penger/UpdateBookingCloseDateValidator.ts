@@ -34,12 +34,12 @@ export default class UpdateBookingCloseDateValidator {
 		from: schema.date({
 			format: 'yyyy-MM-dd'
 		}, [
-			rules.after('today')
+			rules.after(-1, "day")
 		]),
 		to: schema.date({
 			format: 'yyyy-MM-dd'
 		}, [
-			rules.after('today')
+			rules.after(-1, "day")
 		]),
 		name: schema.string(),
 	})
