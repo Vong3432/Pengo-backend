@@ -29,10 +29,13 @@ export default class LocationsController {
   public async update(contract: HttpContextContract) {
     const { response, request } = contract
     try {
-      const { mark_all_not_fav } = request.qs()
+      const { mark_all_not_fav, user_location_id } = request.qs()
 
       if (mark_all_not_fav == 1)
         await PengooService.markAllAsNotFav(contract);
+      else if (user_location_id) {
+        await PengooService.update(contract)
+      }
 
       return SuccessResponse({ response, msg: 'Update successfully' })
     } catch (error) {

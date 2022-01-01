@@ -53,8 +53,29 @@ class PengooService implements PengooInterface {
         }
     }
 
-    async update() {
+    async update({ request, auth }: HttpContextContract) {
+        const trx = await DBTransactionService.init()
+        try {
+            const { user_location_id } = request.qs()
 
+            const user = await auth.authenticate()
+            await user.load('locations')
+
+            for (const location of user.locations) {
+                // user_location_id is string literal, so not using deep equal here should be fine.
+                if (location.id != user_location_id)
+                    location.merge({ isFav: 0 })
+                else
+                    location.merge({ isFav: 1 })
+                await location.useTransaction(trx).save()
+            }
+
+            await trx.commit();
+
+        } catch (error) {
+            await trx.rollback()
+            throw error
+        }
     }
 
     async getLocations({ auth }: HttpContextContract) {
