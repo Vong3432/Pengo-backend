@@ -198,16 +198,17 @@ class PengerService {
 
             // get all unpaid transaction records
             const transactions = await Transaction.query()
+                .useTransaction(trx)
                 .where('to_bank_account_id', bankAccount.id)
                 .where('bank_account_id', '!=', bankAccount.id)
                 .where('is_paid', 0)
 
             // update all as paid
             for await (const transaction of transactions) {
-                await transaction.useTransaction(trx).merge({ isPaid: true }).save()
-                await trx.commit()
+                await transaction.merge({ isPaid: true }).save()
             }
 
+            await trx.commit()
             // // Deposit money
             // const paymentIntent = await StripePaymentService.deposit(fromCus.id, amount)
 

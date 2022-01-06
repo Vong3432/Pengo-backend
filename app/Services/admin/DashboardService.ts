@@ -6,6 +6,7 @@ import User from "App/Models/User";
 import DashboardInterface from "Contracts/interfaces/Dashboard.interface"
 import { DateTime } from "luxon";
 import RateService from "../helpers/RateService";
+import SettingService from "./SettingService";
 
 interface DashboardDataStat {
     value: number;
@@ -164,14 +165,21 @@ class DashboardService implements DashboardInterface {
         let defaultData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let totalCommission = 0
 
-        const monthlyArr = await this.getGroupedRecord({ tableName: 'transactions', column: 'created_at', type: 'month' }).where('is_paid', '0').sum("amount as totalAmount")
+        const monthlyArr = await this.getGroupedRecord({ tableName: 'transactions', column: 'created_at', type: 'month' }).where('is_paid', '1').sum("amount as totalAmount")
 
+        const setting = await SettingService.findByKey('stripe_charge_rate')
+        const chargeRateFromSetting = parseFloat(setting.value) / 100
+
+        const chargeRate = chargeRateFromSetting
 
         // upsert data to defaultData array
         for (const monthData of monthlyArr) {
             const totalAmountInThisMonth = parseFloat((monthData.totalAmount / 100).toFixed(2))
-            totalCommission += totalAmountInThisMonth
-            defaultData[monthData.month - 1] = totalAmountInThisMonth
+            const comission = totalAmountInThisMonth * chargeRate
+            const totalAfterComission = totalAmountInThisMonth - comission
+
+            totalCommission += comission
+            defaultData[monthData.month - 1] = totalAfterComission
         }
 
         // items

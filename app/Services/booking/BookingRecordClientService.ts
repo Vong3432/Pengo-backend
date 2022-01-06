@@ -46,7 +46,7 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
     }
 
     async findAll({ auth, request }: HttpContextContract) {
-        const { limit, category, date, is_used, show_outdated } = request.qs()
+        const { limit, category, date, is_used = 0, show_outdated } = request.qs()
         try {
             const user = await auth.authenticate();
             await user.load('goocard');
@@ -83,6 +83,8 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
                     const isSecondsOver = startSec! < 0 && endSec! < 0
 
                     const isOver = isSecondsOver
+
+                    console.log(isOver, formattedStartDate, formattedEndDate)
 
                     // return records that are not over or within the same date with today
                     return !isOver || todayDT.hasSame(concatEndDT, 'day')
