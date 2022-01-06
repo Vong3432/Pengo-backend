@@ -176,10 +176,9 @@ class DashboardService implements DashboardInterface {
         for (const monthData of monthlyArr) {
             const totalAmountInThisMonth = parseFloat((monthData.totalAmount / 100).toFixed(2))
             const comission = totalAmountInThisMonth * chargeRate
-            const totalAfterComission = totalAmountInThisMonth - comission
 
             totalCommission += comission
-            defaultData[monthData.month - 1] = totalAfterComission
+            defaultData[monthData.month - 1] = comission
         }
 
         // items
