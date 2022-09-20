@@ -49,10 +49,12 @@ class PengerService {
         // const trx = await DBTransactionService.init();
         try {
 
-            await self.load('bankAccounts');
+            const bankAccounts = await BankAccount.query()
+                .where('type', BankAccountType.PENGER)
+                .where('holder_id', self.id)
 
             // check if current penger has any bank accounts in DB
-            if (self.bankAccounts.length === 0) {
+            if (bankAccounts.length === 0) {
                 // does not has any record, create a new one
                 // fromCus = await StripeCustomerService.create({ description: self.name });
                 await BankAccountService.create(accId, BankAccountType.PENGER, self.id);
@@ -63,7 +65,7 @@ class PengerService {
 
             // refresh
             await self.load('bankAccounts');
-            return self.bankAccounts[0];
+            return bankAccounts[0];
 
         } catch (error) {
             // await trx.rollback()

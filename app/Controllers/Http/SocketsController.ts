@@ -18,12 +18,15 @@ import Ws from 'App/Services/socket/SocketService';
 export default class SocketsController {
     public async verifyPass({ request, auth, response, bouncer }: HttpContextContract) {
         try {
+            console.log("SocketsController: Verify pass called")
+            
             const user = await auth.authenticate();
             const {
                 record_id,
                 pin
             } = request.body();
             const { penger_id } = request.qs()
+
 
             if (record_id == null || user == null) throw ('Failed to connect to socket')
 

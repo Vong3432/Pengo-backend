@@ -23,6 +23,8 @@ class BookingRecordClientService implements BookingRecordClientInterface, LogInt
 
     async toLog(data: BookingRecord, type: LogType): Promise<LogMsg> {
         await data.load('item');
+
+
         const body = await DateConvertHelperService
             .fromDateToReadableText(Date.now(), {
                 dateStyle: 'full',

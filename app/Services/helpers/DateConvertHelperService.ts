@@ -5,7 +5,7 @@ class DateConvertHelperService implements DateConvertHelperInterface {
         try {
             let s = new Intl.DateTimeFormat('en-MY', {
                 dateStyle: option?.dateStyle,
-                timeStyle: option?.timeStyle,
+                timeStyle: option?.timeStyle
             }).format(dt)
 
             return Promise.resolve(s);

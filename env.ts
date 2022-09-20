@@ -32,4 +32,5 @@ export default Env.rules({
     SMTP_USER: Env.schema.string(),
     SMTP_PASS: Env.schema.string(),
     SIMPLEMAIL_ENDPOINT: Env.schema.string(),
+    TZ: Env.schema.string()
 })

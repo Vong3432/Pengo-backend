@@ -1,3 +1,9 @@
+## Getting started
+1. Configure environment variables in `.env` file. See `.env.example` file for details.
+2. Run `npm install`
+3. Start local server at "XAMPP".
+4. Run `npm run dev`
+
 ## run test by file
 ```
 npm run test --file=test/user.spec.ts
